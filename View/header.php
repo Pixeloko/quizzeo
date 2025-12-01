@@ -37,7 +37,11 @@ require_once './config/config.php';
 
                 <?php else: ?>
                     <li><a href="login">Connexion</a></li>
+<<<<<<< HEAD
                     
+=======
+                    <li><a href="create">Créer un compte </a></li>
+>>>>>>> 7930e15 (modif header)
 
                 <?php endif; ?>
                 

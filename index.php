@@ -4,7 +4,7 @@ $url = $_GET['url'] ?? '';
 
 switch ($url) {
     case '':
-        require __DIR__ . '/View/login.php';
+        require __DIR__ . '/View/home.php';
         break;
         
     case 'create':
