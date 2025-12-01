@@ -37,7 +37,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         try {
             createUser($role, $firstname, $lastname, $email, $password);
             $_SESSION["message"] = "✅ Compte créé avec succès !";
-            header("Location: login.php");
+            header("Location: ./View/login.php");
             exit;
         } catch (Exception $e) {
             $errors["general"] = "❌ Impossible de créer un compte : " . $e->getMessage();
