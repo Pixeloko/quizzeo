@@ -1,5 +1,7 @@
 <?php 
 require_once '../config/config.php';
+
+
 session_start();
 $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
 
@@ -60,9 +62,9 @@ $role = $role ?? "user";
                 <option value="entreprise" <?= $role === 'entreprise' ? 'selected' : '' ?>>entreprise</option>
             </select>
             <?php if (isset($errors["role"])): ?>
-            <p style=\"color: #780000;\"><?= $errors["role"] ?></p>
+            <p style="color: #780000;\"><?= $errors["role"] ?></p>
             <?php endif ?>
-        </div>
+            </div>
 
         <button>S'inscrire</button>
     </form>
