@@ -11,6 +11,16 @@ function getUserById(int $id): ?array {
     return $stmt->fetch(PDO::FETCH_ASSOC) ?: null;
 }
 
+function getUsers(): ?array {
+    $conn = getDatabase();
+
+    $stmt = $conn->prepare("SELECT * FROM users WHERE role != 'admin'");
+    $stmt->execute();
+
+    return $stmt->fetchAll(PDO::FETCH_ASSOC) ?: null;
+}
+
+
 function getUserByEmail(string $email): ?array {
 
     $conn = getDatabase();
