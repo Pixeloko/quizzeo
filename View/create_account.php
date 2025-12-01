@@ -22,6 +22,21 @@ if (!isset($_SESSION['csrf_token'])) {
         <?php if (isset($errors["general"])): ?>
         <div style="color: #780000"><?= $errors["general"] ?></div>
         <?php endif ?>
+        <div>
+            <label for="firstname">Prénom :</label>
+            <input type="text" name="firstname" id="firstname" value="<?= htmlspecialchars($firstname) ?>" required />
+            <?php if (isset($errors["firstname"])): ?>
+            <p style="color: #780000;"><?= $errors["firstname"] ?></p>
+            <?php endif ?>
+        </div>
+
+        <div>
+            <label for="lastname">Nom :</label>
+            <input type="text" name="lastname" id="lastname" value="<?= htmlspecialchars($lastname) ?>" required />
+            <?php if (isset($errors["lastname"])): ?>
+            <p style="color: #780000;"><?= $errors["lastname"] ?></p>
+            <?php endif ?>
+        </div>
 
         <div>
             <label for="username">Nom d'utilisateur :</label>
