@@ -1,11 +1,24 @@
 <?php
-declare(strict_types=1);
-require_once("./View/header.php");
-?>
 
-<main>
-    <h1>Site de création de quizz</h1>
-</main>
-    
+$url = $_GET['url'] ?? '';
 
-<?php require_once("./View/footer.php");?>
+switch ($url) {
+    case '':
+        require __DIR__ . '/View/login.php';
+        break;
+        
+    case 'create_account':
+
+        require __DIR__ . '/View/create_account.php';
+        break;
+
+    case 'login':
+
+        require __DIR__ . '/View/login.php';
+        break;
+
+    default:
+        http_response_code(404);
+        echo 'Page non trouvée';
+        break;
+}
