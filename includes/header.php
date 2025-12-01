@@ -23,7 +23,6 @@ require_once("./includes/functions.php");
                 <li><a href="./profile.php" >Profil</a></li>
                 <li><a href="./logout.php">Déconnexion</a></li>
             <?php else: ?>
-                <li><a href="./create_account.php">Créer un compte</a></li>
                 <li><a href="./login.php" >Connexion</a></li>
             <?php endif; ?>
             </ul>
