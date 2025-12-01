@@ -3,7 +3,7 @@
 <main>
     <h1>Inscription</h1>
 
-    <form class="sub-form" method="POST" action="../Controller/create_account.php">
+    <form class="sub-form" method="POST" action="./Controller/create_account.php">
         <?php if (isset($errors["general"])): ?>
         <div style="color: #780000"><?= $errors["general"] ?></div>
         <?php endif ?>
@@ -31,8 +31,21 @@
             <p style="color: #780000;"><?= $errors["password"] ?></p>
             <?php endif ?>
         </div>
+        <!-- Choix du type d'utilisateur : école, entreprise, user-->
+        <div>
+            <label for="role">Votre rôle :</label>
+            <select name="role" id="role" value="<?= htmlspecialchars($role) ?>">
+            <option <?= htmlspecialchars($user) ?>>user</option>
+            <option<?= htmlspecialchars($ecole) ?>>école</option>
+            <option <?= htmlspecialchars($entreprise) ?>>entreprise</option>
+            </select>
+            <?php if (isset($errors["role"])): ?>
+            <p style="color: #780000;"><?= $errors["role"] ?></p>
+            <?php endif ?>
+        </div>
 
-        <button id="sub-button">Se connecter</button>
+
+        <button>Se connecter</button>
     </form>
 </main>
 
