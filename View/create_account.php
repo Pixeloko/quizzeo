@@ -2,6 +2,12 @@
 session_start();
 $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
 require_once '../config/config.php';
+
+$errors = $errors ?? [];
+$firstname = $firstname ?? "";
+$lastname = $lastname ?? "";
+$email = $email ?? "";
+$role = $role ?? "user";
 ?>
 
 <main>
