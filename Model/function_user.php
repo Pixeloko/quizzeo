@@ -82,7 +82,6 @@ function createUser(string $role, string $firstname, string $lastname,string $em
     $verif = $conn->prepare("SELECT id FROM users WHERE email = :email");
     $verif->execute([
         "email" => $email, 
-        "username" => $username
     ]);
 
     if ($verif->fetch()) {
