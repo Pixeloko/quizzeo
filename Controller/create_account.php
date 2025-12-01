@@ -2,13 +2,6 @@
 require_once("./Model/function_user.php");
 
 
-$errors = [];
-$email = "";
-$firstname = "";
-$lastname = "";
-$password = "";
-$role = "user";  
-
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
     
     // Vérification du token généré dans la view
