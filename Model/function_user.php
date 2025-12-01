@@ -39,12 +39,13 @@ function getUserByEmail(string $email): ?array {
     return $user ?: null;
 }
 
-function createUser(string $role, string $username, string $email, string $password): int {
+function createUser(string $role, string $firstname, string $lastname,string $email, string $password): int {
     
     $errors = [];
 
     $role = "";
-    $username = trim($username);
+    $firstname = trim($firstname);
+    $lastname = trim($lastname);
     $email = trim($email);
     $password = trim($password);
 
@@ -101,24 +102,25 @@ function createUser(string $role, string $username, string $email, string $passw
     return (int) $conn->lastInsertId();
 }
 
-function updateUser(int $id, string $username, string $email, ?string $password): bool {
+function updateUser(int $id, string $firstname, string $lastname, string $email, ?string $password): bool {
 
     $conn = getDatabase();
 
     if ($password) {
-        $stmt = $conn->prepare("UPDATE users SET username = :username, email = :email, password = :password 
+        $stmt = $conn->prepare("UPDATE users SET firstname = :firstname, lastname = :lastname, email = :email, password = :password 
                                 WHERE id = :id");
         $stmt->execute([
-            'username' => $username,
+            'firstname' => $firstname,
+            'lastname' => $lastname,
             'email'    => $email,
             'password' => password_hash($password, PASSWORD_BCRYPT),
             'id'       => $id
         ]);
     } else {
-        $stmt = $conn->prepare("UPDATE users SET username = :username, email = :email 
+        $stmt = $conn->prepare("UPDATE users SET firstname = :firstname, email = :email 
                                 WHERE id = :id");
         $stmt->execute([
-            'username' => $username,
+            'firstname' => $firstname,
             'email'    => $email,
             'id'       => $id
         ]);
