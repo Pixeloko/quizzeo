@@ -50,7 +50,7 @@ function createUser(string $role, string $firstname, string $lastname,string $em
         'firstname' => $firstname,
         'lastname' => $lastname,
         'email'     => $email,
-        'password'  => password_hash($password, PASSWORD_BCRYPT)
+        'password'  => password_hash($password, PASSWORD_DEFAULT)
     ]);
 
     return (int) $conn->lastInsertId();
