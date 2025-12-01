@@ -1,7 +1,9 @@
+<?php require_once("./header.php"); ?>
+
 <main>
     <h1>Inscription</h1>
 
-    <form class="sub-form" method="POST">
+    <form class="sub-form" method="POST" action="../Controller/create_account.php">
         <?php if (isset($errors["general"])): ?>
         <div style="color: #780000"><?= $errors["general"] ?></div>
         <?php endif ?>
@@ -34,4 +36,4 @@
     </form>
 </main>
 
-<?php require_once("./includes/footer.php") ?>
+<?php require_once("./footer.php") ?>
