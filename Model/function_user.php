@@ -41,56 +41,7 @@ function getUserByEmail(string $email): ?array {
 
 function createUser(string $role, string $firstname, string $lastname,string $email, string $password): int {
     
-    $errors = [];
-
-    $role = "";
-    $firstname = trim($firstname);
-    $lastname = trim($lastname);
-    $email = trim($email);
-    $password = trim($password);
-
-    if (!$firstname) {
-        $errors["firstname"] = "Prénom requis";
-    }
-
-    if (!$lastname) {
-        $errors["lastname"] = "Nom requis";
-    }
-
-    if (!$role) {
-        $errors["role"] = "Role requis";
-    }
-
-    if (!$email) {
-        $errors["email"] = "Email requis";
-    }
-
-    if(!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-        $errors["email"] = "Veuiller entrer un email valide";
-    }
-
-    if ($password && strlen($password) < 6) {
-        $errors["password"] = "Le mot de passe doit contenir au moins 6 caractères";
-    }
-
-    if (!$password) {
-        $errors["password"] = "Mot de passe requis";
-    }
-
     $conn = getDatabase();
-
-    $verif = $conn->prepare("SELECT id FROM users WHERE email = :email");
-    $verif->execute([
-        "email" => $email, 
-    ]);
-
-    if ($verif->fetch()) {
-        $errors["email"] = "Cet email est déjà utilisé.";
-    }
-
-    if (!empty($errors)) {
-        throw new InvalidArgumentException(json_encode($errors));
-    }
 
     $stmt = $conn->prepare("INSERT INTO users(role, firstname, lastname, email, password, created_at) VALUES (:role, :username, :email, :password, NOW())");
 
