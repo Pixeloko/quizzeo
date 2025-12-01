@@ -24,12 +24,14 @@ if ($_SERVER["REQUEST_METHOD"]  === "POST") {
   }
  
     if(empty($errors)) {
-        createQuest($title, $answer)
+        createQuest($title, $answer, $point);
     }
 
     if(empty($errors)) {
         $_SESSION["message"] = "Envoi réussi !";
-        header('Location : dashboard.php');
+
+        // à faire: redirection selon le role
+        header('Location : ./View/dashboard_e.php');
         exit;    
     }
 }

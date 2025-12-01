@@ -49,7 +49,6 @@ function createQuest(string $title, string $answer, int $point): int
         $errors["point"] = "Les points doivent être supérieurs à 0";
     }
 
-
     // Vérifier si le titre existe déjà
     $verif = $conn->prepare("SELECT id FROM questions WHERE title = :title");
     $verif->execute(['title' => $title]);
