@@ -53,11 +53,11 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             switch ($role) {
                 case "entreprise":
                   case "ecole":
-                      header("Location: ./View/dashboard_e.php");
+                      header("Location: dashboard");
                       break;
                 case "user":
                 default:
-                    header("Location: ./View/user.php");
+                    header("Location: user");
                     break;
             }
             exit;

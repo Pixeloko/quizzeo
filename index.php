@@ -17,6 +17,16 @@ switch ($url) {
         require __DIR__ . '/View/login.php';
         break;
 
+    case 'user':
+
+        require __DIR__ . '/View/user.php';
+        break;
+
+    case 'dashboard':
+
+        require __DIR__ . '/View/dashboard_e.php';
+        break;
+
 
     default:
         http_response_code(404);
