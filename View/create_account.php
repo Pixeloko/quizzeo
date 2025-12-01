@@ -6,11 +6,6 @@ session_start();
 require_once './Controller/create_account';
 $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
 
-$errors = $errors ?? [];
-$firstname = $firstname ?? "";
-$lastname = $lastname ?? "";
-$email = $email ?? "";
-$role = $role ?? "user";
 ?>
 
 <main>
