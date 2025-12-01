@@ -38,13 +38,6 @@ if (!isset($_SESSION['csrf_token'])) {
             <?php endif ?>
         </div>
 
-        <div>
-            <label for="username">Nom d'utilisateur :</label>
-            <input type="text" name="username" id="username" value="<?= htmlspecialchars($username) ?>" required />
-            <?php if (isset($errors["username"])): ?>
-            <p style="color: #780000;"><?= $errors["username"] ?></p>
-            <?php endif ?>
-        </div>
 
         <div>
             <label for="email">Email :</label>
