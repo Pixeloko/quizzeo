@@ -1,22 +1,13 @@
 <?php 
+session_start();
+$_SESSION['csrf_token'] = bin2hex(random_bytes(32));
 require_once("header.php"); 
-require_once("./Controller/create_account.php"); 
-
-// Initialisation
-$errors = $errors ?? [];
-$username = $username ?? '';
-$email = $email ?? '';
-$role = $role ?? 'user';
-
-if (!isset($_SESSION['csrf_token'])) {
-    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
-}
 ?>
 
 <main>
     <h1>Inscription</h1>
 
-    <form class="sub-form" method="POST" action="./Controller/create_account.php">
+    <form class="sub-form" method="POST" action="create">
         <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
         
         <?php if (isset($errors["general"])): ?>
