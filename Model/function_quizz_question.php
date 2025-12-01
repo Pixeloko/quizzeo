@@ -32,12 +32,8 @@ function getQuestionsByQuizz(int $quizz_id): array
 {
     $pdo = getDatabase();
 
-    $stmt = $pdo->prepare("
-        SELECT q.*
-        FROM questions q
-        INNER JOIN quizz_questions qq ON qq.question_id = q.id
-        WHERE qq.quizz_id = :id
-    ");
+    $stmt = $pdo->prepare("SELECT q.* FROM questions q INNER JOIN quizz_questions qq ON qq.question_id = q.id
+                            WHERE qq.quizz_id = :id");
 
     $stmt->execute(['id' => $quizz_id]);
     return $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
@@ -50,10 +46,7 @@ function removeQuestionFromQuizz(int $quizz_id, int $question_id): bool
 {
     $pdo = getDatabase();
 
-    $stmt = $pdo->prepare("
-        DELETE FROM quizz_questions
-        WHERE quizz_id = :q AND question_id = :qi
-    ");
+    $stmt = $pdo->prepare("DELETE FROM quizz_questions WHERE quizz_id = :q AND question_id = :qi");
 
     $stmt->execute(['q' => $quizz_id, 'qi' => $question_id]);
     return $stmt->rowCount() > 0;
