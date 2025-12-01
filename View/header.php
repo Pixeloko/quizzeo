@@ -27,20 +27,18 @@ require_once("config/config.php");
 
                 <?php if (isset($_SESSION["user_id"])): ?>
                     <?php if ($_SESSION["role"] === 'admin'): ?>
-                        <li><a href="./admin.php">Espace Admin</a></li>
-                    <?php elseif ($_SESSION["role"] === 'ecole'): ?>
-                        <li><a href="./ecole.php">Espace École</a></li>
-                    <?php elseif ($_SESSION["role"] === 'entreprise'): ?>
-                        <li><a href="./entreprise.php">Espace Entreprise</a></li>
-                    <?php else: ?>
-                        <li><a href="./dashboard.php">Dashboard</a></li>
+                        <li><a href="admin.php">Espace Admin</a></li>
+                    <?php elseif ($_SESSION["role"] === 'ecole' || 'entreprise'): ?>
+                        <li><a href="dashboard_e.php">Espace École</a></li>
                     <?php endif; ?>
 
-                    <li><a href="./profile.php">Profil</a></li>
-                    <li><a href="./logout.php">Déconnexion</a></li>
+                    <li><a href="profile.php">Profil</a></li>
+                    <li><a href="./Controller/logout.php">Déconnexion</a></li>
 
                 <?php else: ?>
-                    <li><a href="./login.php">Connexion</a></li>
+                    <li><a href="login">Connexion</a></li>
+                    <li><a href="create">Creé un compte </a></li>
+
                 <?php endif; ?>
                 
             </ul>
