@@ -8,10 +8,9 @@ switch ($url) {
         break;
         
     case 'create':
-
         require __DIR__ . '/Controller/create_account.php';
         break;
-    
+        
     case 'login':
 
         require __DIR__ . '/View/login.php';

@@ -1,4 +1,5 @@
 <?php
+session_start();
 require_once("./Model/function_user.php");
 
 
@@ -38,26 +39,28 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         
         try {
             $user = createUser($role, $firstname, $lastname, $email, $password_hash);
-            
+
             $_SESSION["message"] = "Connexion réussie !";
             $_SESSION["user_id"] = $user["id"];
-            
-            // Redirection en fonction du rôle
+
             switch ($role) {
-                case "entreprise":
-                  case "ecole":
-                      header("Location: dashboard");
-                      break;
-                case "user":
-                default:
-                    header("Location: user");
-                    break;
-            }
-            exit;
-            
+              case "entreprise":
+              case "ecole":
+                  header("Location: ./View/dashboard_e.php");
+                  break;
+
+              case "user":
+              default:
+                  header("Location: ./View/user.php");
+                  break;
+          }
+
+          exit;
+
+
         } catch (Exception $e) {
-            $errors[] = "Une erreur est survenue lors de la création du compte: " . htmlspecialchars($e->getMessage());
+            $errors[] = "Une erreur est survenue lors de la création du compte : " . htmlspecialchars($e->getMessage());
         }
-    }
+      }
 }
 ?>

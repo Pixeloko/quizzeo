@@ -1,7 +1,7 @@
 <?php 
+require_once '../config/config.php';
 session_start();
 $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
-require_once '../config/config.php';
 
 $errors = $errors ?? [];
 $firstname = $firstname ?? "";
@@ -13,7 +13,7 @@ $role = $role ?? "user";
 <main>
     <h1>Inscription</h1>
 
-    <form class="sub-form" method="POST" action="create">
+    <form class="sub-form" method="POST" action="/quizzeo/?uri=create">
         <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
         
         <?php if (isset($errors["general"])): ?>
