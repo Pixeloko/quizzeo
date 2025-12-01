@@ -1,8 +1,6 @@
 <?php 
-    require_once("./Model/function_user.php");
-    require_once("./Model/function_quizz.php");
+    require_once("./Controller/admin.php");
 ?>
-
     <main>
     <h1>Espace Admin</h1>
     <p>Bienvenue sur l'espace admin. Vous pouvez gérer tout les quizz et utilisateurs à partir de cette page.</p>
