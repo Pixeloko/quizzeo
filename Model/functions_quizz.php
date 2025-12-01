@@ -105,26 +105,3 @@ function formatDate(string $date, string $format = 'd/m/Y'): string
     return date($format, $timestamp);
 }
 
-/**
- * Créer un extrait de texte
- *
- * @param string $text Texte complet
- * @param int $length Longueur maximale
- * @return string Extrait
- */
-function excerpt(string $text, int $length = 150): string
-{
-    if (strlen($text) <= $length) {
-        return $text;
-    }
-
-    // Couper au dernier espace avant la limite
-    $excerpt = substr($text, 0, $length);
-    $lastSpace = strrpos($excerpt, ' ');
-
-    if ($lastSpace !== false) {
-        $excerpt = substr($excerpt, 0, $lastSpace);
-    }
-
-    return $excerpt . '...';
-}
