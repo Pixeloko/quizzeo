@@ -2,6 +2,15 @@
 declare(strict_types=1);
 require_once './config/config.php';
 
+function getActiveQuizz() {
+    $pdo = getDatabase();
+
+    $stmt = $pdo->prepare("SELECT * FROM quizz WHERE is_active = 1");
+    $stmt->execute();
+
+    return $stmt->fetchAll() ?: [];
+}
+
 /**
  * Retourne les données (ou une array vide) via l'id du quizz
  *
@@ -30,7 +39,7 @@ function getQuizz(): ?array
 {
     $pdo = getDatabase();
 
-    $stmt = $pdo->prepare("SELECT * FROM quizz;");
+    $stmt = $pdo->prepare("SELECT * FROM quizz");
     $stmt->execute();
 
     return $stmt->fetchAll() ?: [];
@@ -80,14 +89,10 @@ function deleteQuizz(int $Id): bool
 {
     $pdo = getDatabase();
 
-    $stmt = $pdo->prepare("
-        DELETE quizz
-        WHERE id = :id;
-    ");
+    $stmt = $pdo->prepare("DELETE quizz WHERE id = :id");
 
     $stmt->execute(['id' => $$Id]);
 
-    // Compte les modifications par la dernière requête
     return $stmt->rowCount() > 0;
 }
 
