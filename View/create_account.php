@@ -1,5 +1,8 @@
 <?php 
 require_once '../config/config.php';
+
+
+session_start();
 require_once './Controller/create_account'
 $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
 
@@ -59,9 +62,10 @@ $role = $role ?? "user";
                 <option value="entreprise" <?= $role === 'entreprise' ? 'selected' : '' ?>>entreprise</option>
             </select>
             <?php if (isset($errors["role"])): ?>
+            <p style="color: #780000;\"><?= $errors["role"] ?></p>
                 <span style="color: red;"><?= $errors["role"] ?></span>
             <?php endif ?>
-        </div>
+            </div>
 
         <input type="submit" value="Créer">
     </form>
