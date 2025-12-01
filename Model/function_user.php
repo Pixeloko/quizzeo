@@ -43,7 +43,7 @@ function createUser(string $role, string $firstname, string $lastname,string $em
     
     $conn = getDatabase();
 
-    $stmt = $conn->prepare("INSERT INTO users(role, firstname, lastname, email, password, created_at) VALUES (:role, :username, :email, :password, NOW())");
+    $stmt = $conn->prepare("INSERT INTO users(role, firstname, lastname, email, password, created_at) VALUES (:role, :firstname, :lastname, :email, :password, NOW())");
 
     $stmt->execute([
         'role' => $role,
