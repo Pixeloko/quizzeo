@@ -9,12 +9,22 @@ switch ($url) {
         
     case 'create':
 
-        require __DIR__ . '/View/create_account.php';
+        require __DIR__ . '/Controller/create_account.php';
         break;
     
     case 'login':
 
         require __DIR__ . '/View/login.php';
+        break;
+
+    case 'user':
+
+        require __DIR__ . '/View/user.php';
+        break;
+
+    case 'dashboard':
+
+        require __DIR__ . '/View/dashboard_e.php';
         break;
 
 

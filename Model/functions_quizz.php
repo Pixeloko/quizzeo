@@ -96,3 +96,17 @@ function deleteQuizz(int $Id): bool
     return $stmt->rowCount() > 0;
 }
 
+
+/**
+ * Formater une date
+ *
+ * @param string $date Date au format Y-m-d H:i:s
+ * @param string $format Format de sortie
+ * @return string Date formatée
+ */
+function formatDate(string $date, string $format = 'd/m/Y'): string
+{
+    $timestamp = strtotime($date);
+    return date($format, $timestamp);
+}
+
