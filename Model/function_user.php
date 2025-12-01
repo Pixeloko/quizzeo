@@ -1,5 +1,5 @@
 <?php     
-require_once './config/database.php';
+require_once './config/config.php';
 
 
 function getUserById(int $id): ?array {

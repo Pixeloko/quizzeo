@@ -1,5 +1,6 @@
 <?php
 declare(strict_types=1);
+require_once './config/config.php';
 
 /**
  * Retourne les données (ou une array vide) via l'id du quizz
