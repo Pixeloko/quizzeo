@@ -10,7 +10,7 @@ require_once("./includes/functions.php");
 
 ?>
 
-<link rel="stylesheet" href="assets/css/styles.css">
+<link rel="stylesheet" href="assets/css/style.css">
 
 <nav>
     <div class="nav-container">
