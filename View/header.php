@@ -1,12 +1,11 @@
 <?php
-declare(strict_types=1)
 
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-require_once("./config/config.php");
-require_once("./includes/functions.php");
+require_once("config/config.php");
+require_once("./Controller");
 
 ?>
 

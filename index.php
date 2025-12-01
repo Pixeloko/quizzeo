@@ -1,6 +1,6 @@
 <?php
 declare(strict_types=1);
-require_once("./includes/header.php");
+require_once("./View/header.php");
 ?>
 
 <main>
@@ -8,4 +8,4 @@ require_once("./includes/header.php");
 </main>
     
 
-<?php require_once("./includes/footer.php");?>
+<?php require_once("./View/footer.php");?>
