@@ -1,12 +1,11 @@
 <?php
-require_once "./Model/function_user.php"; 
-require_once "./View/header.php";
 
 $errors = [];
 $firstname = "";
 $lastname = "";
 $email = "";
 $password = "";
+$role = "user";
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
