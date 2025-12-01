@@ -1,7 +1,7 @@
 <?php require_once ('header.php')?>
 
 <main>
-<h1>Dashboard Utilisateur</h1>
+<h1>Dashboard Ecole</h1>
 
 <h2> Bonjour <?= htmlspecialchars($firstname,$lastname) ?> </h2>
 
