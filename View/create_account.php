@@ -14,7 +14,7 @@ $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
         <div style="color:red"><?= $errors["general"] ?></div>
     <?php endif; ?>
 
-    <form method="POST">
+    <form method="POST" action="./Controller/create_account.php">
         <h3>Entrez vos informations :</h3>
 
         <p>
