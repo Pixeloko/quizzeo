@@ -38,8 +38,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST"){
     if (empty($errors)) {
         $_SESSION["message"] = "✅ Connexion réussie";
         $_SESSION["user_id"] = $user["id"];
-        $_SESSION["admin"] = (int) $user["admin"];
-        header("Location: index.php");
+        header("Location: home.php");
         exit;
     }
 }

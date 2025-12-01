@@ -37,7 +37,7 @@ require_once("config/config.php");
 
                 <?php else: ?>
                     <li><a href="login">Connexion</a></li>
-                    <li><a href="create">Creé un compte </a></li>
+                    <li><a href="create">Crée un compte </a></li>
 
                 <?php endif; ?>
                 
