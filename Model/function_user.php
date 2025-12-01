@@ -1,6 +1,14 @@
 <?php     
 require_once './config/config.php';
 
+function getUserByRole(string $role): ?array {
+    $conn = getDatabase();
+
+    $stmt = $conn->prepare("SELECT * FROM users WHERE role = :role");
+    $stmt->execute(["role" => $role]);
+
+    return $stmt->fetchAll(PDO::FETCH_ASSOC) ?: null;
+}
 
 function getUserById(int $id): ?array {
     $conn = getDatabase();
@@ -31,13 +39,18 @@ function getUserByEmail(string $email): ?array {
     return $user ?: null;
 }
 
-function createUser(string $username, string $email, string $password): int {
+function createUser(string $role, string $username, string $email, string $password): int {
     
     $errors = [];
 
+    $role = "";
     $username = trim($username);
     $email = trim($email);
     $password = trim($password);
+
+    if (!$role) {
+        $errors["role"] = "Role requis";
+    }
 
     if (!$username) {
         $errors["username"] = "Nom d'utilisateur requis";
@@ -76,9 +89,10 @@ function createUser(string $username, string $email, string $password): int {
         throw new InvalidArgumentException(json_encode($errors));
     }
 
-    $stmt = $conn->prepare("INSERT INTO users(username, email, password, created_at) VALUES (:username, :email, :password, NOW())");
+    $stmt = $conn->prepare("INSERT INTO users(role, username, email, password, created_at) VALUES (:role, :username, :email, :password, NOW())");
 
     $stmt->execute([
+        'role' => $role,
         'username' => $username,
         'email'     => $email,
         'password'  => password_hash($password, PASSWORD_BCRYPT)
