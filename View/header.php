@@ -5,7 +5,7 @@ if (session_status() === PHP_SESSION_NONE) {
 }
 
 require_once("config/config.php");
-require_once("./Controller");
+
 
 ?>
 
