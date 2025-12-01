@@ -35,9 +35,9 @@
         <div>
             <label for="role">Votre rôle :</label>
             <select name="role" id="role" value="<?= htmlspecialchars($role) ?>">
-            <option <?= htmlspecialchars($user) ?>>user</option>
-            <option<?= htmlspecialchars($ecole) ?>>école</option>
-            <option <?= htmlspecialchars($entreprise) ?>>entreprise</option>
+            <option value="user">user</option>
+            <option value="ecole">école</option>
+            <option value="entreprise">entreprise</option>
             </select>
             <?php if (isset($errors["role"])): ?>
             <p style="color: #780000;"><?= $errors["role"] ?></p>
@@ -49,4 +49,4 @@
     </form>
 </main>
 
-<?php require_once("./footer.php") ?>
+<?php require_once("footer.php") ?>
