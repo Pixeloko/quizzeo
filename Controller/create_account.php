@@ -4,7 +4,8 @@ require_once("./Model/function_user.php");
 
 $errors = [];
 $email = "";
-$username = "";
+$firstname = "";
+$lastname = "";
 $password = "";
 $role = "user";  
 
@@ -16,7 +17,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     }
 
     $email = trim($_POST["email"] ?? '');
-    $username = trim($_POST["username"] ?? '');
+    $firstname = trim($_POST["firstname"] ?? '');
+    $lastname = trim($_POST["lastname"] ?? '');
     $password = trim($_POST["password"] ?? '');
     
     // Validation des inputs
@@ -26,8 +28,9 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         $errors["email"] = "Veuillez entrer un email valide";
     }
 
-    if (empty($username)) {
-        $errors["username"] = "Entrer un nom";
+    if (empty($firstname || empty($lastname))) {
+        $errors["firstname"] = "Entrer un prénom";
+        $errors["lastname"] = "Entrer un nom";
     }
 
     if (empty($password)) {
@@ -41,7 +44,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         $password_hash = password_hash($password, PASSWORD_DEFAULT);
         
         try {
-            $user = createUser($role, $username, $email, $password_hash);
+            $user = createUser($role, $firstname, $lastname, $email, $password_hash);
             
             $_SESSION["message"] = "Connexion réussie !";
             $_SESSION["user_id"] = $user["id"];
