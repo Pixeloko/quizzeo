@@ -27,7 +27,7 @@ try {
           </div>
 
           <h3><?= ($pomme["title"]) ?></h3>
-          <p><?= (except($pomme["content"])) ?></p>
+          <p><?= (excerpt($pomme["content"])) ?></p>
           <a href="<?= 'article.php?id=' . $article["article_id"] ?>">Lire la suite</a>
         </article>
         <endif; ?>
