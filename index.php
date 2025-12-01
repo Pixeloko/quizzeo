@@ -4,11 +4,11 @@ $url = $_GET['url'] ?? '';
 
 switch ($url) {
     case '':
-        require __DIR__ . '/View/login.php';
+        require __DIR__ . '/View/home.php';
         break;
         
     case 'create':
-        require __DIR__ . '/Controller/create_account.php';
+        require __DIR__ . '/View/create_account.php';
         break;
         
     case 'login':

@@ -1,66 +1,47 @@
 <?php
-session_start();
-require_once("./Model/function_user.php");
+require_once "./Model/function_user.php"; 
+require_once "./View/header.php";
 
+$errors = [];
+$firstname = "";
+$lastname = "";
+$email = "";
+$password = "";
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
-    
-    // Vérification du token généré dans la view
-    if (!isset($_POST['csrf_token']) || !hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])) {
-        die("CSRF token validation failed");
+
+    $firstname = trim($_POST["firstname"] ?? "");
+    $lastname  = trim($_POST["lastname"] ?? "");
+    $email     = trim($_POST["email"] ?? "");
+    $password  = trim($_POST["password"] ?? "");
+
+    if (!$firstname) {
+        $errors["firstname"] = "Prénom requis";
     }
 
-    $email = trim($_POST["email"] ?? '');
-    $firstname = trim($_POST["firstname"] ?? '');
-    $lastname = trim($_POST["lastname"] ?? '');
-    $password = trim($_POST["password"] ?? '');
-    
-    // Validation des inputs
-    if (empty($email)) {
-        $errors["email"] = "L'email est requis";
+    if (!$lastname) {
+        $errors["lastname"] = "Nom requis";
+    }
+
+    if (!$email) {
+        $errors["email"] = "Email requis";
     } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
         $errors["email"] = "Veuillez entrer un email valide";
     }
 
-    if (empty($firstname || empty($lastname))) {
-        $errors["firstname"] = "Entrer un prénom";
-        $errors["lastname"] = "Entrer un nom";
+    if (!$password) {
+        $errors["password"] = "Mot de passe requis";
     }
 
-    if (empty($password)) {
-        $errors["password"] = "Le mot de passe est requis";
-    } elseif (strlen($password) < 8) {
-        $errors["password"] = "Le mot de passe doit contenir au moins 8 caractères";
-    }
-
-    // Si pas d'erreur
-    if(empty($errors)) {
-        $password_hash = password_hash($password, PASSWORD_DEFAULT);
-        
+    if (empty($errors)) {
         try {
-            $user = createUser($role, $firstname, $lastname, $email, $password_hash);
-
-            $_SESSION["message"] = "Connexion réussie !";
-            $_SESSION["user_id"] = $user["id"];
-
-            switch ($role) {
-              case "entreprise":
-              case "ecole":
-                  header("Location: ./View/dashboard_e.php");
-                  break;
-
-              case "user":
-              default:
-                  header("Location: ./View/user.php");
-                  break;
-          }
-
-          exit;
-
-
+            createMember($role, $firstname, $lastname, $email, $password);
+            $_SESSION["message"] = "✅ Compte créé avec succès !";
+            header("Location: login.php");
+            exit;
         } catch (Exception $e) {
-            $errors[] = "Une erreur est survenue lors de la création du compte : " . htmlspecialchars($e->getMessage());
+            $errors["general"] = "❌ Impossible de créer un compte : " . $e->getMessage();
         }
-      }
+    }
 }
 ?>

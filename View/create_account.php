@@ -3,6 +3,7 @@ require_once '../config/config.php';
 
 
 session_start();
+require_once './Controller/create_account'
 $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
 
 $errors = $errors ?? [];
@@ -13,46 +14,45 @@ $role = $role ?? "user";
 ?>
 
 <main>
-    <h1>Inscription</h1>
+    <h1>Création de votre compte</h1>
+    <?php if (isset($errors["general"])): ?>
+        <div style="color:red"><?= $errors["general"] ?></div>
+    <?php endif; ?>
 
-    <form class="sub-form" method="POST" action="/quizzeo/?uri=create">
-        <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
-        
-        <?php if (isset($errors["general"])): ?>
-        <div style="color: #780000"><?= $errors["general"] ?></div>
-        <?php endif ?>
-        <div>
+    <form method="POST">
+        <h3>Entrez vos informations :</h3>
+
+        <p>
             <label for="firstname">Prénom :</label>
-            <input type="text" name="firstname" id="firstname" value="<?= htmlspecialchars($firstname) ?>" required />
+            <input type="text" id="firstname" name="firstname" value="<?= htmlspecialchars($firstname) ?>">
             <?php if (isset($errors["firstname"])): ?>
-            <p style="color: #780000;"><?= $errors["firstname"] ?></p>
+                <span style="color: red;"><?= $errors["firstname"] ?></span>
             <?php endif ?>
-        </div>
+        </p>
 
-        <div>
+        <p>
             <label for="lastname">Nom :</label>
-            <input type="text" name="lastname" id="lastname" value="<?= htmlspecialchars($lastname) ?>" required />
+            <input type="text" id="lastname" name="lastname" value="<?= htmlspecialchars($lastname) ?>">
             <?php if (isset($errors["lastname"])): ?>
-            <p style="color: #780000;"><?= $errors["lastname"] ?></p>
+                <span style="color: red;"><?= $errors["lastname"] ?></span>
             <?php endif ?>
-        </div>
+        </p>
 
-
-        <div>
+        <p>
             <label for="email">Email :</label>
-            <input type="email" name="email" id="email" value="<?= htmlspecialchars($email) ?>" required />
+            <input type="email" id="email" name="email" value="<?= htmlspecialchars($email) ?>" placeholder="monemail@exemple.com">
             <?php if (isset($errors["email"])): ?>
-            <p style="color: #780000;"><?= $errors["email"] ?></p>
+                <span style="color: red;"><?= $errors["email"] ?></span>
             <?php endif ?>
-        </div>
+        </p>
 
-        <div>
+        <p>
             <label for="password">Mot de passe :</label>
-            <input type="password" name="password" id="password" required />
+            <input type="password" id="password" name="password" value="<?= htmlspecialchars($password) ?>">
             <?php if (isset($errors["password"])): ?>
-            <p style="color: #780000;"><?= $errors["password"] ?></p>
+                <span style="color: red;"><?= $errors["password"] ?></span>
             <?php endif ?>
-        </div>
+        </p>
 
         <div>
             <label for="role">Votre rôle :</label>
@@ -63,10 +63,11 @@ $role = $role ?? "user";
             </select>
             <?php if (isset($errors["role"])): ?>
             <p style="color: #780000;\"><?= $errors["role"] ?></p>
+                <span style="color: red;"><?= $errors["role"] ?></span>
             <?php endif ?>
             </div>
 
-        <button>S'inscrire</button>
+        <input type="submit" value="Créer">
     </form>
 </main>
 
