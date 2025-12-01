@@ -49,12 +49,16 @@ function createUser(string $role, string $firstname, string $lastname,string $em
     $email = trim($email);
     $password = trim($password);
 
-    if (!$role) {
-        $errors["role"] = "Role requis";
+    if (!$firstname) {
+        $errors["firstname"] = "Prénom requis";
     }
 
-    if (!$username) {
-        $errors["username"] = "Nom d'utilisateur requis";
+    if (!$lastname) {
+        $errors["lastname"] = "Nom requis";
+    }
+
+    if (!$role) {
+        $errors["role"] = "Role requis";
     }
 
     if (!$email) {
@@ -75,7 +79,7 @@ function createUser(string $role, string $firstname, string $lastname,string $em
 
     $conn = getDatabase();
 
-    $verif = $conn->prepare("SELECT id FROM users WHERE email = :email OR username = :username");
+    $verif = $conn->prepare("SELECT id FROM users WHERE email = :email");
     $verif->execute([
         "email" => $email, 
         "username" => $username
@@ -83,18 +87,18 @@ function createUser(string $role, string $firstname, string $lastname,string $em
 
     if ($verif->fetch()) {
         $errors["email"] = "Cet email est déjà utilisé.";
-        $errors["username"] = "Ce nom d'utilisateur est déjà utilisé.";
     }
 
     if (!empty($errors)) {
         throw new InvalidArgumentException(json_encode($errors));
     }
 
-    $stmt = $conn->prepare("INSERT INTO users(role, username, email, password, created_at) VALUES (:role, :username, :email, :password, NOW())");
+    $stmt = $conn->prepare("INSERT INTO users(role, firstname, lastname, email, password, created_at) VALUES (:role, :username, :email, :password, NOW())");
 
     $stmt->execute([
         'role' => $role,
-        'username' => $username,
+        'firstname' => $firstname,
+        'lastname' => $lastname,
         'email'     => $email,
         'password'  => password_hash($password, PASSWORD_BCRYPT)
     ]);
