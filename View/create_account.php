@@ -1,7 +1,9 @@
 <?php 
 
 session_start();
-require_once './Controller/create_account';
+require_once "./Controller/create_account.php";
+require_once "./Model/function_user.php"; 
+require_once "includes/header.php";
 $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
 
 ?>
@@ -12,7 +14,7 @@ $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
         <div style="color:red"><?= $errors["general"] ?></div>
     <?php endif; ?>
 
-    <form method="POST" action="./Controller/create_account.php">
+    <form method="POST">
         <h3>Entrez vos informations :</h3>
 
         <p>
@@ -64,4 +66,4 @@ $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
     </form>
 </main>
 
-<?php require_once("footer.php") ?>
+<?php require_once("includes/footer.php") ?>
