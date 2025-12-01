@@ -1,4 +1,5 @@
 <?php
+require_once "./Model/function_user.php"; 
 
 $errors = [];
 $firstname = "";
