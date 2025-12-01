@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1)
 
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
@@ -15,7 +16,7 @@ require_once("./includes/functions.php");
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>   
-    <link rel="stylesheet" href="assets/css/styles.css">
+    <link rel="stylesheet" href="assets/css/style.css">
 </head>
 <body>
 
