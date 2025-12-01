@@ -8,7 +8,7 @@ if (!isset($_SESSION['user_id'])){
 
 
 try {
-    $quizz= getQuizz();
+    $quizz= getActiveQuizz();
 } catch (PDOException $e) {
     echo "Erreur lors de la récupération des articles : " . $e->getMessage();
 }
@@ -18,18 +18,15 @@ try {
 <header><h1> Quizz disponibles </h1></header>
     <section>
        <?php foreach($quizz as $pomme): ?>
-        <?php if ($quizz[1] ) ; ?>
         <article>
           <div>
             <time datetime="<?= ($pomme["created_at"]) ?>">
               <?= formatDate($pomme["created_at"]) ?>
             </time>
           </div>
-
           <h3><?= ($pomme["title"]) ?></h3>
           <a href="<?= 'quizz.php?id=' . $pomme["quizz_id"] ?>">Répondre au quizz</a>
-        </article>
-        <endif; ?>
+       </article>
         <?php endforeach ?>
     </section>
 <?php require_once 'footer.php'; ?>

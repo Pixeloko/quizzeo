@@ -28,7 +28,7 @@
             <?php endif ?>
         </div>
 
-        <button type="submit">Se connecter</button>
+        <button  type="submit">Se connecter</button>
     </form>
     <a href="View/create_account.php">S'inscrire</a>
 </main>
