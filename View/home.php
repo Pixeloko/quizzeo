@@ -27,12 +27,11 @@ try {
           </div>
 
           <h3><?= ($pomme["title"]) ?></h3>
-          <a href="<?= 'article.php?id=' . $article["article_id"] ?>">Lire la suite</a>
+          <a href="<?= 'quizz.php?id=' . $pomme["quizz_id"] ?>">Répondre au quizz</a>
         </article>
         <endif; ?>
         <?php endforeach ?>
     </section>
-<?php include 'includes/footer.php'; ?>
-
+<?php require_once 'footer.php'; ?>
 </body>
 </html>
