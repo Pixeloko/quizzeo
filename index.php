@@ -7,14 +7,9 @@ switch ($url) {
         require __DIR__ . '/View/login.php';
         break;
         
-    case 'create_account':
+    case 'create':
 
         require __DIR__ . '/View/create_account.php';
-        break;
-
-    case 'login':
-
-        require __DIR__ . '/View/login.php';
         break;
 
     default:
