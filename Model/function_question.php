@@ -29,7 +29,7 @@ function getQuest(): array
 /**
  * Crée une question
  */
-function createQuest(string $title, string $answer): int 
+function createQuest(string $title, string $answer, int $point): int 
 {
     $conn = getDatabase();
     $errors = [];
@@ -45,6 +45,11 @@ function createQuest(string $title, string $answer): int
         $errors["answer"] = "Réponse requise";
     }
 
+    if ($point <= 0) {
+        $errors["point"] = "Les points doivent être supérieurs à 0";
+    }
+
+
     // Vérifier si le titre existe déjà
     $verif = $conn->prepare("SELECT id FROM questions WHERE title = :title");
     $verif->execute(['title' => $title]);
@@ -57,10 +62,11 @@ function createQuest(string $title, string $answer): int
         throw new InvalidArgumentException(json_encode($errors));
     }
 
-    $stmt = $conn->prepare("INSERT INTO questions (title, answer) VALUES (:title, :answer)");
+    $stmt = $conn->prepare("INSERT INTO questions (title, answer, point) VALUES (:title, :answer, :point)");
     $stmt->execute([
         'title' => $title,
-        'answer' => $answer
+        'answer' => $answer,
+        'point' => $point
     ]);
 
     return (int) $conn->lastInsertId();

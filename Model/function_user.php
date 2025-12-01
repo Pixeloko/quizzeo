@@ -87,21 +87,32 @@ function createUser(string $username, string $email, string $password): int {
     return (int) $conn->lastInsertId();
 }
 
-function updateUser(int $id, string $username, string $email, string $password): bool {
+function updateUser(int $id, string $username, string $email, ?string $password): bool {
 
     $conn = getDatabase();
 
-    $stmt = $conn->prepare("UPDATE users SET username = :username, email = :email, password = :password WHERE id = :id");
-
-    $stmt->execute([
-        'username' => $username,
-        'email'     => $email,
-        'password'  => $password ? password_hash($password, PASSWORD_BCRYPT) : null,
-        'id'        => $id
-    ]);
+    if ($password) {
+        $stmt = $conn->prepare("UPDATE users SET username = :username, email = :email, password = :password 
+                                WHERE id = :id");
+        $stmt->execute([
+            'username' => $username,
+            'email'    => $email,
+            'password' => password_hash($password, PASSWORD_BCRYPT),
+            'id'       => $id
+        ]);
+    } else {
+        $stmt = $conn->prepare("UPDATE users SET username = :username, email = :email 
+                                WHERE id = :id");
+        $stmt->execute([
+            'username' => $username,
+            'email'    => $email,
+            'id'       => $id
+        ]);
+    }
 
     return $stmt->rowCount() > 0;
 }
+
 
 function deleteUser(int $id): bool {
 
