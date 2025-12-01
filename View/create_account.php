@@ -1,16 +1,9 @@
 <?php 
-require_once '../config/config.php';
-
 
 session_start();
-require_once './Controller/create_account'
+require_once './Controller/create_account';
 $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
 
-$errors = $errors ?? [];
-$firstname = $firstname ?? "";
-$lastname = $lastname ?? "";
-$email = $email ?? "";
-$role = $role ?? "user";
 ?>
 
 <main>
@@ -19,7 +12,7 @@ $role = $role ?? "user";
         <div style="color:red"><?= $errors["general"] ?></div>
     <?php endif; ?>
 
-    <form method="POST">
+    <form method="POST" action="./Controller/create_account.php">
         <h3>Entrez vos informations :</h3>
 
         <p>
