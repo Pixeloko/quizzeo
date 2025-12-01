@@ -36,7 +36,9 @@ require_once("config/config.php");
                     <li><a href="./Controller/logout.php">Déconnexion</a></li>
 
                 <?php else: ?>
-                    <li><a href="login.php">Connexion</a></li>
+                    <li><a href="login">Connexion</a></li>
+                    <li><a href="create">Creé un compte </a></li>
+
                 <?php endif; ?>
                 
             </ul>

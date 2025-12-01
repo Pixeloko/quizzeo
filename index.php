@@ -11,6 +11,11 @@ switch ($url) {
 
         require __DIR__ . '/View/create_account.php';
         break;
+    case 'login':
+
+        require __DIR__ . '/View/login.php';
+        break;
+
 
     default:
         http_response_code(404);
