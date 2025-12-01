@@ -1,6 +1,6 @@
 <?php 
-    require_once("header.php");
-    require_once("Model/function_user.php")
+    require_once("Controller/login.php");
+   
 ?>
 
 <main>
