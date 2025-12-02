@@ -1,34 +1,35 @@
 <?php
+session_start();
 
 $url = $_GET['url'] ?? '';
 
 switch ($url) {
+
     case '':
         require __DIR__ . '/View/home.php';
         break;
-        
-    case 'create':
-        require __DIR__ . '/View/create_account.php';
-        break;
-        
-    case 'login':
 
+    case 'login':
         require __DIR__ . '/View/login.php';
         break;
 
-    case 'user':
+    case 'create':
+        require __DIR__ . '/View/create_account.php';
+        break;
 
+    case 'dashboard':
+        require __DIR__ . '/View/dashboard.php';
+        break;
+
+    case 'user':
         require __DIR__ . '/View/user.php';
         break;
-   
-    case 'dashboard':
 
-        require __DIR__ . '/View/dashboard_e.php';
+    case 'logout':
+        require __DIR__ . '/Controller/logout.php';
         break;
-
 
     default:
         http_response_code(404);
-        echo 'Page non trouvée';
-        break;
+        echo "Page non trouvée";
 }
