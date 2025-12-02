@@ -1,8 +1,7 @@
 <?php 
-
 session_start();
-require_once "./Controller/create_account.php";
-require_once "includes/header.php";
+require_once __DIR__ . "/../Controller/create_account.php";
+require_once __DIR__ . "/includes/header.php";
 $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
 
 ?>
@@ -65,4 +64,5 @@ $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
     </form>
 </main>
 
-<?php require_once("includes/footer.php") ?>
+<?php require_once __DIR__ . "/includes/footer.php";
+ ?>
