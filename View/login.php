@@ -1,19 +1,17 @@
 <?php 
-    require_once("Controller/login.php");
-    require_once("View/includes/header.php");
-   
+require_once __DIR__ . "/../Controller/login.php";
+require_once __DIR__ . "/includes/header.php";
 ?>
 
 <main>
     <form action="?url=login" method="POST">
- 
         <?php if (isset($errors["general"])): ?>
             <div style="color: red"><?= htmlspecialchars($errors["general"]) ?></div>
         <?php endif ?>
         <h1>Connexion</h1>
         <div>
             <label for="email">Email (requis) :</label>
-            <input type="email" name="email" id="email" value="<?= htmlspecialchars($email) ?>" required />
+            <input type="email" name="email" id="email" value="<?= htmlspecialchars($email ?? '') ?>" required />
             <?php if (isset($errors["email"])): ?>
                 <p style="color: red"><?= htmlspecialchars($errors["email"]) ?></p>
             <?php endif ?>
@@ -26,9 +24,9 @@
             <?php endif ?>
         </div>
 
-        <button  type="submit">Se connecter</button>
+        <button type="submit">Se connecter</button>
     </form>
-    <a href="View/create_account.php">S'inscrire</a>
+     <a href="<?= BASE_URL ?>/View/create_account.php">S'inscrire</a>
 </main>
 
-<?php require_once("View/includes/footer.php"); ?>
+<?php require_once __DIR__ . "/includes/footer.php"; ?>
