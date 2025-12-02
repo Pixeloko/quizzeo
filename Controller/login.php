@@ -1,6 +1,6 @@
 <?php 
-    require_once "View/header.php";
-    require_once "Model/function_user.php";
+   require_once __DIR__ . "/../View/includes/header.php";
+   require_once "Model/function_user.php";
 
 $errors = [];
 $email ="";

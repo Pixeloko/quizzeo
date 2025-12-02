@@ -5,7 +5,8 @@
 ?>
 
 <main>
-    <form action='login.php' method="POST">
+    <form action="?url=login" method="POST">
+ 
         <?php if (isset($errors["general"])): ?>
             <div style="color: red"><?= htmlspecialchars($errors["general"]) ?></div>
         <?php endif ?>

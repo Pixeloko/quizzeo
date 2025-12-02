@@ -1,9 +1,11 @@
 <?php
-    include 'header.php';
+    include __DIR__ . '/includes/header.php';
+
 
 if (!isset($_SESSION['user_id'])){
-    header("Location: login.php");
-    exit;
+    header("Location: index.php?url=login");
+exit;
+
 }
 
 
@@ -25,10 +27,12 @@ try {
             </time>
           </div>
           <h3><?= ($pomme["title"]) ?></h3>
-          <a href="<?= 'quizz.php?id=' . $pomme["quizz_id"] ?>">Répondre au quizz</a>
+          <a href="index.php?url=quizz&id=<?= $pomme['quizz_id'] ?>">Répondre au quizz</a>
+
        </article>
         <?php endforeach ?>
     </section>
-<?php require_once 'footer.php'; ?>
+<?php require_once __DIR__ . '/includes/footer.php';
+ ?>
 </body>
 </html>
