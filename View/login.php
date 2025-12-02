@@ -1,4 +1,15 @@
 <?php 
+
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+// Afficher le message s'il existe
+if (isset($_SESSION["message"])) {
+    echo '<div style="color: green; margin-bottom: 20px;">' . htmlspecialchars($_SESSION["message"]) . '</div>';
+    unset($_SESSION["message"]); // Supprime le message après l'affichage
+}
+
 require_once __DIR__ . "/../Controller/login.php";
 require_once __DIR__ . "/includes/header.php";
 ?>
