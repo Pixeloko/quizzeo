@@ -39,7 +39,8 @@ define('BASE_URL', '/quizzeo'); // adapte selon le nom de ton dossier
 
                     <!-- Profil et Déconnexion -->
                     <li><a href="<?= BASE_URL ?>/View/profile.php">Profil</a></li>
-                    <li><a href="<?= BASE_URL ?>/Controller/logout.php">Déconnexion</a></li>
+                    <li><a href="<?= BASE_URL ?>/index.php?url=logout">Déconnexion</a></li>
+
 
                 <?php else: ?>
                     <!-- Lien vers la connexion si non connecté -->
