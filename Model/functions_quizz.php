@@ -1,14 +1,21 @@
 <?php
 declare(strict_types=1);
-require_once './config/config.php';
 
-function getActiveQuizz() {
-    $pdo = getDatabase();
-
-    $stmt = $pdo->prepare("SELECT * FROM quizz WHERE is_active = 1");
+/**
+ * Récupère les quizz actifs
+ *
+ * @return array
+ */
+function getActiveQuizz(): array {
+    $conn = getDatabase();
+    $stmt = $conn->prepare("
+        SELECT id AS quizz_id, name AS title, created_at 
+        FROM quizz 
+        WHERE is_active = 1 
+        ORDER BY created_at DESC
+    ");
     $stmt->execute();
-
-    return $stmt->fetchAll() ?: [];
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 
 /**
