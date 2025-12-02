@@ -1,51 +1,41 @@
 <?php     
 require_once __DIR__ . '/../config/config.php';
 
+// ---------- FONCTIONS UTILISATEURS ----------
 
 function getUserByRole(string $role): ?array {
     $conn = getDatabase();
-
     $stmt = $conn->prepare("SELECT * FROM users WHERE role = :role");
     $stmt->execute(["role" => $role]);
-
     return $stmt->fetchAll(PDO::FETCH_ASSOC) ?: null;
 }
 
 function getUserById(int $id): ?array {
     $conn = getDatabase();
-
     $stmt = $conn->prepare("SELECT * FROM users WHERE id = :id");
     $stmt->execute(["id" => $id]);
-
     return $stmt->fetch(PDO::FETCH_ASSOC) ?: null;
 }
 
 function getUsers(): ?array {
     $conn = getDatabase();
-
     $stmt = $conn->prepare("SELECT * FROM users WHERE role != 'admin'");
     $stmt->execute();
-
     return $stmt->fetchAll(PDO::FETCH_ASSOC) ?: null;
 }
 
-
 function getUserByEmail(string $email): ?array {
-
     $conn = getDatabase();
-
     $stmt = $conn->prepare("SELECT * FROM users WHERE email = :email");
-    $stmt -> execute(["email" => $email]);
+    $stmt->execute(["email" => $email]);
     $user = $stmt->fetch();
     return $user ?: null;
 }
 
-function createUser(string $role, string $firstname, string $lastname,string $email, string $password): int {
-    
+function createUser(string $role, string $firstname, string $lastname, string $email, string $password): int {
     $conn = getDatabase();
-
-    $stmt = $conn->prepare("INSERT INTO users(role, firstname, lastname, email, password, created_at) VALUES (:role, :firstname, :lastname, :email, :password, NOW())");
-
+    $stmt = $conn->prepare("INSERT INTO users(role, firstname, lastname, email, password, created_at) 
+                            VALUES (:role, :firstname, :lastname, :email, :password, NOW())");
     $stmt->execute([
         'role' => $role,
         'firstname' => $firstname,
@@ -53,17 +43,13 @@ function createUser(string $role, string $firstname, string $lastname,string $em
         'email'     => $email,
         'password'  => password_hash($password, PASSWORD_DEFAULT)
     ]);
-
     return (int) $conn->lastInsertId();
 }
 
 function updateUser(int $id, string $firstname, string $lastname, string $email, ?string $password): bool {
-
     $conn = getDatabase();
-
     if ($password) {
-        $stmt = $conn->prepare("UPDATE users SET firstname = :firstname, lastname = :lastname, email = :email, password = :password 
-                                WHERE id = :id");
+        $stmt = $conn->prepare("UPDATE users SET firstname = :firstname, lastname = :lastname, email = :email, password = :password WHERE id = :id");
         $stmt->execute([
             'firstname' => $firstname,
             'lastname' => $lastname,
@@ -72,28 +58,47 @@ function updateUser(int $id, string $firstname, string $lastname, string $email,
             'id'       => $id
         ]);
     } else {
-        $stmt = $conn->prepare("UPDATE users SET firstname = :firstname, email = :email 
-                                WHERE id = :id");
+        $stmt = $conn->prepare("UPDATE users SET firstname = :firstname, email = :email WHERE id = :id");
         $stmt->execute([
             'firstname' => $firstname,
             'email'    => $email,
             'id'       => $id
         ]);
     }
-
     return $stmt->rowCount() > 0;
 }
-
 
 function deleteUser(int $id): bool {
-
     $conn = getDatabase();
-
     $stmt = $conn->prepare("DELETE FROM users WHERE id = :id");
-    $stmt->execute([
-        "id" => $id
-    ]);
-
+    $stmt->execute(["id" => $id]);
     return $stmt->rowCount() > 0;
 }
-?>
+
+// ---------- FONCTIONS QUIZZ ----------
+
+/**
+ * Récupère les quizz actifs
+ *
+ * @return array
+ */
+function getActiveQuizz(): array {
+    $conn = getDatabase();
+    $stmt = $conn->prepare("
+        SELECT id AS quizz_id, name AS title, created_at 
+        FROM quizz 
+        WHERE is_active = 1 
+        ORDER BY created_at DESC
+    ");
+    $stmt->execute();
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
+
+/**
+ * Formate une date en français
+ */
+function formatDate(string $date): string {
+    $d = new DateTime($date);
+    return $d->format('d/m/Y');
+}

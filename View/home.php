@@ -1,38 +1,52 @@
 <?php
-    include __DIR__ . '/includes/header.php';
+// Démarrer la session
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 
+// Inclure les fonctions utilisateurs
+require_once __DIR__ . '/../Model/function_user.php';
 
-if (!isset($_SESSION['user_id'])){
+// Vérifier si l'utilisateur est connecté
+if (!isset($_SESSION['user_id'])) {
     header("Location: index.php?url=login");
-exit;
-
+    exit;
 }
 
-
+// Récupérer les quizz actifs
 try {
-    $quizz= getActiveQuizz();
+    $quizz = getActiveQuizz();
 } catch (PDOException $e) {
-    echo "Erreur lors de la récupération des articles : " . $e->getMessage();
+    echo "Erreur lors de la récupération des quiz : " . $e->getMessage();
+    $quizz = [];
 }
 
+// Inclure le header
+include __DIR__ . '/includes/header.php';
 ?>
 
-<header><h1> Quizz disponibles </h1></header>
-    <section>
-       <?php foreach($quizz as $pomme): ?>
-        <article>
-          <div>
-            <time datetime="<?= ($pomme["created_at"]) ?>">
-              <?= formatDate($pomme["created_at"]) ?>
-            </time>
-          </div>
-          <h3><?= ($pomme["title"]) ?></h3>
-          <a href="index.php?url=quizz&id=<?= $pomme['quizz_id'] ?>">Répondre au quizz</a>
+<header>
+    <h1>Quizz disponibles</h1>
+</header>
 
-       </article>
-        <?php endforeach ?>
-    </section>
-<?php require_once __DIR__ . '/includes/footer.php';
- ?>
+<section>
+    <?php if (!empty($quizz)): ?>
+        <?php foreach ($quizz as $q): ?>
+            <article>
+                <div>
+                    <time datetime="<?= htmlspecialchars($q["created_at"]) ?>">
+                        <?= htmlspecialchars(formatDate($q["created_at"])) ?>
+                    </time>
+                </div>
+                <h3><?= htmlspecialchars($q["title"]) ?></h3>
+                <a href="index.php?url=quizz&id=<?= (int)$q['quizz_id'] ?>">Répondre au quizz</a>
+            </article>
+        <?php endforeach; ?>
+    <?php else: ?>
+        <p>Aucun quizz disponible pour le moment.</p>
+    <?php endif; ?>
+</section>
+
+<?php include __DIR__ . '/includes/footer.php'; ?>
 </body>
 </html>

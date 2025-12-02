@@ -1,22 +1,22 @@
 <?php
+// Démarre la session si elle n'est pas déjà démarrée
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-
-
+// Inclure la configuration si nécessaire
 require_once __DIR__ . '/../../config/config.php';
 
-// Définir la base URL de ton projet pour les liens
-define('BASE_URL', '/quizzeo'); // adapte si ton dossier projet change
-?>
+// Définir la base URL du projet
+define('BASE_URL', '/quizzeo'); // adapte selon le nom de ton dossier
 
+?>
 <!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quizzeo</title>   
+    <title>Quizzeo</title>
     <link rel="stylesheet" href="<?= BASE_URL ?>/View/assets/css/style.css">
 </head>
 <body>
@@ -25,23 +25,27 @@ define('BASE_URL', '/quizzeo'); // adapte si ton dossier projet change
     <nav>
         <div>
             <ul>
+                <!-- Lien vers l'accueil -->
                 <li><a href="<?= BASE_URL ?>/index.php">Accueil</a></li>
 
                 <?php if (isset($_SESSION["user_id"])): ?>
-                    <?php if ($_SESSION["role"] === 'admin'): ?>
+
+                    <!-- Liens selon le rôle -->
+                    <?php if (isset($_SESSION["role"]) && $_SESSION["role"] === 'admin'): ?>
                         <li><a href="<?= BASE_URL ?>/View/admin.php">Espace Admin</a></li>
-                    <?php elseif ($_SESSION["role"] === 'ecole' || $_SESSION["role"] === 'entreprise'): ?>
+                    <?php elseif (isset($_SESSION["role"]) && ($_SESSION["role"] === 'ecole' || $_SESSION["role"] === 'entreprise')): ?>
                         <li><a href="<?= BASE_URL ?>/View/dashboard_e.php">Espace École</a></li>
                     <?php endif; ?>
 
+                    <!-- Profil et Déconnexion -->
                     <li><a href="<?= BASE_URL ?>/View/profile.php">Profil</a></li>
                     <li><a href="<?= BASE_URL ?>/Controller/logout.php">Déconnexion</a></li>
 
                 <?php else: ?>
+                    <!-- Lien vers la connexion si non connecté -->
                     <li><a href="<?= BASE_URL ?>/View/login.php">Connexion</a></li>
                 <?php endif; ?>
             </ul>
         </div>
     </nav>
 </header>
-
