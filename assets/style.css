@@ -1,0 +1,162 @@
+/* ====== RESET ====== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+/* ====== BODY ====== */
+body {
+    background: #f0f2f5;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    padding-top: 80px; /* espace pour header fixe */
+}
+
+/* ====== HEADER ====== */
+header {
+    background: #151515;
+    padding: 15px 0;
+    width: 100%;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1000;
+}
+
+nav {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+.nav-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+nav ul {
+    list-style: none;
+    display: flex;
+    gap: 25px;
+}
+
+nav ul li a {
+    text-decoration: none;
+    color: #fff;
+    font-weight: 600;
+    transition: 0.2s;
+    padding: 8px 12px;
+    border-radius: 6px;
+}
+
+nav ul li a:hover {
+    background: #fff;
+    color: #151515;
+}
+
+/* ====== LOGO ====== */
+.logo img {
+    height: 50px;
+    width: auto;
+}
+
+/* ====== FORMULAIRE LOGIN ====== */
+main {
+    background: #fff;
+    padding: 40px 30px;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    width: 100%;
+    max-width: 400px;
+    margin: 20px auto;
+    flex: 1; /* pour pousser le footer en bas */
+}
+
+h1 {
+    text-align: center;
+    margin-bottom: 30px;
+    color: #151515;
+}
+
+form div {
+    margin-bottom: 20px;
+}
+
+label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 600;
+}
+
+input[type="email"],
+input[type="password"] {
+    width: 100%;
+    padding: 10px 15px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    transition: 0.3s;
+}
+
+input[type="email"]:focus,
+input[type="password"]:focus {
+    border-color: #151515;
+    outline: none;
+}
+
+button {
+    width: 100%;
+    padding: 12px;
+    background: #151515;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+button:hover {
+    background: #333;
+}
+
+/* ====== MESSAGES ====== */
+div[style*="color: red"] {
+    font-size: 0.9em;
+}
+
+div[style*="color: green"] {
+    font-size: 0.9em;
+    text-align: center;
+    margin-bottom: 15px;
+}
+
+/* ====== LIEN S'INSCRIRE ====== */
+main a {
+    display: block;
+    text-align: center;
+    margin-top: 15px;
+    color: #151515;
+    text-decoration: none;
+    font-weight: 600;
+    transition: 0.3s;
+}
+
+main a:hover {
+    color: #333;
+}
+
+/* ====== FOOTER ====== */
+footer {
+    background: #151515;
+    color: #fff;
+    padding: 20px 0;
+    text-align: center;
+    width: 100%;
+    box-shadow: 0 -2px 5px rgba(0,0,0,0.2);
+}
+

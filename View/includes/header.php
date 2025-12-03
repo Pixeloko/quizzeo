@@ -17,12 +17,18 @@ define('BASE_URL', '/quizzeo'); // adapte selon le nom de ton dossier
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Quizzeo</title>
-    <link rel="stylesheet" href="<?= BASE_URL ?>/View/assets/css/style.css">
+   <link rel="stylesheet" href="<?= BASE_URL ?>/assets/style.css">
+
 </head>
 <body>
 
 <header>
     <nav>
+        <div class="nav-container">
+            <!-- Logo -->
+            <a href="<?= BASE_URL ?>/index.php" class="logo">
+                <img src="assets/loho.png" alt="Logo Quizzeo">
+            </a>
         <div>
             <ul>
                 <!-- Lien vers l'accueil -->

@@ -7,7 +7,7 @@
 <h2> Bienvenue </h2>
 
 
-<h2>Les quizz auquels vous avez répondu:</h2>
+<p>Les quizz auquels vous avez répondu:</p>
 
 <div>
     
