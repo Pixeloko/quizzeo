@@ -27,7 +27,7 @@ define('BASE_URL', '/quizzeo'); // adapte selon le nom de ton dossier
         <div class="nav-container">
             <!-- Logo -->
             <a href="<?= BASE_URL ?>/index.php" class="logo">
-                <img src="<?= BASE_URL ?>/assets/loho.png" alt="Logo Quizzeo">
+                <img src="<?= BASE_URL ?>/assets/logo.png" alt="Logo Quizzeo">
             </a>
         <div>
             <ul>
