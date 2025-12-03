@@ -57,6 +57,16 @@
     box-sizing: border-box;
     font-family: Arial, Helvetica, sans-serif;
 }
+.header-profile-photo {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-left: 10px;
+    vertical-align: middle;
+    cursor: pointer;
+   
+}
 
 /* ====== BODY ====== */
 body {

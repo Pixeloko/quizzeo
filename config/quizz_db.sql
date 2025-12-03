@@ -44,6 +44,9 @@ CREATE TABLE quizz_user (
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
     UNIQUE(quizz_id, user_id)
 );
+ALTER TABLE users
+ADD COLUMN profile_photo VARCHAR(255) DEFAULT NULL AFTER email;
+
 
 
 INSERT INTO users(role, firstname, lastname, email, password)
