@@ -5,7 +5,7 @@
 <main>
     <h1>Dashboard Pro </h1>
 
-    <h2>Bienvenue sur votre dashboard proffessionnel.</h2>
+    <h2>Bienvenue sur votre dashboard professionnel.</h2>
 
     <h2>Vos quizz :</h2>
     <?php if (!empty($quizzes)): ?>
