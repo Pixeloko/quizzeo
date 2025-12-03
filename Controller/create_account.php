@@ -28,9 +28,10 @@ if (!$captcha) {
 
 
     $firstname = trim($_POST["firstname"] ?? "");
-    $lastname  = trim($_POST["lastname"] ?? "");
-    $email     = trim($_POST["email"] ?? "");
+    $lastname = trim($_POST["lastname"] ?? "");
+    $email = trim($_POST["email"] ?? "");
     $password  = trim($_POST["password"] ?? "");
+    $role = $_POST["role"] ?? "user";
 
     if (!$firstname) {
         $errors["firstname"] = "Prénom requis";
