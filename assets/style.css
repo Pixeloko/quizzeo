@@ -1,3 +1,55 @@
+/* ====== VARIABLES GLOBALES ====== */
+:root {
+    /* Mode clair */
+    --primary: #8e79b2;       /* violet foncé */
+    --secondary: #e76667;     /* rouge pastel */
+    --light: #fddea7;         /* beige clair */
+    --text: #202020;
+    --bg: #fddea7;
+    --card-bg: #ffffff;
+    --header-bg: #8e79b2;
+    --footer-bg: #8e79b2;
+}
+
+/* Mode sombre */
+.dark-theme {
+    --primary: #6e5a8a;       /* violet sombre */
+    --secondary: #ff8a8a;     /* rouge plus vif */
+    --light: #ffe8c7;         /* beige foncé */
+    --text: #f5f5f5;
+    --bg: #2b2b2b;
+    --card-bg: #3a3a3a;
+    --header-bg: #6e5a8a;
+    --footer-bg: #6e5a8a;
+}
+/* ====== BOUTON THEME SWITCH ====== */
+.theme-btn {
+    background: var(--secondary);
+    border: none;
+    color: #fff;
+    width: 45px;               /* largeur fixe */
+    height: 45px;              /* hauteur fixe (même que la largeur pour le rond) */
+    border-radius: 50%;        /* forme ronde parfaite */
+    cursor: pointer;
+    font-weight: 700;          
+    font-size: 1.2rem;         /* taille emoji / texte */
+    transition: 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Hover */
+.theme-btn:hover {
+    background: var(--primary);
+}
+
+/* Focus */
+.theme-btn:focus {
+    outline: 2px solid var(--light);
+    outline-offset: 2px;
+}
+
 /* ====== RESET ====== */
 * {
     margin: 0;
@@ -8,7 +60,8 @@
 
 /* ====== BODY ====== */
 body {
-    background: #fddea7;
+    background: var(--bg);
+    color: var(--text);
     display: flex;
     flex-direction: column;
     min-height: 100vh;
@@ -17,7 +70,7 @@ body {
 
 /* ====== HEADER ====== */
 header {
-    background: #8e79b2;
+    background: var(--header-bg);
     padding: 15px 0;
     width: 100%;
     box-shadow: 0 2px 5px rgba(0,0,0,0.2);
@@ -55,8 +108,8 @@ nav ul li a {
 }
 
 nav ul li a:hover {
-    background: #fff;
-    color: #8e79b2;
+    background: var(--light);
+    color: var(--primary);
 }
 
 /* ====== LOGO ====== */
@@ -65,12 +118,12 @@ nav ul li a:hover {
     width: auto;
 }
 
-/* ====== FORMULAIRE LOGIN ====== */
+/* ====== MAIN CARD / FORM ====== */
 main {
-    background: #ffffff;
+    background: var(--card-bg);
     padding: 40px 30px;
-    border-radius: 5px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.15);
     width: 100%;
     max-width: 650px;
     margin: 20px auto;
@@ -80,37 +133,38 @@ main {
 h1 {
     text-align: center;
     margin-bottom: 30px;
-    color: #8e79b2;
+    color: var(--primary);
 }
 
-form div {
-    margin-bottom: 20px;
+h2, h3 {
+    color: var(--primary);
 }
 
+/* FORMULAIRES */
 label {
     display: block;
-    margin-bottom: 5px;
+    margin-bottom: 6px;
     font-weight: 600;
-    color: #8e79b2;
+    color: var(--primary);
 }
 
+input[type="text"],
 input[type="email"],
 input[type="password"],
-input[type="text"] {
+select {
     width: 100%;
-    padding: 10px 15px;
-    border: 1px solid #8e79b2;
+    padding: 12px 15px;
+    border: 1px solid var(--primary);
     border-radius: 6px;
+    background: var(--light);
     transition: 0.3s;
-    background: #fddea7;
 }
 
-input[type="email"]:focus,
-input[type="password"]:focus,
-input[type="text"]:focus {
-    border-color: #e76667;
+input:focus,
+select:focus {
+    border-color: var(--secondary);
+    background: var(--card-bg);
     outline: none;
-    background: #fff;
 }
 
 /* ====== BUTTONS ====== */
@@ -118,58 +172,72 @@ button,
 input[type="submit"] {
     width: 100%;
     padding: 12px;
-    background: #8e79b2;
+    background: var(--primary);
     color: #fff;
     border: none;
     border-radius: 6px;
     font-weight: 600;
     cursor: pointer;
     transition: 0.3s;
+    margin-top: 10px;
 }
 
 button:hover,
 input[type="submit"]:hover {
-    background: #e76667;
+    background: var(--secondary);
+}
+
+/* BOUTON SUPPRESSION */
+.delete-btn {
+    background: var(--secondary) !important;
+}
+
+.delete-btn:hover {
+    background: var(--primary) !important;
 }
 
 /* ====== MESSAGES ====== */
-div[style*="color: red"],
-.profile-error,
-.create-error {
-    background: #ffe1e1;
-    border-left: 4px solid #e76667;
-    padding: 12px;
-    border-radius: 6px;
-    color: #a10000;
-}
-
-div[style*="color: green"],
-.profile-success {
+.profile-success,
+.create-success {
     background: #d8ffd8;
     border-left: 4px solid #28a745;
     padding: 12px;
     border-radius: 6px;
     color: #155724;
+    text-align: center;
+    margin-bottom: 20px;
 }
 
-/* ====== LIENS ====== */
+.profile-error,
+.create-error,
+div[style*="color:red"] {
+    background: #ffe1e1;
+    border-left: 4px solid var(--secondary);
+    padding: 12px;
+    border-radius: 6px;
+    color: #a10000;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+/* ====== LINKS ====== */
 main a {
     display: block;
     text-align: center;
     margin-top: 15px;
-    color: #8e79b2;
+    color: var(--primary);
     text-decoration: none;
     font-weight: 600;
     transition: 0.3s;
 }
 
 main a:hover {
-    color: #e76667;
+    color: var(--secondary);
 }
 
 /* ====== FOOTER ====== */
 footer {
-    background: #8e79b2;
+    background: var(--footer-bg);
     color: #fff;
     padding: 20px 0;
     text-align: center;
@@ -181,30 +249,17 @@ footer {
 .admin-container {
     max-width: 1000px;
     margin: 30px auto;
-    background: #fff;
+    background: var(--card-bg);
     padding: 30px;
     border-radius: 10px;
     box-shadow: 0 4px 15px rgba(0,0,0,0.15);
 }
 
-.admin-container h1 {
-    text-align: center;
-    margin-bottom: 10px;
-    color: #8e79b2;
-}
-
-.admin-container p {
-    text-align: center;
-    margin-bottom: 30px;
-    color: #444;
-}
-
+.admin-container h1,
 .admin-container h3 {
-    margin: 25px 0 10px;
-    color: #8e79b2;
+    color: var(--primary);
 }
 
-/* TABLEAUX ADMIN */
 .admin-table {
     width: 100%;
     border-collapse: collapse;
@@ -213,127 +268,74 @@ footer {
 }
 
 .admin-table thead {
-    background: #8e79b2;
+    background: var(--primary);
     color: #fff;
 }
 
 .admin-table th,
 .admin-table td {
     padding: 12px 15px;
-    border: 1px solid #ddd;
+    border: 1px solid var(--light);
 }
 
 .admin-table tr:nth-child(even) {
-    background: #fddea7;
+    background: var(--light);
 }
 
-/* Boutons d’action */
 .admin-table button {
-    width: auto;
-    padding: 8px 12px;
-    background: #e76667;
-    font-size: 0.85em;
-    border-radius: 5px;
+    background: var(--secondary);
     color: #fff;
+    border-radius: 5px;
 }
 
 .admin-table button:hover {
-    background: #8e79b2;
-}
-
-/* Message */
-.admin-message {
-    padding: 12px;
-    background: #d4f7d4;
-    border-left: 4px solid #28a745;
-    text-align: center;
-    border-radius: 6px;
-    margin-bottom: 20px;
-    color: #155724;
+    background: var(--primary);
 }
 
 /* ====== PAGE PROFIL ====== */
-.profile-container {
+.profile-container,
+.create-container {
     max-width: 800px;
     margin: 30px auto;
-    background: #fff;
+    background: var(--card-bg);
     padding: 40px 30px;
     border-radius: 10px;
     box-shadow: 0 4px 15px rgba(0,0,0,0.15);
 }
 
-.profile-container h1 {
-    text-align: center;
-    font-size: 2rem;
-    margin-bottom: 25px;
-    color: #8e79b2;
-}
-
-.profile-container h2 {
-    margin: 25px 0 10px;
-    color: #8e79b2;
-    font-size: 1.3rem;
-}
-
-.profile-container label {
-    display: block;
-    margin-bottom: 6px;
-    font-weight: 600;
-    color: #8e79b2;
-}
-
-.profile-container input {
-    background: #fddea7;
-    border: 1px solid #8e79b2;
-}
-
-.profile-container input:focus {
-    border-color: #e76667;
-    background: #fff;
-}
-
-.profile-container button {
-    background: #8e79b2;
-}
-
-.profile-container button:hover {
-    background: #e76667;
-}
-
-/* BOUTON SUPPRESSION */
-.profile-container .delete-btn {
-    background: #e76667 !important;
-}
-
-.profile-container .delete-btn:hover {
-    background: #8e79b2 !important;
-}
-
-/* ====== PAGE CREATE ACCOUNT ====== */
+.profile-container h1,
 .create-container h1 {
-    color: #8e79b2;
+    color: var(--primary);
 }
 
+.profile-container label,
 .create-container label {
-    color: #8e79b2;
+    color: var(--primary);
 }
 
+.profile-container input,
 .create-container input,
+.profile-container select,
 .create-container select {
-    background: #fddea7;
-    border: 1px solid #8e79b2;
+    border: 1px solid var(--primary);
+    background: var(--light);
 }
 
+.profile-container input:focus,
 .create-container input:focus,
+.profile-container select:focus,
 .create-container select:focus {
-    border-color: #e76667;
-    background: #fff;
+    border-color: var(--secondary);
+    background: var(--card-bg);
 }
 
-.create-container input[type="submit"] {
-    background: #8e79b2;
+/* ====== RECAPTCHA ====== */
+.g-recaptcha {
+    margin-top: 15px;
+    margin-bottom: 20px;
+    transform: scale(0.95);
+    transform-origin: center;
 }
 
-.create-container input[type="submit"]:hover {
-    background: #e76667;
-}
+
+

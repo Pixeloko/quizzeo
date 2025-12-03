@@ -29,6 +29,7 @@ define('BASE_URL', '/quizzeo'); // adapte selon le nom de ton dossier
             <a href="<?= BASE_URL ?>/index.php" class="logo">
                 <img src="<?= BASE_URL ?>/assets/logo.png" alt="Logo Quizzeo">
             </a>
+            
         <div>
             <ul>
                 <!-- Lien vers l'accueil -->
@@ -48,8 +49,33 @@ define('BASE_URL', '/quizzeo'); // adapte selon le nom de ton dossier
 
                 <?php else: ?>
                     <li><a href="<?= BASE_URL ?>/View/login.php">Connexion</a></li>
+                    
                 <?php endif; ?>
+                <button id="theme-toggle" class="theme-btn">🌙</button>
             </ul>
+            
         </div>
     </nav>
+    <script>
+const btn = document.getElementById("theme-toggle");
+
+// Charger le thème sauvegardé
+if (localStorage.getItem("theme") === "dark") {
+    document.body.classList.add("dark-theme");
+    btn.textContent = "☀️";
+}
+
+btn.addEventListener("click", () => {
+    document.body.classList.toggle("dark-theme");
+
+    if (document.body.classList.contains("dark-theme")) {
+        localStorage.setItem("theme", "dark");
+        btn.textContent = "☀️";
+    } else {
+        localStorage.setItem("theme", "light");
+        btn.textContent = "🌙";
+    }
+});
+</script>
+
 </header>
