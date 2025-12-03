@@ -45,6 +45,9 @@ if ($_SERVER["REQUEST_METHOD"] === "POST"){
             if ($user["role"] === "admin") {
                 header("Location: ./View/admin.php"); 
                 exit;
+            } if ($user["role"] === "ecole" || $user["role"] === "entreprise") {
+                header("Location: ./View/dashboard_e.php"); 
+                exit;
             } else {
                 header("Location: ./View/home.php"); 
                 exit;

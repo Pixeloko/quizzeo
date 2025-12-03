@@ -14,7 +14,7 @@ function getUserById(int $id): ?array {
     $conn = getDatabase();
     $stmt = $conn->prepare("SELECT * FROM users WHERE id = :id");
     $stmt->execute(["id" => $id]);
-    return $stmt->fetch(PDO::FETCH_ASSOC) ?: null;
+    return $stmt->fetch(PDO::FETCH_ASSOC) ?: null ;
 }
 
 function getUsers(): ?array {
