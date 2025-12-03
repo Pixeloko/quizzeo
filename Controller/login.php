@@ -1,60 +1,49 @@
 <?php 
-   require_once __DIR__ . "/../View/includes/header.php";
-  require_once __DIR__ . "/../Model/function_user.php";
+    require_once __DIR__ . "/../View/includes/header.php";
+    require_once __DIR__ . "/../Model/function_user.php";
 
+    $errors = [];
+    $email ="";
+    $password ="";
 
-$errors = [];
-$email ="";
-$password ="";
+    if ($_SERVER["REQUEST_METHOD"] === "POST"){
 
-if ($_SERVER["REQUEST_METHOD"] === "POST"){
+        $email = trim($_POST["email"]);
+        $password = trim($_POST["password"]);
 
-    $email = trim($_POST["email"]);
-    $password = trim($_POST["password"]);
+        if (!$email) {
+            $errors["email"] = "Email requis";
+        }
 
-    if (!$email) {
-        $errors["email"] = "Email requis";
-    }
+        if(!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            $errors["email"] = "Veuiller entrer un email valide";
+        }
 
-    if(!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-        $errors["email"] = "Veuiller entrer un email valide";
-    }
+        if (!$password) {
+            $errors["password"] = "Mot de passe requis";
+        }
 
-    if (!$password) {
-        $errors["password"] = "Mot de passe requis";
-    }
+        if (empty($errors)) {
 
-    $user = getUserByEmail($email);
+        $user = getUserByEmail($email);
 
-    if (!$user) {
-        $errors["general"] = "Identifiants invalides";
-    } else {
-        $validpassword = password_verify($password, $user["password"]);
+        if (!$user || !password_verify($password, $user["password"])) {
+            $errors["general"] = "Identifiants invalides";
+        } else {
+            $_SESSION["user_id"] = $user["id"];
+            $_SESSION["role"] = $user["role"];
 
-        if (!$validpassword) {
-            $errors["general"] = "Identifiant invalides";
+            $_SESSION["message"] = "Connexion réussie !";
+
+            if ($user["role"] === "admin") {
+                header("Location: ../View/admin.php");
+            } elseif ($user["role"] === "ecole" || $user["role"] === "entreprise") {
+                header("Location: ../Controller/dashboard_pro.php");
+            } else {
+                header("Location: ../Controller/dashboard.php");
+            }
+            exit;
+        }
         }
     }
-
-    if (empty($errors)) {
-        $_SESSION["message"] = "✅ Connexion réussie";
-        $_SESSION["user_id"] = $user["id"];
-        $_SESSION["user_role"] = $user["role"]; // stocker le rôle en session
-
-            // redirection selon le rôle
-            if ($user["role"] === "admin") {
-                header("Location: admin.php"); 
-                exit;
-            } if ($user["role"] === "ecole" || $user["role"] === "entreprise") {
-                header("Location: dashboard_pro.php"); 
-                exit;
-            } else {
-                header("Location: home.php"); 
-                exit;
-            }
-        
-    }
-}
-
-// Redirection
 ?>
