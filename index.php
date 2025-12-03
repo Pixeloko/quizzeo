@@ -30,6 +30,10 @@ switch ($url) {
         require __DIR__ . '/Controller/logout.php';
         break;
 
+    case 'ecole':
+        require __DIR__ . '/View/ecole/dashboard.php';
+        break;
+
     case 'admin':
         if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
             header('Location: /?url=login');
