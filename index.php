@@ -2,7 +2,6 @@
 $url = $_GET['url'] ?? '';
 
 switch ($url) {
-
     case 'login':
         require __DIR__ . '/View/login.php';
         break;
@@ -12,10 +11,18 @@ switch ($url) {
         break;
 
     case 'dashboard':
+        if (!isset($_SESSION['user_id'])) {
+            header('Location: /?url=login');
+            exit;
+        }
         require __DIR__ . '/View/dashboard.php';
         break;
 
     case 'user':
+        if (!isset($_SESSION['user_id'])) {
+            header('Location: /?url=login');
+            exit;
+        }
         require __DIR__ . '/View/user.php';
         break;
 
@@ -24,12 +31,16 @@ switch ($url) {
         break;
 
     case 'admin':
-        require __DIR__ .'/View/admin.php';
+        if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
+            header('Location: /?url=login');
+            exit;
+        }
+        require __DIR__ . '/View/admin.php';
         break;
-
 
     default:
         http_response_code(404);
+        break;
 }
 ?>
 

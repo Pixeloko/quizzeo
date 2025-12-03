@@ -1,0 +1,170 @@
+<?php
+declare(strict_types=1);
+
+/**
+ * Récupère les quizz actifs
+ *
+ * @return array
+ */
+function getActiveQuizz(): array {
+    $conn = getDatabase();
+    $stmt = $conn->prepare("
+        SELECT id AS quizz_id, name AS title, created_at 
+        FROM quizz 
+        WHERE is_active = 1 
+        ORDER BY created_at DESC
+    ");
+    $stmt->execute();
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
+/**
+ * Retourne les données (ou une array vide) via l'id du quizz
+ *
+ * @param string $id L'id du quizz
+ * @return ?array array avec les clés-valeurs pour ce quizz || array vide si quizz non trouvé
+ */
+function getQuizzById(int $Id): ?array
+{
+    $pdo = getDatabase();
+
+    $stmt = $pdo->prepare("SELECT * FROM quizz WHERE id = :id");
+    $stmt->execute(['id' => $Id]);
+
+    $book = $stmt->fetch();
+
+    return $book ?: null;
+}
+
+/**
+ * Récupère tous les quizz 
+ * @return array avec tous les quizz
+ * 
+ *  || array vide si quizz non trouvé
+ */
+function getQuizz(): ?array
+{
+    $pdo = getDatabase();
+
+    $stmt = $pdo->prepare("SELECT * FROM quizz");
+    $stmt->execute();
+
+    return $stmt->fetchAll() ?: [];
+}
+
+function createQuizz(string $name, string $user_id): int {
+    
+    $errors = [];
+
+    $title = trim($name);
+
+    if (!$title) {
+        $errors["name"] = "Nom requis";
+    }
+
+    $conn = getDatabase();
+
+    $verif = $conn->prepare("SELECT id FROM quizz WHERE name = :name ");
+    $verif->execute([
+        "name" => $name, 
+    ]);
+
+    if ($verif->fetch()) {
+        $errors["name"] = "Nom déjà utilisé";
+    }
+
+    if (!empty($errors)) {
+        throw new InvalidArgumentException(json_encode($errors));
+    }
+
+    $stmt = $conn->prepare("INSERT INTO quizz(name, user_id) VALUES (:title, :user_id");
+
+    $stmt->execute([
+        'name' => $title,
+        'user_id' => $user_id,
+    ]);
+
+    return (int) $conn->lastInsertId();
+}
+
+/**
+ * Supprime un quizz 
+ * @param $Id L'id du quizz
+ * @return bool True si action accomplie || False si échec
+ */
+function deleteQuizz(int $Id): bool
+{
+    $pdo = getDatabase();
+
+    $stmt = $pdo->prepare("DELETE quizz WHERE id = :id");
+
+    $stmt->execute(['id' => $$Id]);
+
+    return $stmt->rowCount() > 0;
+}
+
+
+/**
+ * Formater une date
+ *
+ * @param string $date Date au format Y-m-d H:i:s
+ * @param string $format Format de sortie
+ * @return string Date formatée
+ */
+function formatDate(string $date, string $format = 'd/m/Y'): string
+{
+    $timestamp = strtotime($date);
+    return date($format, $timestamp);
+}
+
+// Fonctions école
+
+/**
+ * Récupère les quiz d'un utilisateur spécifique
+ */
+function getQuizzByUser(int $user_id): array
+{
+    $pdo = getDatabase();
+    $stmt = $pdo->prepare("SELECT * FROM quizz WHERE user_id = :user_id ORDER BY created_at DESC");
+    $stmt->execute(['user_id' => $user_id]);
+    return $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
+}
+
+/**
+ * Compte le nombre de soumissions pour un quiz
+ */
+function countSubmissions(int $quizz_id): int
+{
+    $pdo = getDatabase();
+    $stmt = $pdo->prepare("SELECT COUNT(*) as count FROM submissions WHERE quizz_id = :id");
+    $stmt->execute(['id' => $quizz_id]);
+    $result = $stmt->fetch(PDO::FETCH_ASSOC);
+    return (int) $result['count'];
+}
+
+/**
+ * Récupère les résultats d'un quiz terminé (noms et notes)
+ */
+function getQuizzResults(int $quizz_id): array
+{
+    $pdo = getDatabase();
+    $stmt = $pdo->prepare("
+        SELECT u.name, s.score 
+        FROM submissions s 
+        INNER JOIN users u ON s.user_id = u.id 
+        WHERE s.quizz_id = :id 
+        ORDER BY s.score DESC
+    ");
+    $stmt->execute(['id' => $quizz_id]);
+    return $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
+}
+
+/**
+ * Met à jour le statut d'un quiz
+ */
+function updateQuizzStatus(int $quizz_id, string $status): bool
+{
+    $pdo = getDatabase();
+    $stmt = $pdo->prepare("UPDATE quizz SET status = :status WHERE id = :id");
+    return $stmt->execute(['status' => $status, 'id' => $quizz_id]);
+}
