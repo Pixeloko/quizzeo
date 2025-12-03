@@ -94,14 +94,6 @@ if (isset($_POST["delete_account"])) {
         <label>Email :</label>
         <input type="email" name="email" value="<?= htmlspecialchars($user['email']) ?>">
 
-        <label>Photo de profil :</label>
-        <input type="file" name="profile_photo" accept="image/*">
-        <?php if (!empty($user['profile_photo'])): ?>
-            <div>
-                <img src="../uploads/<?= htmlspecialchars($user['profile_photo']) ?>" alt="Photo de profil" class="profile-photo" style="width:100px;height:100px;border-radius:50%;margin-top:10px;">
-            </div>
-        <?php endif; ?>
-
         <button type="submit" name="change_profile">Mettre à jour</button>
     </form>
 
