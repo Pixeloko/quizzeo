@@ -1,11 +1,11 @@
 <?php
 require_once ('includes/header.php');
 require_once(__DIR__ . "/../Controller/admin.php");
-
-if (!isset($_SESSION['user_id']) || $_SESSION['role'] === 'admin') {
+if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
     header("Location: index.php");
     exit;
 }
+
 
 handleAdminPost(); // si besoin
 
