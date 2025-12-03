@@ -1,22 +1,68 @@
 <?php 
-    require_once("includes/header.php");
-    require_once("./Controller/admin.php");
+require_once("includes/header.php");
+require_once("./Controller/admin.php");
+
+// Démarrage de session si nécessaire
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+// Génération du CSRF token si inexistant
+if (empty($_SESSION['csrf_token'])) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+}
+
+// --- Traitement POST pour utilisateurs ---
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST['csrf_token']) && $_POST['csrf_token'] === $_SESSION['csrf_token']) {
+    
+    // Activer/Désactiver utilisateur
+    if (!empty($_POST['user_id']) && !empty($_POST['action'])) {
+        $userId = (int)$_POST['user_id'];
+        if ($_POST['action'] === 'activate') {
+            activateUser($userId);
+            $_SESSION['message'] = "Utilisateur activé !";
+        } elseif ($_POST['action'] === 'deactivate') {
+            deactivateUser($userId);
+            $_SESSION['message'] = "Utilisateur désactivé !";
+        }
+        header("Location: admin.php");
+        exit;
+    }
+
+    // Activer/Désactiver quiz
+    if (!empty($_POST['quiz_id']) && !empty($_POST['action'])) {
+        $quizId = (int)$_POST['quiz_id'];
+        if ($_POST['action'] === 'activate') {
+            activateQuiz($quizId);
+            $_SESSION['message'] = "Quiz activé !";
+        } elseif ($_POST['action'] === 'deactivate') {
+            deactivateQuiz($quizId);
+            $_SESSION['message'] = "Quiz désactivé !";
+        }
+        header("Location: admin.php");
+        exit;
+    }
+}
+
+// --- Récupération des données ---
+$users = fetchUsers();      // tableau toujours défini
+$quizzes = fetchQuizzes();  // tableau toujours défini
 ?>
-    <main>
+
+<main>
     <h1>Espace Admin</h1>
-    <p>Bienvenue sur l'espace admin. Vous pouvez gérer tout les quizz et utilisateurs à partir de cette page.</p>
+    <p>Bienvenue sur l'espace admin. Vous pouvez gérer tous les quizz et utilisateurs à partir de cette page.</p>
 
     <?php if (isset($_SESSION["message"])): ?>
         <div style="color: green"><?=  htmlspecialchars($_SESSION["message"]) ?></div>
-    <?php unset($_SESSION["message"]) ?>
+        <?php unset($_SESSION["message"]); ?>
     <?php endif ?>
-    
-    <h3>utilisateurs :</h3>
 
-    <?php if (count($user) === 0): ?>
+    <h3>Utilisateurs :</h3>
+    <?php if (count($users) === 0): ?>
         <p>Il n'y a pas d'utilisateur pour le moment.</p>
     <?php else: ?>
-        <table border = 1>
+        <table border="1">
             <thead>
                 <tr>
                     <th>Prénom</th>
@@ -28,57 +74,69 @@
             </thead>
             <tbody>
                 <?php foreach($users as $user): ?>
-                    <tr>
-                        <td><?= $user["firstname"] ?></td>
-                        <td><?= $user["lastname"] ?></td>
-                        <td><?= formatDate($user["created_at"]) ?></td>
-                        <td><?= $user["role"] ?></td>
-                        <td>
-                            <form class="btn_dash" method="GET" action="updateTask.php">
-                                <input type="hidden" name="user" value="<?= htmlspecialchars($user['id']) ?>">
-                                <button type="submit">Activer</button>
-                            </form>
-                            <form method="POST" action="completeTask.php?user=<?= htmlspecialchars($user['id']) ?>">
-                                <button>Désactiver</button>
-                            </form>
-                        </td>
-                    </tr>
-                <?php endforeach?>
+                <tr>
+                    <td><?= htmlspecialchars($user["firstname"]) ?></td>
+                    <td><?= htmlspecialchars($user["lastname"]) ?></td>
+                    <td><?= formatDate($user["created_at"]) ?></td>
+                    <td><?= htmlspecialchars($user["role"]) ?></td>
+                    <td>
+                        <form method="POST" action="admin.php">
+                            <input type="hidden" name="user_id" value="<?= htmlspecialchars($user['id']) ?>">
+                            <input type="hidden" name="action" value="activate">
+                            <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
+                            <button type="submit">Activer</button>
+                        </form>
+
+                        <form method="POST" action="admin.php">
+                            <input type="hidden" name="user_id" value="<?= htmlspecialchars($user['id']) ?>">
+                            <input type="hidden" name="action" value="deactivate">
+                            <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
+                            <button type="submit">Désactiver</button>
+                        </form>
+                    </td>
+                </tr>
+                <?php endforeach ?>
             </tbody>
         </table>
     <?php endif ?>
 
     <h3>Quizz :</h3>
-
-    <?php if (count($Quizz) === 0): ?>
+    <?php if (count($quizzes) === 0): ?>
         <p>Il n'y a pas de quizz pour le moment.</p>
     <?php else: ?>
-        <table border = 1>
+        <table border="1">
             <thead>
                 <tr>
                     <th>Titre</th>
                     <th>Date de création</th>
+                    <th>Statut</th>
                     <th>Actions</th>
                 </tr>
             </thead>
             <tbody>
-                <?php foreach($Quizz as $quizz): ?>
-                    <tr>
-                        <td><?= $quizz["title"] ?></td>
-                        <td><?= formatDate($quizz["created_at"]) ?></td>
-                        <td>
-                            <form class="btn_dash" method="GET" action="updateTask.php">
-                                <input type="hidden" name="id" value="<?= htmlspecialchars($task['id']) ?>">
-                                <button type="submit">Activer</button>
-                            </form>
-                            <form method="POST" action="completeTask.php?task=<?= htmlspecialchars($task['id']) ?>">
-                                <button>Désactiver</button>
-                            </form>
-                        </td>
-                    </tr>
-                <?php endforeach?>
+                <?php foreach($quizzes as $quiz): ?>
+                <tr>
+                    <td><?= htmlspecialchars($quiz["title"]) ?></td>
+                    <td><?= formatDate($quiz["created_at"]) ?></td>
+                    <td><?= htmlspecialchars($quiz["status"]) ?></td>
+                    <td>
+                        <form method="POST" action="admin.php">
+                            <input type="hidden" name="quiz_id" value="<?= htmlspecialchars($quiz['id']) ?>">
+                            <input type="hidden" name="action" value="activate">
+                            <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
+                            <button type="submit">Activer</button>
+                        </form>
+
+                        <form method="POST" action="admin.php">
+                            <input type="hidden" name="quiz_id" value="<?= htmlspecialchars($quiz['id']) ?>">
+                            <input type="hidden" name="action" value="deactivate">
+                            <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
+                            <button type="submit">Désactiver</button>
+                        </form>
+                    </td>
+                </tr>
+                <?php endforeach ?>
             </tbody>
         </table>
     <?php endif ?>
-
 </main>

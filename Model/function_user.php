@@ -75,30 +75,39 @@ function deleteUser(int $id): bool {
     return $stmt->rowCount() > 0;
 }
 
-// ---------- FONCTIONS QUIZZ ----------
+function setActiveUser($userId)
+{
+    try {
+        $stmt = $pdo->prepare("UPDATE users SET is_active = 1 WHERE id = :id");
+        $stmt->execute([
+            "id" => $userId
+        ]);
 
-/**
- * Récupère les quizz actifs
- *
- * @return array
- */
-function getActiveQuizz(): array {
-    $conn = getDatabase();
-    $stmt = $conn->prepare("
-        SELECT id AS quizz_id, name AS title, created_at 
-        FROM quizz 
-        WHERE is_active = 1 
-        ORDER BY created_at DESC
-    ");
-    $stmt->execute();
-    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        // Vérifie le changement
+        if ($stmt->rowCount() > 0) {
+            $_SESSION['message'] = "Succès";
+        } else {
+            $_SESSION['message'] = "Erreur, l'utilisateur n'existe pas ou est déjà actif";
+        }
+    } catch (PDOException $e) {
+        $_SESSION['error'] = "Database error: " . $e->getMessage();
+    }
 }
 
+function setInactiveUser($userId)
+{
+    try {
+    $stmt = $pdo->prepare("UPDATE users SET is_active = 0 WHERE id = :id");
+    $stmt->execute([
+        "id" => $userId
+    ]);
 
-/**
- * Formate une date en français
- */
-function formatDate(string $date): string {
-    $d = new DateTime($date);
-    return $d->format('d/m/Y');
+    if ($stmt->rowCount() > 0) {
+        $_SESSION['message'] = "Utilisateur désactivé";
+    } else {
+        $_SESSION['message'] = "Pas de changement, utilisateur inexistant ou déjà inactif";
+    }
+    } catch (PDOException $e) {
+        $_SESSION['error'] = "Database error: " . $e->getMessage();
+    }
 }

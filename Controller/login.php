@@ -39,8 +39,19 @@ if ($_SERVER["REQUEST_METHOD"] === "POST"){
     if (empty($errors)) {
         $_SESSION["message"] = "✅ Connexion réussie";
         $_SESSION["user_id"] = $user["id"];
-        header("Location: home.php");
-        exit;
+        $_SESSION["user_role"] = $user["role"]; // stocker le rôle en session
+
+            // redirection selon le rôle
+            if ($user["role"] === "admin") {
+                header("Location: ./View/admin.php"); 
+                exit;
+            } else {
+                header("Location: ./View/home.php"); 
+                exit;
+            }
+        
     }
 }
+
+// Redirection
 ?>
