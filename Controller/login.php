@@ -49,7 +49,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST"){
                 header("Location: ./View/dashboard_e.php"); 
                 exit;
             } else {
-                header("Location: View/home.php"); 
+                header("Location: home.php"); 
                 exit;
             }
         
