@@ -1,64 +1,30 @@
 <?php
 declare(strict_types=1);
-require_once './functions_quizz.php'; // Inclut les fonctions existantes et ajoutées
-require_once './function_question.php'; // Assume un fichier pour les questions (non fourni, mais nécessaire pour lister/ajouter des questions)
+require_once './Model/function_quizz.php'; // Inclut les fonctions existantes et ajoutées
+require_once './Model/function_question.php'; // Assume un fichier pour les questions (non fourni, mais nécessaire pour lister/ajouter des questions)
 
-class SchoolController
+class ecoleController
 {
     public function dashboard()
     {
-        // Vérifier le rôle
-        if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'ecole') {
-            header('Location: /login');
-            exit;
-        }
-
-        $user_id = $_SESSION['user_id'];
-        $quizzes = getQuizzByUser($user_id);
-
-        // Enrichir les données pour chaque quiz
-        foreach ($quizzes as &$quiz) {
-            $questions = getQuestionsByQuizz($quiz['id']);
-            $quiz['status'] = $this->determineStatus($quiz, $questions);
-            $quiz['response_count'] = countSubmissions($quiz['id']);
-        }
-
-        // Passer à la vue
-        require_once './views/school/dashboard.php';
+        $quizzes = getQuizzesByUser($_SESSION['user_id']); // par ex.
+        require_once __DIR__ . '/../View/ecole/dashboard.php';
     }
+
+
 
     public function createForm()
     {
         // Formulaire de création de quiz (vide au départ)
-        require_once './views/school/create_quiz.php';
+        require_once './View/ecole/create_quiz.php';
     }
 
-    public function store()
-    {
-        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            header('Location: /school/dashboard');
-            exit;
-        }
-
-        $name = trim($_POST['name'] ?? '');
-        $user_id = $_SESSION['user_id'];
-
-        try {
-            $quizz_id = createQuizz($name, $user_id);
-            // Rediriger vers l'édition du quiz
-            header("Location: /school/edit/$quizz_id");
-            exit;
-        } catch (InvalidArgumentException $e) {
-            $errors = json_decode($e->getMessage(), true);
-            require_once './views/school/create_quiz.php';
-        }
-    }
 
     public function edit(int $quizz_id)
     {
         $quiz = getQuizzById($quizz_id);
         if (!$quiz || $quiz['user_id'] != $_SESSION['user_id']) {
-            header('Location: /school/dashboard');
+            header('Location: /ecole/dashboard');
             exit;
         }
 
@@ -66,19 +32,19 @@ class SchoolController
         // Assume une fonction getAllQuestions() pour lister toutes les questions disponibles
         $allQuestions = getAllQuestions(); // À implémenter si nécessaire
 
-        require_once './views/school/edit_quiz.php';
+        require_once './views/ecole/edit_quiz.php';
     }
 
     public function update(int $quizz_id)
     {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            header('Location: /school/dashboard');
+            header('Location: /ecole/dashboard');
             exit;
         }
 
         $quiz = getQuizzById($quizz_id);
         if (!$quiz || $quiz['user_id'] != $_SESSION['user_id']) {
-            header('Location: /school/dashboard');
+            header('Location: /ecole/dashboard');
             exit;
         }
 
@@ -99,7 +65,7 @@ class SchoolController
             updateQuizzStatus($quizz_id, 'finished');
         }
 
-        header("Location: /school/edit/$quizz_id");
+        header("Location: /ecole/edit/$quizz_id");
         exit;
     }
 
@@ -107,12 +73,12 @@ class SchoolController
     {
         $quiz = getQuizzById($quizz_id);
         if (!$quiz || $quiz['user_id'] != $_SESSION['user_id'] || $quiz['status'] !== 'finished') {
-            header('Location: /school/dashboard');
+            header('Location: /ecole/dashboard');
             exit;
         }
 
         $results = getQuizzResults($quizz_id);
-        require_once './views/school/show_results.php';
+        require_once './views/ecole/show_results.php';
     }
 
     private function determineStatus(array $quiz, array $questions): string

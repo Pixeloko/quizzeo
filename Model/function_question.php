@@ -8,11 +8,13 @@ function createQuestion(int $quizz_id, string $question_text, int $point = 1): i
     ");
     $stmt->execute([
         'quizz_id' => $quizz_id,
-        'title' => $title,
+        'title' => $question_text,
         'point' => $point
     ]);
     return (int)$conn->lastInsertId();
 }
+
+
 
 function addAnswerToQuestion(int $question_id, string $answer_text, bool $is_correct = false): int {
     $conn = getDatabase();
@@ -23,4 +25,24 @@ function addAnswerToQuestion(int $question_id, string $answer_text, bool $is_cor
         'is_correct' => $is_correct ? 1 : 0
     ]);
     return (int)$conn->lastInsertId();
+}
+
+
+function getAllQuestions(): array
+{
+    $pdo = getDatabase();
+
+    // Récupère toutes les questions
+    $stmt = $pdo->prepare("SELECT * FROM questions ORDER BY id ASC");
+    $stmt->execute();
+    $questions = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    // Pour chaque question, récupérer ses réponses
+    foreach ($questions as &$question) {
+        $stmt2 = $pdo->prepare("SELECT * FROM answers WHERE question_id = :qid ORDER BY id ASC");
+        $stmt2->execute(['qid' => $question['id']]);
+        $question['answers'] = $stmt2->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    return $questions;
 }

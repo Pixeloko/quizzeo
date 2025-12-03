@@ -38,7 +38,7 @@
             if ($user["role"] === "admin") {
                 header("Location: ../View/admin.php");
             } elseif ($user["role"] === "ecole" || $user["role"] === "entreprise") {
-                header("Location: ../View/dashboard_pro.php");
+                header("Location: ecole");
             } else {
                 header("Location: ../View/user.php");
             }

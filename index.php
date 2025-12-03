@@ -30,10 +30,6 @@ switch ($url) {
         require __DIR__ . '/Controller/logout.php';
         break;
 
-    case 'ecole':
-        require __DIR__ . '/View/ecole/dashboard.php';
-        break;
-
     case 'admin':
         if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
             header('Location: /?url=login');
@@ -41,6 +37,25 @@ switch ($url) {
         }
         require __DIR__ . '/View/admin.php';
         break;
+    
+    case 'ecole':
+        require_once __DIR__ . '/View/ecole/dashboard.php';
+        break;
+
+    case 'ecole/create':
+        require_once __DIR__ . '/View/ecole/create_quizz.php';
+        break;
+
+    case 'ecole/store':
+        require_once __DIR__ . '/Controller/store.php';
+        break;
+
+    case 'ecole/update':
+        require_once __DIR__ . '/Controller/ecole/update.php';
+        break;
+
+
+
 
     default:
         http_response_code(404);
