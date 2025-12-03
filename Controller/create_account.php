@@ -10,6 +10,22 @@ $password = "";
 $role = "user";
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
+    $captcha = $_POST['g-recaptcha-response'] ?? '';
+
+if (!$captcha) {
+    $errors["general"] = "Veuillez valider le captcha.";
+} else {
+    $secretKey = "6Lcv2h8sAAAAAOQbiiU37VVzckA-4XD6S5gs35ez";
+    $response = file_get_contents(
+        "https://www.google.com/recaptcha/api/siteverify?secret={$secretKey}&response={$captcha}"
+    );
+    $responseKeys = json_decode($response, true);
+
+    if (!$responseKeys["success"]) {
+        $errors["general"] = "Captcha invalide. Veuillez réessayer.";
+    }
+}
+
 
     $firstname = trim($_POST["firstname"] ?? "");
     $lastname  = trim($_POST["lastname"] ?? "");
@@ -34,9 +50,10 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         $errors["password"] = "Mot de passe requis";
     }
 
-    if (empty($errors)) {
-        try {
-            createUser($role, $firstname, $lastname, $email, $password);
+   if (empty($errors)) {
+    try {
+        createUser($role, $firstname, $lastname, $email, $password);
+
             $_SESSION["message"] = "✅ Compte créé avec succès !";
             header("Location: ./login.php");
             exit;

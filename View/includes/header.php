@@ -49,4 +49,5 @@ define('BASE_URL', '/quizzeo'); // adapte selon le nom de ton dossier
             </ul>
         </div>
     </nav>
+    
 </header>
