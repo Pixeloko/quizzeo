@@ -159,4 +159,85 @@ footer {
     width: 100%;
     box-shadow: 0 -2px 5px rgba(0,0,0,0.2);
 }
+/* ====== PAGE ADMIN ====== */
+
+/* Conteneur principal admin */
+.admin-container {
+    max-width: 1000px;
+    margin: 30px auto;
+    background: #fff;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+}
+
+/* Titres */
+.admin-container h1 {
+    text-align: center;
+    margin-bottom: 10px;
+    color: #151515;
+}
+
+.admin-container p {
+    text-align: center;
+    margin-bottom: 30px;
+    color: #444;
+}
+
+/* Sous-titres (Utilisateurs, Quizz) */
+.admin-container h3 {
+    margin: 25px 0 10px;
+    color: #151515;
+}
+
+/* TABLEAUX ADMIN */
+.admin-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 30px;
+    font-size: 0.95em;
+}
+
+.admin-table thead {
+    background: #151515;
+    color: #fff;
+}
+
+.admin-table th,
+.admin-table td {
+    padding: 12px 15px;
+    border: 1px solid #ddd;
+}
+
+.admin-table tr:nth-child(even) {
+    background: #f7f7f7;
+}
+
+
+
+/* Boutons d’action */
+.admin-table button {
+    width: auto;
+    padding: 8px 12px;
+    background: #151515;
+    font-size: 0.85em;
+    border-radius: 5px;
+    display: inline-block;
+    margin-bottom: 5px;
+}
+
+.admin-table button:hover {
+    background: #333;
+}
+
+/* Message */
+.admin-message {
+    padding: 12px;
+    background: #d4f7d4;
+    border-left: 4px solid #28a745;
+    text-align: center;
+    border-radius: 6px;
+    margin-bottom: 20px;
+    color: #155724;
+}
 
