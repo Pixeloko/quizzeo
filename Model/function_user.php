@@ -7,21 +7,21 @@ function getUserByRole(string $role): ?array {
     $conn = getDatabase();
     $stmt = $conn->prepare("SELECT * FROM users WHERE role = :role");
     $stmt->execute(["role" => $role]);
-    return $stmt->fetchAll(PDO::FETCH_ASSOC) ?: null;
+    return $stmt->fetchAll() ?: null;
 }
 
 function getUserById(int $id): ?array {
     $conn = getDatabase();
     $stmt = $conn->prepare("SELECT * FROM users WHERE id = :id");
     $stmt->execute(["id" => $id]);
-    return $stmt->fetch(PDO::FETCH_ASSOC) ?: null ;
+    return $stmt->fetch() ?: null ;
 }
 
 function getUsers(): ?array {
     $conn = getDatabase();
     $stmt = $conn->prepare("SELECT * FROM users WHERE role != 'admin'");
     $stmt->execute();
-    return $stmt->fetchAll(PDO::FETCH_ASSOC) ?: null;
+    return $stmt->fetchAll() ?: null;
 }
 
 function getUserByEmail(string $email): ?array {
@@ -77,8 +77,9 @@ function deleteUser(int $id): bool {
 
 function setActiveUser($userId)
 {
+    $conn = getDatabase();
     try {
-        $stmt = $pdo->prepare("UPDATE users SET is_active = 1 WHERE id = :id");
+        $stmt = $conn->prepare("UPDATE users SET is_active = 1 WHERE id = :id");
         $stmt->execute([
             "id" => $userId
         ]);
@@ -96,8 +97,9 @@ function setActiveUser($userId)
 
 function setInactiveUser($userId)
 {
+    $conn = getDatabase();
     try {
-    $stmt = $pdo->prepare("UPDATE users SET is_active = 0 WHERE id = :id");
+    $stmt = $conn->prepare("UPDATE users SET is_active = 0 WHERE id = :id");
     $stmt->execute([
         "id" => $userId
     ]);
