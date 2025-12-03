@@ -241,3 +241,105 @@ footer {
     color: #155724;
 }
 
+/* ====== PAGE PROFIL ====== */
+
+.profile-container {
+    max-width: 800px;
+    margin: 30px auto;
+    background: #fff;
+    padding: 40px 30px;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+}
+
+/* TITRE PRINCIPAL */
+.profile-container h1 {
+    text-align: center;
+    font-size: 2rem;
+    margin-bottom: 25px;
+    color: #151515;
+}
+
+/* SOUS-TITRES DES FORMULAIRES */
+.profile-container h2 {
+    margin: 25px 0 10px;
+    color: #202020;
+    font-size: 1.3rem;
+}
+
+/* FORMULAIRES */
+.profile-container form {
+    margin-bottom: 40px;
+}
+
+.profile-container label {
+    display: block;
+    margin-bottom: 6px;
+    font-weight: 600;
+    color: #333;
+}
+
+.profile-container input[type="text"],
+.profile-container input[type="email"],
+.profile-container input[type="password"] {
+    width: 100%;
+    padding: 12px 15px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    background: #fafafa;
+    transition: 0.3s;
+}
+
+.profile-container input:focus {
+    border-color: #151515;
+    background: #fff;
+    outline: none;
+}
+
+/* BOUTONS */
+.profile-container button {
+    width: 100%;
+    padding: 12px;
+    background: #151515;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.3s;
+    margin-top: 10px;
+}
+
+.profile-container button:hover {
+    background: #333;
+}
+
+/* BOUTON SUPPRESSION */
+.profile-container .delete-btn {
+    background: #d11a2a !important;
+}
+
+.profile-container .delete-btn:hover {
+    background: #b01020 !important;
+}
+
+/* MESSAGES */
+.profile-success {
+    background: #d4f7d4;
+    padding: 12px;
+    border-left: 4px solid #28a745;
+    border-radius: 6px;
+    margin-bottom: 20px;
+    color: #155724;
+    text-align: center;
+}
+
+.profile-error {
+    background: #ffe1e1;
+    padding: 12px;
+    border-left: 4px solid #d11a2a;
+    border-radius: 6px;
+    margin-bottom: 20px;
+    color: #a10000;
+    text-align: center;
+}

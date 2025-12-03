@@ -1,5 +1,5 @@
 <?php
-require_once('../config/config.php'); // inclusion de la fonction getDatabase()
+require_once('../config/config.php');
 require_once('./includes/header.php');
 
 $pdo = getDatabase();
@@ -34,9 +34,10 @@ if (isset($_POST['change_profile'])) {
     } elseif (!filter_var($newEmail, FILTER_VALIDATE_EMAIL)) {
         $errorMessage = "Email invalide.";
     } else {
-        // Vérifier si email déjà utilisé par un autre utilisateur
+        // Vérifier si email déjà utilisé
         $stmt = $pdo->prepare("SELECT id FROM users WHERE email = :email AND id != :id");
         $stmt->execute(['email' => $newEmail, 'id' => $user_id]);
+
         if ($stmt->fetch()) {
             $errorMessage = "Cet email est déjà utilisé.";
         } else {
@@ -47,6 +48,7 @@ if (isset($_POST['change_profile'])) {
                 'email' => $newEmail,
                 'id' => $user_id
             ]);
+
             $successMessage = "Profil mis à jour !";
             $user['firstname'] = $newFirstname;
             $user['lastname'] = $newLastname;
@@ -62,11 +64,11 @@ if (isset($_POST['change_password'])) {
     $confirmPassword = $_POST['confirm_password'] ?? '';
 
     if ($currentPassword === '' || $newPassword === '' || $confirmPassword === '') {
-        $errorMessage = "Tous les champs de mot de passe doivent être remplis.";
+        $errorMessage = "Tous les champs doivent être remplis.";
     } elseif (!password_verify($currentPassword, $user['password'])) {
         $errorMessage = "Mot de passe actuel incorrect.";
     } elseif ($newPassword !== $confirmPassword) {
-        $errorMessage = "Le nouveau mot de passe et sa confirmation ne correspondent pas.";
+        $errorMessage = "Les mots de passe ne correspondent pas.";
     } else {
         $hashedPassword = password_hash($newPassword, PASSWORD_BCRYPT);
         $stmt = $pdo->prepare("UPDATE users SET password = :password WHERE id = :id");
@@ -74,6 +76,7 @@ if (isset($_POST['change_password'])) {
             'password' => $hashedPassword,
             'id' => $user_id
         ]);
+
         $successMessage = "Mot de passe mis à jour !";
     }
 }
@@ -82,47 +85,64 @@ if (isset($_POST['change_password'])) {
 if (isset($_POST['delete_account'])) {
     $stmt = $pdo->prepare("DELETE FROM users WHERE id = :id");
     $stmt->execute(['id' => $user_id]);
-
     session_destroy();
+
     header("Location: ../index.php");
     exit;
 }
 ?>
 
-<h1>Profil de <?= htmlspecialchars($user['firstname'] . ' ' . $user['lastname']) ?></h1>
+<!-- Conteneur principal -->
+<div class="profile-container">
 
-<?php if ($successMessage) echo "<p style='color:green;'>$successMessage</p>"; ?>
-<?php if ($errorMessage) echo "<p style='color:red;'>$errorMessage</p>"; ?>
+    <h1>Profil de <?= htmlspecialchars($user['firstname'] . ' ' . $user['lastname']) ?></h1>
 
-<!-- Formulaire pour modifier prénom, nom et email -->
-<form method="post">
-    <h2>Modifier mes informations</h2>
-    <label>Prénom :</label>
-    <input type="text" name="firstname" value="<?= htmlspecialchars($user['firstname']) ?>"><br>
-    <label>Nom :</label>
-    <input type="text" name="lastname" value="<?= htmlspecialchars($user['lastname']) ?>"><br>
-    <label>Email :</label>
-    <input type="email" name="email" value="<?= htmlspecialchars($user['email']) ?>"><br>
-    <button type="submit" name="change_profile">Mettre à jour</button>
-</form>
+    <!-- Messages -->
+    <?php if ($successMessage): ?>
+        <p class="profile-success"><?= $successMessage ?></p>
+    <?php endif; ?>
 
-<br>
+    <?php if ($errorMessage): ?>
+        <p class="profile-error"><?= $errorMessage ?></p>
+    <?php endif; ?>
 
-<!-- Formulaire pour changer le mot de passe -->
-<form method="post">
-    <h2>Changer mon mot de passe</h2>
-    <label>Mot de passe actuel :</label>
-    <input type="password" name="current_password"><br>
-    <label>Nouveau mot de passe :</label>
-    <input type="password" name="new_password"><br>
-    <label>Confirmer le nouveau mot de passe :</label>
-    <input type="password" name="confirm_password"><br>
-    <button type="submit" name="change_password">Changer le mot de passe</button>
-</form>
+    <!-- Modifier informations -->
+    <form method="post">
+        <h2>Modifier mes informations</h2>
 
-<br>
+        <label>Prénom :</label>
+        <input type="text" name="firstname" value="<?= htmlspecialchars($user['firstname']) ?>">
 
-<!-- Formulaire suppression compte -->
-<form method="post" onsubmit="return confirm('Voulez-vous vraiment supprimer votre compte ? Cette action est irréversible !');">
-    <button type="submit" name="delete_account" style="background-color:red;color:white;">Supprimer mon compte</button>
-</form>
+        <label>Nom :</label>
+        <input type="text" name="lastname" value="<?= htmlspecialchars($user['lastname']) ?>">
+
+        <label>Email :</label>
+        <input type="email" name="email" value="<?= htmlspecialchars($user['email']) ?>">
+
+        <button type="submit" name="change_profile">Mettre à jour</button>
+    </form>
+
+    <!-- Modifier mot de passe -->
+    <form method="post">
+        <h2>Changer mon mot de passe</h2>
+
+        <label>Mot de passe actuel :</label>
+        <input type="password" name="current_password">
+
+        <label>Nouveau mot de passe :</label>
+        <input type="password" name="new_password">
+
+        <label>Confirmer le nouveau mot de passe :</label>
+        <input type="password" name="confirm_password">
+
+        <button type="submit" name="change_password">Changer le mot de passe</button>
+    </form>
+
+    <!-- Supprimer compte -->
+    <form method="post" 
+          onsubmit="return confirm('Voulez-vous vraiment supprimer votre compte ? Cette action est irréversible !');">
+
+        <button type="submit" name="delete_account" class="delete-btn">Supprimer mon compte</button>
+    </form>
+
+</div>
