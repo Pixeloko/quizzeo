@@ -11,12 +11,6 @@ if (session_status() === PHP_SESSION_NONE) {
 // Inclure les fonctions utilisateurs
 require_once __DIR__ . '/../Model/function_user.php';
 
-// Vérifier si l'utilisateur est connecté
-if (!isset($_SESSION['user_id'])) {
-    header("Location: index.php?url=login");
-    exit;
-}
-
 // Récupérer les quizz actifs
 try {
     $quizz = getActiveQuizz();
