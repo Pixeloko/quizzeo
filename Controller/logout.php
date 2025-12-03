@@ -6,5 +6,5 @@ if (session_status() === PHP_SESSION_NONE) {
 $_SESSION = [];
 session_destroy();
 
-header("Location: ../index.php"); 
+header("Location:View/login.php"); 
 exit;
