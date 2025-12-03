@@ -1,6 +1,7 @@
 <?php
-require_once("./Model/function_user.php");
-require_once("./Model/functions_quizz.php");
+require_once(__DIR__ . "/../Model/function_user.php");
+require_once(__DIR__ . "/../Model/functions_quizz.php");
+
 
 /**
  * Récupère tous les utilisateurs (hors admins)
