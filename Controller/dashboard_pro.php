@@ -22,7 +22,7 @@ if (!$user) {
 // Vérifier le rôle ➜ accès réservé aux entreprises
 if ($user["role"] !== "entreprise" || $user["role"] !== "ecole") {
     $_SESSION["error"] = "Accès interdit.";
-    header("Location: dashboard.php");
+    header("Location: index.php");
     exit;
 }
 
