@@ -1,4 +1,10 @@
 <?php
+
+//Vérifier les erreurs
+ini_set('display_errors', 1);
+error_reporting(E_ALL);
+
+
 $url = $_GET['url'] ?? '';
 
 switch ($url) {
@@ -49,13 +55,6 @@ switch ($url) {
     case 'ecole/store':
         require_once __DIR__ . '/Controller/store.php';
         break;
-
-    case 'ecole/update':
-        require_once __DIR__ . '/Controller/ecole/update.php';
-        break;
-
-
-
 
     default:
         http_response_code(404);

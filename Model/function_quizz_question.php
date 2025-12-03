@@ -39,6 +39,22 @@ function getQuestionsByQuizz(int $quizz_id): array
     return $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
 }
 
+function GetQuestionsByQuizz_ecole(int $quizz_id): array {
+    $conn = getDatabase();
+    $stmt = $conn->prepare("SELECT * FROM questions WHERE quizz_id = :qid ORDER BY id ASC");
+    $stmt->execute(['qid' => $quizz_id]);
+    $questions = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    foreach ($questions as &$question) {
+        $stmt2 = $conn->prepare("SELECT * FROM answers WHERE question_id = :qid ORDER BY id ASC");
+        $stmt2->execute(['qid' => $question['id']]);
+        $question['answers'] = $stmt2->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    return $questions ?: [];
+}
+
+
 /**
  * Supprime une question d’un quizz
  */
