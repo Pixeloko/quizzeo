@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 require_once './functions_quizz.php'; // Inclut les fonctions existantes et ajoutées
-require_once './functions_questions.php'; // Assume un fichier pour les questions (non fourni, mais nécessaire pour lister/ajouter des questions)
+require_once './function_question.php'; // Assume un fichier pour les questions (non fourni, mais nécessaire pour lister/ajouter des questions)
 
 class SchoolController
 {
