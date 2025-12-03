@@ -14,6 +14,7 @@ $quizzes = getQuizzByUserId($_SESSION["user_id"]);
 
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -21,6 +22,7 @@ $quizzes = getQuizzByUserId($_SESSION["user_id"]);
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="../css/style.css">
 </head>
+
 <body>
     <div class="container mt-4">
         <div class="d-flex justify-content-between align-items-center mb-4">
@@ -33,13 +35,13 @@ $quizzes = getQuizzByUserId($_SESSION["user_id"]);
 
         <!-- Susccès ou erreur ? -->
         <?php if (isset($_SESSION['message'])): ?>
-            <div class="alert alert-success"><?= htmlspecialchars($_SESSION['message']); ?></div>
-            <?php unset($_SESSION['message']); ?>
+        <div class="alert alert-success"><?= htmlspecialchars($_SESSION['message']); ?></div>
+        <?php unset($_SESSION['message']); ?>
         <?php endif; ?>
 
         <?php if (isset($_SESSION['error'])): ?>
-            <div class="alert alert-danger"><?= htmlspecialchars($_SESSION['error']); ?></div>
-            <?php unset($_SESSION['error']); ?>
+        <div class="alert alert-danger"><?= htmlspecialchars($_SESSION['error']); ?></div>
+        <?php unset($_SESSION['error']); ?>
         <?php endif; ?>
 
         <!-- Table pour les quizzs -->
@@ -49,59 +51,65 @@ $quizzes = getQuizzByUserId($_SESSION["user_id"]);
             </div>
             <div class="card-body">
                 <?php if (empty($quizzes)): ?>
-                    <p class="text-muted">Aucun quiz créé pour le moment.</p>
+                <p class="text-muted">Aucun quiz créé pour le moment.</p>
                 <?php else: ?>
-                    <div class="table-responsive">
-                        <table class="table table-hover">
-                            <thead>
-                                <tr>
-                                    <th>Nom du Quiz</th>
-                                    <th>Statut</th>
-                                    <th>Réponses</th>
-                                    <th>Créé le</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <?php foreach ($quizzes as $quiz): 
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Nom du Quiz</th>
+                                <th>Statut</th>
+                                <th>Réponses</th>
+                                <th>Créé le</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php foreach ($quizzes as $quiz): 
                                     require_once __DIR__ . "/../../Model/function_quizz.php";
                                     $submissions = countSubmissions($quiz['id']);
                                     $status = getQuizStatus($quiz['id']); 
                                 ?>
-                                <tr>
-                                    <td><?= htmlspecialchars($quiz['name']); ?></td>
-                                    <td>
-                                        <span class="badge bg-<?= 
+                            <tr>
+                                <td><?= htmlspecialchars($quiz['name']); ?></td>
+                                <td>
+                                    <span class="badge bg-<?= 
                                             $status === 'finished' ? 'success' : 
                                             ($status === 'launched' ? 'warning' : 'secondary') 
                                         ?>">
-                                            <?= 
+                                        <?= 
                                                 $status === 'finished' ? 'Terminé' : 
                                                 ($status === 'launched' ? 'Lancé' : 'En écriture') 
                                             ?>
-                                        </span>
-                                    </td>
-                                    <td>
-                                        <span class="badge bg-info"><?= $submissions; ?> réponse(s)</span>
-                                    </td>
-                                    <td><?= date('d/m/Y', strtotime($quiz['created_at'])); ?></td>
-                                    <td>
-                                        <?php if ($status !== 'finished'): ?>
-                                            <a href="edit_quiz.php?id=<?= $quiz['id']; ?>" class="btn btn-sm btn-primary">Éditer</a>
-                                            <a href="launch_quiz.php?id=<?= $quiz['id']; ?>" class="btn btn-sm btn-warning">Lancer</a>
-                                        <?php else: ?>
-                                            <a href="results.php?id=<?= $quiz['id']; ?>" class="btn btn-sm btn-success">Voir Résultats</a>
-                                        <?php endif; ?>
-                                    </td>
-                                </tr>
-                                <?php endforeach; ?>
-                            </tbody>
-                        </table>
-                    </div>
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="badge bg-info"><?= $submissions; ?> réponse(s)</span>
+                                </td>
+                                <td><?= date('d/m/Y', strtotime($quiz['created_at'])); ?></td>
+                                <td>
+                                    <?php if ($status !== 'finished'): ?>
+                                    <a href="/quizzeo/View/ecole/edit_quiz.php?id=<?= $quiz['id']; ?>"
+                                        class="btn btn-sm btn-primary">Éditer</a>
+
+                                    <a href="/quizzeo/Controller/launch_quiz.php?id=<?= $quiz['id']; ?>"
+                                        class="btn btn-sm btn-warning"
+                                        onclick="return confirm('Lancer ce quiz ? Les étudiants pourront y répondre.')">Lancer</a>
+                                    <?php else: ?>
+                                    <a href="results.php?id=<?= $quiz['id']; ?>" class="btn btn-sm btn-success">Voir
+                                        Résultats</a>
+                                    <?php endif; ?>
+                                </td>
+                            </tr>
+                            <?php endforeach; ?>
+                        </tbody>
+                    </table>
+                </div>
                 <?php endif; ?>
             </div>
         </div>
     </div>
 
 </body>
+
 </html>

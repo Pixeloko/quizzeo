@@ -98,6 +98,24 @@ function getQuizStatus(int $quizz_id): string {
     return $result['status'] ?? 'draft';
 }
 
+/**
+ * Met à jour le statut d'un quiz
+ */
+function updateQuizzStatus(int $quizz_id, string $status): bool {
+    $conn = getDatabase();
+    $stmt = $conn->prepare("UPDATE quizz SET status = :status WHERE id = :id");
+    return $stmt->execute(['status' => $status, 'id' => $quizz_id]);
+}
+
+/**
+ * Met à jour le nom d'un quiz
+ */
+function updateQuizName(int $quizz_id, string $name): bool {
+    $conn = getDatabase();
+    $stmt = $conn->prepare("UPDATE quizz SET name = :name WHERE id = :id");
+    return $stmt->execute(['name' => $name, 'id' => $quizz_id]);
+}
+
 function countSubmissions(int $quizz_id): int {
     $conn = getDatabase();
     $stmt = $conn->prepare("SELECT COUNT(*) as count FROM quizz_user WHERE quizz_id = :id");

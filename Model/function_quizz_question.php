@@ -1,6 +1,6 @@
 <?php
 declare(strict_types=1);
-require_once './config/config.php';
+
 
 /**
  * Ajoute une question dans un quizz
