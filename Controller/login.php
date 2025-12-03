@@ -43,7 +43,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST"){
 
             // redirection selon le rôle
             if ($user["role"] === "admin") {
-                header("Location: View/admin.php"); 
+                header("Location: admin.php"); 
                 exit;
             } if ($user["role"] === "ecole" || $user["role"] === "entreprise") {
                 header("Location: dashboard_pro.php"); 
