@@ -1,6 +1,20 @@
-<?php 
-require_once("includes/header.php");
-require_once("./Controller/admin.php");
+<?php
+require_once ('includes/header.php');
+require_once(__DIR__ . "/../Controller/admin.php");
+
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+
+handleAdminPost(); // si besoin
+
+$users = fetchUsers();
+$quizzes = fetchQuizzes();
+
+
+
+
 
 // Démarrage de session si nécessaire
 if (session_status() === PHP_SESSION_NONE) {

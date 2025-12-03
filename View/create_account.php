@@ -59,6 +59,9 @@ $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
                 <span style="color: red;"><?= $errors["role"] ?></span>
             <?php endif ?>
             </div>
+            <div class="g-recaptcha" data-sitekey="6Lcv2h8sAAAAADz7sieWye4znLGXjVJYUVAzckWb"></div>
+
+<script src="https://www.google.com/recaptcha/api.js" async defer></script>
 
         <input type="submit" value="Créer">
     </form>
