@@ -1,6 +1,6 @@
 <?php
 require_once(__DIR__ . "/../Model/function_user.php");
-require_once(__DIR__ . "/../Model/functions_quizz.php");
+require_once(__DIR__ . "/../Model/function_quizz.php");
 
 
 /**

@@ -34,7 +34,7 @@ switch ($url) {
 ?>
 
 <?php
-require_once __DIR__ . '/Model/functions_quizz.php';
+require_once __DIR__ . '/Model/function_quizz.php';
 require_once __DIR__ . '/Model/function_user.php';
 include __DIR__ . '/View/includes/header.php';
 

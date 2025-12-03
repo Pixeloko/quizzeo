@@ -2,7 +2,7 @@
 require_once ('includes/header.php');
 require_once(__DIR__ . "/../Controller/admin.php");
 
-if (!isset($_SESSION['user_id']) || $_SESSION['role'] === 'admin') {
+if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
     header("Location: index.php");
     exit;
 }
@@ -130,7 +130,7 @@ $quizzes = fetchQuizzes();  // tableau toujours défini
             <tbody>
                 <?php foreach($quizzes as $quiz): ?>
                 <tr>
-                    <td><?= htmlspecialchars($quiz["title"]) ?></td>
+                    <td><?= htmlspecialchars($quiz["name"]) ?></td>
                     <td><?= formatDate($quiz["created_at"]) ?></td>
                     <td><?= htmlspecialchars($quiz["status"]) ?></td>
                     <td>

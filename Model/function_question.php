@@ -1,85 +1,26 @@
 <?php
-declare(strict_types=1);
-require_once './config/config.php';
+require_once __DIR__ . "/../config/config.php";
 
-/**
- * Récupère une question par son ID
- */
-function getQuestById(int $id): ?array
-{
-    $pdo = getDatabase();
-
-    $stmt = $pdo->prepare("SELECT * FROM questions WHERE id = :id");
-    $stmt->execute(['id' => $id]);
-
-    return $stmt->fetch(PDO::FETCH_ASSOC) ?: null;
-}
-
-/**
- * Récupère toutes les questions
- */
-function getQuest(): array
-{
-    $pdo = getDatabase();
-
-    $stmt = $pdo->query("SELECT * FROM questions");
-    return $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
-}
-
-/**
- * Crée une question
- */
-function createQuest(string $title, string $answer, int $point): int 
-{
+function createQuestion(int $quizz_id, string $question_text, int $point = 1): int {
     $conn = getDatabase();
-    $errors = [];
-
-    $title = trim($title);
-    $answer = trim($answer);
-
-    if (!$title) {
-        $errors["title"] = "Titre requis";
-    }
-
-    if (!$answer) {
-        $errors["answer"] = "Réponse requise";
-    }
-
-    if ($point <= 0) {
-        $errors["point"] = "Les points doivent être supérieurs à 0";
-    }
-
-    // Vérifier si le titre existe déjà
-    $verif = $conn->prepare("SELECT id FROM questions WHERE title = :title");
-    $verif->execute(['title' => $title]);
-
-    if ($verif->fetch()) {
-        $errors["title"] = "Titre déjà utilisé";
-    }
-
-    if (!empty($errors)) {
-        throw new InvalidArgumentException(json_encode($errors));
-    }
-
-    $stmt = $conn->prepare("INSERT INTO questions (title, answer, point) VALUES (:title, :answer, :point)");
+    $stmt = $conn->prepare("INSERT INTO questions (quizz_id, title, point)
+        VALUES (:quizz_id, :title, :point)
+    ");
     $stmt->execute([
+        'quizz_id' => $quizz_id,
         'title' => $title,
-        'answer' => $answer,
         'point' => $point
     ]);
-
-    return (int) $conn->lastInsertId();
+    return (int)$conn->lastInsertId();
 }
 
-/**
- * Supprime une question
- */
-function deleteQuest(int $id): bool
-{
-    $pdo = getDatabase();
-
-    $stmt = $pdo->prepare("DELETE FROM questions WHERE id = :id");
-    $stmt->execute(['id' => $id]);
-
-    return $stmt->rowCount() > 0;
+function addAnswerToQuestion(int $question_id, string $answer_text, bool $is_correct = false): int {
+    $conn = getDatabase();
+    $stmt = $conn->prepare("INSERT INTO answers(question_id, answer_text, is_correct) VALUES (:question_id, :answer_text, :is_correct)");
+    $stmt->execute([
+        'question_id' => $question_id,
+        'answer_text' => $answer_text,
+        'is_correct' => $is_correct ? 1 : 0
+    ]);
+    return (int)$conn->lastInsertId();
 }
