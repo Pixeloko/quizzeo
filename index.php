@@ -1,6 +1,4 @@
 <?php
-session_start();
-
 $url = $_GET['url'] ?? '';
 
 switch ($url) {
@@ -37,8 +35,9 @@ switch ($url) {
 ?>
 
 <?php
-require_once __DIR__ . '/../Model/functions_quizz.php';
-require_once __DIR__ . '/../config/config.php';
+require_once __DIR__ . '/Model/functions_quizz.php';
+require_once __DIR__ . '/Model/function_user.php';
+include __DIR__ . '/View/includes/header.php';
 
 
 // Démarrer la session
@@ -47,7 +46,7 @@ if (session_status() === PHP_SESSION_NONE) {
 }
 
 // Inclure les fonctions utilisateurs
-require_once __DIR__ . '/../Model/function_user.php';
+
 
 // Récupérer les quizz actifs
 try {
@@ -57,8 +56,6 @@ try {
     $quizz = [];
 }
 
-// Inclure le header
-include __DIR__ . '/includes/header.php';
 ?>
 
 <main>
@@ -83,5 +80,5 @@ include __DIR__ . '/includes/header.php';
         <?php endif; ?>
     </section>
 </main>
-<?php include __DIR__ . '/includes/footer.php'; ?>
+<?php include __DIR__ . '/View/includes/footer.php'; ?>
 
