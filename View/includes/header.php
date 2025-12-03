@@ -30,20 +30,17 @@ define('BASE_URL', '/quizzeo'); // adapte selon le nom de ton dossier
 
                 <?php if (isset($_SESSION["user_id"])): ?>
 
-                    <!-- Liens selon le rôle -->
                     <?php if (isset($_SESSION["role"]) && $_SESSION["role"] === 'admin'): ?>
                         <li><a href="<?= BASE_URL ?>/View/admin.php">Espace Admin</a></li>
                     <?php elseif (isset($_SESSION["role"]) && ($_SESSION["role"] === 'ecole' || $_SESSION["role"] === 'entreprise')): ?>
                         <li><a href="<?= BASE_URL ?>/View/dashboard_pro.php">Espace École</a></li>
                     <?php endif; ?>
-
-                    <!-- Profil et Déconnexion -->
+                    
                     <li><a href="<?= BASE_URL ?>/View/profile.php">Profil</a></li>
                     <li><a href="<?= BASE_URL ?>/index.php?url=logout">Déconnexion</a></li>
 
 
                 <?php else: ?>
-                    <!-- Lien vers la connexion si non connecté -->
                     <li><a href="<?= BASE_URL ?>/View/login.php">Connexion</a></li>
                 <?php endif; ?>
             </ul>

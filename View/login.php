@@ -21,14 +21,14 @@ if (isset($_SESSION["message"])) {
         <h1>Connexion</h1>
         <div>
             <label for="email">Email (requis) :</label>
-            <input type="email" name="email" id="email" value="<?= htmlspecialchars($email ?? '') ?>" required />
+            <input type="email" name="email" id="email" value="<?= htmlspecialchars($email ?? '') ?>">
             <?php if (isset($errors["email"])): ?>
                 <p style="color: red"><?= htmlspecialchars($errors["email"]) ?></p>
             <?php endif ?>
         </div>
         <div>
             <label for="password">Mot de passe (requis) :</label>
-            <input type="password" name="password" id="password" required />
+            <input type="password" name="password" id="password">
             <?php if (isset($errors["password"])): ?>
                 <p style="color: red"><?= htmlspecialchars($errors["password"]) ?></p>
             <?php endif ?>
