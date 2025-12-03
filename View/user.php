@@ -1,12 +1,13 @@
-<?php require_once ('header.php')?>
+<?php require_once ('includes/header.php')?>
+
 
 <main>
 <h1>Dashboard Utilisateur</h1>
 
-<h2> Bonjour <?= htmlspecialchars($firstname,$lastname) ?> </h2>
+<h2> Bienvenue </h2>
 
 
-<h2>Les quizz auquels vous avez répondu</h2>
+<p>Les quizz auquels vous avez répondu:</p>
 
 <div>
     

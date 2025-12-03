@@ -1,5 +1,5 @@
 <?php
-require_once('../config/config.php'); // inclusion de la fonction getDatabase()
+require_once('../config/config.php');
 require_once('./includes/header.php');
 
 $pdo = getDatabase();
@@ -16,14 +16,14 @@ if (!isset($_SESSION["user_id"])) {
 $user_id = $_SESSION["user_id"];
 
 // Récupérer les informations utilisateur
-$stmt = $pdo->prepare("SELECT firstname, lastname, email, role, password FROM users WHERE id = :id");
+$stmt = $pdo->prepare("SELECT firstname, lastname, email, role, password, profile_photo FROM users WHERE id = :id");
 $stmt->execute(['id' => $user_id]);
 $user = $stmt->fetch();
 
 $successMessage = '';
 $errorMessage = '';
 
-// --- Changer prénom, nom et email ---
+// --- Changer prénom, nom, email et photo ---
 if (isset($_POST['change_profile'])) {
     $newFirstname = trim($_POST['firstname']);
     $newLastname = trim($_POST['lastname']);
@@ -34,23 +34,56 @@ if (isset($_POST['change_profile'])) {
     } elseif (!filter_var($newEmail, FILTER_VALIDATE_EMAIL)) {
         $errorMessage = "Email invalide.";
     } else {
-        // Vérifier si email déjà utilisé par un autre utilisateur
+        // Vérifier si email déjà utilisé
         $stmt = $pdo->prepare("SELECT id FROM users WHERE email = :email AND id != :id");
         $stmt->execute(['email' => $newEmail, 'id' => $user_id]);
+
         if ($stmt->fetch()) {
             $errorMessage = "Cet email est déjà utilisé.";
         } else {
-            $stmt = $pdo->prepare("UPDATE users SET firstname = :firstname, lastname = :lastname, email = :email WHERE id = :id");
-            $stmt->execute([
-                'firstname' => $newFirstname,
-                'lastname' => $newLastname,
-                'email' => $newEmail,
-                'id' => $user_id
-            ]);
-            $successMessage = "Profil mis à jour !";
-            $user['firstname'] = $newFirstname;
-            $user['lastname'] = $newLastname;
-            $user['email'] = $newEmail;
+            // Gestion upload photo
+            $profilePhotoName = $user['profile_photo']; // garder l'ancienne si pas de nouvelle
+            if (isset($_FILES['profile_photo']) && $_FILES['profile_photo']['error'] === UPLOAD_ERR_OK) {
+                $uploadDir = '../uploads/';
+                if (!is_dir($uploadDir)) {
+                    mkdir($uploadDir, 0755, true);
+                }
+
+                $tmpName = $_FILES['profile_photo']['tmp_name'];
+                $originalName = basename($_FILES['profile_photo']['name']);
+                $ext = strtolower(pathinfo($originalName, PATHINFO_EXTENSION));
+
+                // Vérifier extension autorisée
+                $allowed = ['jpg','jpeg','png','gif'];
+                if (!in_array($ext, $allowed)) {
+                    $errorMessage = "Format de fichier non autorisé. (jpg, jpeg, png, gif)";
+                } else {
+                    // Générer un nom unique
+                    $newFileName = uniqid('profile_', true) . '.' . $ext;
+                    if (move_uploaded_file($tmpName, $uploadDir . $newFileName)) {
+                        $profilePhotoName = $newFileName;
+                    } else {
+                        $errorMessage = "Erreur lors de l'upload de l'image.";
+                    }
+                }
+            }
+
+            if (!$errorMessage) {
+                $stmt = $pdo->prepare("UPDATE users SET firstname = :firstname, lastname = :lastname, email = :email, profile_photo = :profile_photo WHERE id = :id");
+                $stmt->execute([
+                    'firstname' => $newFirstname,
+                    'lastname' => $newLastname,
+                    'email' => $newEmail,
+                    'profile_photo' => $profilePhotoName,
+                    'id' => $user_id
+                ]);
+
+                $successMessage = "Profil mis à jour !";
+                $user['firstname'] = $newFirstname;
+                $user['lastname'] = $newLastname;
+                $user['email'] = $newEmail;
+                $user['profile_photo'] = $profilePhotoName;
+            }
         }
     }
 }
@@ -62,11 +95,11 @@ if (isset($_POST['change_password'])) {
     $confirmPassword = $_POST['confirm_password'] ?? '';
 
     if ($currentPassword === '' || $newPassword === '' || $confirmPassword === '') {
-        $errorMessage = "Tous les champs de mot de passe doivent être remplis.";
+        $errorMessage = "Tous les champs doivent être remplis.";
     } elseif (!password_verify($currentPassword, $user['password'])) {
         $errorMessage = "Mot de passe actuel incorrect.";
     } elseif ($newPassword !== $confirmPassword) {
-        $errorMessage = "Le nouveau mot de passe et sa confirmation ne correspondent pas.";
+        $errorMessage = "Les mots de passe ne correspondent pas.";
     } else {
         $hashedPassword = password_hash($newPassword, PASSWORD_BCRYPT);
         $stmt = $pdo->prepare("UPDATE users SET password = :password WHERE id = :id");
@@ -74,6 +107,7 @@ if (isset($_POST['change_password'])) {
             'password' => $hashedPassword,
             'id' => $user_id
         ]);
+
         $successMessage = "Mot de passe mis à jour !";
     }
 }
@@ -82,47 +116,67 @@ if (isset($_POST['change_password'])) {
 if (isset($_POST['delete_account'])) {
     $stmt = $pdo->prepare("DELETE FROM users WHERE id = :id");
     $stmt->execute(['id' => $user_id]);
-
     session_destroy();
+
     header("Location: ../index.php");
     exit;
 }
 ?>
 
-<h1>Profil de <?= htmlspecialchars($user['firstname'] . ' ' . $user['lastname']) ?></h1>
+<div class="profile-container">
 
-<?php if ($successMessage) echo "<p style='color:green;'>$successMessage</p>"; ?>
-<?php if ($errorMessage) echo "<p style='color:red;'>$errorMessage</p>"; ?>
+    <h1>Profil de <?= htmlspecialchars($user['firstname'] . ' ' . $user['lastname']) ?></h1>
 
-<!-- Formulaire pour modifier prénom, nom et email -->
-<form method="post">
-    <h2>Modifier mes informations</h2>
-    <label>Prénom :</label>
-    <input type="text" name="firstname" value="<?= htmlspecialchars($user['firstname']) ?>"><br>
-    <label>Nom :</label>
-    <input type="text" name="lastname" value="<?= htmlspecialchars($user['lastname']) ?>"><br>
-    <label>Email :</label>
-    <input type="email" name="email" value="<?= htmlspecialchars($user['email']) ?>"><br>
-    <button type="submit" name="change_profile">Mettre à jour</button>
-</form>
+    <?php if ($successMessage): ?>
+        <p class="profile-success"><?= $successMessage ?></p>
+    <?php endif; ?>
+    <?php if ($errorMessage): ?>
+        <p class="profile-error"><?= $errorMessage ?></p>
+    <?php endif; ?>
 
-<br>
+    <!-- Modifier informations et photo -->
+    <form method="post" enctype="multipart/form-data">
+        <h2>Modifier mes informations</h2>
 
-<!-- Formulaire pour changer le mot de passe -->
-<form method="post">
-    <h2>Changer mon mot de passe</h2>
-    <label>Mot de passe actuel :</label>
-    <input type="password" name="current_password"><br>
-    <label>Nouveau mot de passe :</label>
-    <input type="password" name="new_password"><br>
-    <label>Confirmer le nouveau mot de passe :</label>
-    <input type="password" name="confirm_password"><br>
-    <button type="submit" name="change_password">Changer le mot de passe</button>
-</form>
+        <label>Prénom :</label>
+        <input type="text" name="firstname" value="<?= htmlspecialchars($user['firstname']) ?>">
 
-<br>
+        <label>Nom :</label>
+        <input type="text" name="lastname" value="<?= htmlspecialchars($user['lastname']) ?>">
 
-<!-- Formulaire suppression compte -->
-<form method="post" onsubmit="return confirm('Voulez-vous vraiment supprimer votre compte ? Cette action est irréversible !');">
-    <button type="submit" name="delete_account" style="background-color:red;color:white;">Supprimer mon compte</button>
-</form>
+        <label>Email :</label>
+        <input type="email" name="email" value="<?= htmlspecialchars($user['email']) ?>">
+
+        <label>Photo de profil :</label>
+        <input type="file" name="profile_photo" accept="image/*">
+        <?php if (!empty($user['profile_photo'])): ?>
+            <div>
+                <img src="../uploads/<?= htmlspecialchars($user['profile_photo']) ?>" alt="Photo de profil" class="profile-photo" style="width:100px;height:100px;border-radius:50%;margin-top:10px;">
+            </div>
+        <?php endif; ?>
+
+        <button type="submit" name="change_profile">Mettre à jour</button>
+    </form>
+
+    <!-- Changer mot de passe -->
+    <form method="post">
+        <h2>Changer mon mot de passe</h2>
+
+        <label>Mot de passe actuel :</label>
+        <input type="password" name="current_password">
+
+        <label>Nouveau mot de passe :</label>
+        <input type="password" name="new_password">
+
+        <label>Confirmer le nouveau mot de passe :</label>
+        <input type="password" name="confirm_password">
+
+        <button type="submit" name="change_password">Changer le mot de passe</button>
+    </form>
+
+    <!-- Supprimer compte -->
+    <form method="post" onsubmit="return confirm('Voulez-vous vraiment supprimer votre compte ? Cette action est irréversible !');">
+        <button type="submit" name="delete_account" class="delete-btn">Supprimer mon compte</button>
+    </form>
+
+</div>

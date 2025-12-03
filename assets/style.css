@@ -1,0 +1,351 @@
+/* ====== VARIABLES GLOBALES ====== */
+:root {
+    /* Mode clair */
+    --primary: #8e79b2;       /* violet foncé */
+    --secondary: #e76667;     /* rouge pastel */
+    --light: #fddea7;         /* beige clair */
+    --text: #202020;
+    --bg: #fddea7;
+    --card-bg: #ffffff;
+    --header-bg: #8e79b2;
+    --footer-bg: #8e79b2;
+}
+
+/* Mode sombre */
+.dark-theme {
+    --primary: #6e5a8a;       /* violet sombre */
+    --secondary: #ff8a8a;     /* rouge plus vif */
+    --light: #ffe8c7;         /* beige foncé */
+    --text: #f5f5f5;
+    --bg: #2b2b2b;
+    --card-bg: #3a3a3a;
+    --header-bg: #6e5a8a;
+    --footer-bg: #6e5a8a;
+}
+/* ====== BOUTON THEME SWITCH ====== */
+.theme-btn {
+    background: var(--secondary);
+    border: none;
+    color: #fff;
+    width: 45px;               /* largeur fixe */
+    height: 45px;              /* hauteur fixe (même que la largeur pour le rond) */
+    border-radius: 50%;        /* forme ronde parfaite */
+    cursor: pointer;
+    font-weight: 700;          
+    font-size: 1.2rem;         /* taille emoji / texte */
+    transition: 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Hover */
+.theme-btn:hover {
+    background: var(--primary);
+}
+
+/* Focus */
+.theme-btn:focus {
+    outline: 2px solid var(--light);
+    outline-offset: 2px;
+}
+
+/* ====== RESET ====== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, Helvetica, sans-serif;
+}
+.header-profile-photo {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-left: 10px;
+    vertical-align: middle;
+    cursor: pointer;
+   
+}
+
+/* ====== BODY ====== */
+body {
+    background: var(--bg);
+    color: var(--text);
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    padding-top: 80px;
+}
+
+/* ====== HEADER ====== */
+header {
+    background: var(--header-bg);
+    padding: 15px 0;
+    width: 100%;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1000;
+}
+
+nav {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+.nav-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+nav ul {
+    list-style: none;
+    display: flex;
+    gap: 25px;
+}
+
+nav ul li a {
+    text-decoration: none;
+    color: #fff;
+    font-weight: 600;
+    transition: 0.2s;
+    padding: 8px 12px;
+    border-radius: 6px;
+}
+
+nav ul li a:hover {
+    background: var(--light);
+    color: var(--primary);
+}
+
+/* ====== LOGO ====== */
+.logo img {
+    height: 50px;
+    width: auto;
+}
+
+/* ====== MAIN CARD / FORM ====== */
+main {
+    background: var(--card-bg);
+    padding: 40px 30px;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+    width: 100%;
+    max-width: 650px;
+    margin: 20px auto;
+    flex: 1;
+}
+
+h1 {
+    text-align: center;
+    margin-bottom: 30px;
+    color: var(--primary);
+}
+
+h2, h3 {
+    color: var(--primary);
+}
+
+/* FORMULAIRES */
+label {
+    display: block;
+    margin-bottom: 6px;
+    font-weight: 600;
+    color: var(--primary);
+}
+
+input[type="text"],
+input[type="email"],
+input[type="password"],
+select {
+    width: 100%;
+    padding: 12px 15px;
+    border: 1px solid var(--primary);
+    border-radius: 6px;
+    background: var(--light);
+    transition: 0.3s;
+}
+
+input:focus,
+select:focus {
+    border-color: var(--secondary);
+    background: var(--card-bg);
+    outline: none;
+}
+
+/* ====== BUTTONS ====== */
+button,
+input[type="submit"] {
+    width: 100%;
+    padding: 12px;
+    background: var(--primary);
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.3s;
+    margin-top: 10px;
+}
+
+button:hover,
+input[type="submit"]:hover {
+    background: var(--secondary);
+}
+
+/* BOUTON SUPPRESSION */
+.delete-btn {
+    background: var(--secondary) !important;
+}
+
+.delete-btn:hover {
+    background: var(--primary) !important;
+}
+
+/* ====== MESSAGES ====== */
+.profile-success,
+.create-success {
+    background: #d8ffd8;
+    border-left: 4px solid #28a745;
+    padding: 12px;
+    border-radius: 6px;
+    color: #155724;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.profile-error,
+.create-error,
+div[style*="color:red"] {
+    background: #ffe1e1;
+    border-left: 4px solid var(--secondary);
+    padding: 12px;
+    border-radius: 6px;
+    color: #a10000;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+/* ====== LINKS ====== */
+main a {
+    display: block;
+    text-align: center;
+    margin-top: 15px;
+    color: var(--primary);
+    text-decoration: none;
+    font-weight: 600;
+    transition: 0.3s;
+}
+
+main a:hover {
+    color: var(--secondary);
+}
+
+/* ====== FOOTER ====== */
+footer {
+    background: var(--footer-bg);
+    color: #fff;
+    padding: 20px 0;
+    text-align: center;
+    width: 100%;
+    box-shadow: 0 -2px 5px rgba(0,0,0,0.2);
+}
+
+/* ====== PAGE ADMIN ====== */
+.admin-container {
+    max-width: 1000px;
+    margin: 30px auto;
+    background: var(--card-bg);
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+}
+
+.admin-container h1,
+.admin-container h3 {
+    color: var(--primary);
+}
+
+.admin-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 30px;
+    font-size: 0.95em;
+}
+
+.admin-table thead {
+    background: var(--primary);
+    color: #fff;
+}
+
+.admin-table th,
+.admin-table td {
+    padding: 12px 15px;
+    border: 1px solid var(--light);
+}
+
+.admin-table tr:nth-child(even) {
+    background: var(--light);
+}
+
+.admin-table button {
+    background: var(--secondary);
+    color: #fff;
+    border-radius: 5px;
+}
+
+.admin-table button:hover {
+    background: var(--primary);
+}
+
+/* ====== PAGE PROFIL ====== */
+.profile-container,
+.create-container {
+    max-width: 800px;
+    margin: 30px auto;
+    background: var(--card-bg);
+    padding: 40px 30px;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+}
+
+.profile-container h1,
+.create-container h1 {
+    color: var(--primary);
+}
+
+.profile-container label,
+.create-container label {
+    color: var(--primary);
+}
+
+.profile-container input,
+.create-container input,
+.profile-container select,
+.create-container select {
+    border: 1px solid var(--primary);
+    background: var(--light);
+}
+
+.profile-container input:focus,
+.create-container input:focus,
+.profile-container select:focus,
+.create-container select:focus {
+    border-color: var(--secondary);
+    background: var(--card-bg);
+}
+
+/* ====== RECAPTCHA ====== */
+.g-recaptcha {
+    margin-top: 15px;
+    margin-bottom: 20px;
+    transform: scale(0.95);
+    transform-origin: center;
+}
+
+
+
