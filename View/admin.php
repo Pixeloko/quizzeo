@@ -97,18 +97,12 @@ $quizzes = fetchQuizzes();
                     <td><?= formatDate($user["created_at"]) ?></td>
                     <td><?= htmlspecialchars($user["role"]) ?></td>
                     <td>
-                        <form method="POST" action="admin.php" style="display:inline-block;">
-                            <input type="hidden" name="user_id" value="<?= htmlspecialchars($user['id']) ?>">
-                            <input type="hidden" name="action" value="activate">
-                            <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
-                            <button type="submit">Activer</button>
+                        <form method="POST" action="activate_account.php?user_id=<?= htmlspecialchars($user['id']) ?>">
+                            <button>Activer</button>
                         </form>
-
-                        <form method="POST" action="admin.php" style="display:inline-block;">
-                            <input type="hidden" name="user_id" value="<?= htmlspecialchars($user['id']) ?>">
-                            <input type="hidden" name="action" value="deactivate">
-                            <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
-                            <button type="submit">Désactiver</button>
+ 
+                        <form method="POST" action="desactivate_account.php?user_id=<?= htmlspecialchars($task['id']) ?>">
+                            <button>Désactiver</button>
                         </form>
                     </td>
                 </tr>

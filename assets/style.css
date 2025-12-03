@@ -8,16 +8,16 @@
 
 /* ====== BODY ====== */
 body {
-    background: #f0f2f5;
+    background: #fddea7;
     display: flex;
     flex-direction: column;
     min-height: 100vh;
-    padding-top: 80px; /* espace pour header fixe */
+    padding-top: 80px;
 }
 
 /* ====== HEADER ====== */
 header {
-    background: #151515;
+    background: #8e79b2;
     padding: 15px 0;
     width: 100%;
     box-shadow: 0 2px 5px rgba(0,0,0,0.2);
@@ -56,7 +56,7 @@ nav ul li a {
 
 nav ul li a:hover {
     background: #fff;
-    color: #151515;
+    color: #8e79b2;
 }
 
 /* ====== LOGO ====== */
@@ -67,20 +67,20 @@ nav ul li a:hover {
 
 /* ====== FORMULAIRE LOGIN ====== */
 main {
-    background: #fff;
+    background: #ffffff;
     padding: 40px 30px;
     border-radius: 5px;
     box-shadow: 0 4px 15px rgba(0,0,0,0.2);
     width: 100%;
     max-width: 650px;
     margin: 20px auto;
-    flex: 1; /* pour pousser le footer en bas */
+    flex: 1;
 }
 
 h1 {
     text-align: center;
     margin-bottom: 30px;
-    color: #151515;
+    color: #8e79b2;
 }
 
 form div {
@@ -91,27 +91,34 @@ label {
     display: block;
     margin-bottom: 5px;
     font-weight: 600;
+    color: #8e79b2;
 }
 
 input[type="email"],
-input[type="password"] {
+input[type="password"],
+input[type="text"] {
     width: 100%;
     padding: 10px 15px;
-    border: 1px solid #ccc;
+    border: 1px solid #8e79b2;
     border-radius: 6px;
     transition: 0.3s;
+    background: #fddea7;
 }
 
 input[type="email"]:focus,
-input[type="password"]:focus {
-    border-color: #151515;
+input[type="password"]:focus,
+input[type="text"]:focus {
+    border-color: #e76667;
     outline: none;
+    background: #fff;
 }
 
-button {
+/* ====== BUTTONS ====== */
+button,
+input[type="submit"] {
     width: 100%;
     padding: 12px;
-    background: #151515;
+    background: #8e79b2;
     color: #fff;
     border: none;
     border-radius: 6px;
@@ -120,48 +127,57 @@ button {
     transition: 0.3s;
 }
 
-button:hover {
-    background: #333;
+button:hover,
+input[type="submit"]:hover {
+    background: #e76667;
 }
 
 /* ====== MESSAGES ====== */
-div[style*="color: red"] {
-    font-size: 0.9em;
+div[style*="color: red"],
+.profile-error,
+.create-error {
+    background: #ffe1e1;
+    border-left: 4px solid #e76667;
+    padding: 12px;
+    border-radius: 6px;
+    color: #a10000;
 }
 
-div[style*="color: green"] {
-    font-size: 0.9em;
-    text-align: center;
-    margin-bottom: 15px;
+div[style*="color: green"],
+.profile-success {
+    background: #d8ffd8;
+    border-left: 4px solid #28a745;
+    padding: 12px;
+    border-radius: 6px;
+    color: #155724;
 }
 
-/* ====== LIEN S'INSCRIRE ====== */
+/* ====== LIENS ====== */
 main a {
     display: block;
     text-align: center;
     margin-top: 15px;
-    color: #151515;
+    color: #8e79b2;
     text-decoration: none;
     font-weight: 600;
     transition: 0.3s;
 }
 
 main a:hover {
-    color: #333;
+    color: #e76667;
 }
 
 /* ====== FOOTER ====== */
 footer {
-    background: #151515;
+    background: #8e79b2;
     color: #fff;
     padding: 20px 0;
     text-align: center;
     width: 100%;
     box-shadow: 0 -2px 5px rgba(0,0,0,0.2);
 }
-/* ====== PAGE ADMIN ====== */
 
-/* Conteneur principal admin */
+/* ====== PAGE ADMIN ====== */
 .admin-container {
     max-width: 1000px;
     margin: 30px auto;
@@ -171,11 +187,10 @@ footer {
     box-shadow: 0 4px 15px rgba(0,0,0,0.15);
 }
 
-/* Titres */
 .admin-container h1 {
     text-align: center;
     margin-bottom: 10px;
-    color: #151515;
+    color: #8e79b2;
 }
 
 .admin-container p {
@@ -184,10 +199,9 @@ footer {
     color: #444;
 }
 
-/* Sous-titres (Utilisateurs, Quizz) */
 .admin-container h3 {
     margin: 25px 0 10px;
-    color: #151515;
+    color: #8e79b2;
 }
 
 /* TABLEAUX ADMIN */
@@ -199,7 +213,7 @@ footer {
 }
 
 .admin-table thead {
-    background: #151515;
+    background: #8e79b2;
     color: #fff;
 }
 
@@ -210,24 +224,21 @@ footer {
 }
 
 .admin-table tr:nth-child(even) {
-    background: #f7f7f7;
+    background: #fddea7;
 }
-
-
 
 /* Boutons d’action */
 .admin-table button {
     width: auto;
     padding: 8px 12px;
-    background: #151515;
+    background: #e76667;
     font-size: 0.85em;
     border-radius: 5px;
-    display: inline-block;
-    margin-bottom: 5px;
+    color: #fff;
 }
 
 .admin-table button:hover {
-    background: #333;
+    background: #8e79b2;
 }
 
 /* Message */
@@ -242,7 +253,6 @@ footer {
 }
 
 /* ====== PAGE PROFIL ====== */
-
 .profile-container {
     max-width: 800px;
     margin: 30px auto;
@@ -252,94 +262,78 @@ footer {
     box-shadow: 0 4px 15px rgba(0,0,0,0.15);
 }
 
-/* TITRE PRINCIPAL */
 .profile-container h1 {
     text-align: center;
     font-size: 2rem;
     margin-bottom: 25px;
-    color: #151515;
+    color: #8e79b2;
 }
 
-/* SOUS-TITRES DES FORMULAIRES */
 .profile-container h2 {
     margin: 25px 0 10px;
-    color: #202020;
+    color: #8e79b2;
     font-size: 1.3rem;
-}
-
-/* FORMULAIRES */
-.profile-container form {
-    margin-bottom: 40px;
 }
 
 .profile-container label {
     display: block;
     margin-bottom: 6px;
     font-weight: 600;
-    color: #333;
+    color: #8e79b2;
 }
 
-.profile-container input[type="text"],
-.profile-container input[type="email"],
-.profile-container input[type="password"] {
-    width: 100%;
-    padding: 12px 15px;
-    border: 1px solid #ccc;
-    border-radius: 6px;
-    background: #fafafa;
-    transition: 0.3s;
+.profile-container input {
+    background: #fddea7;
+    border: 1px solid #8e79b2;
 }
 
 .profile-container input:focus {
-    border-color: #151515;
+    border-color: #e76667;
     background: #fff;
-    outline: none;
 }
 
-/* BOUTONS */
 .profile-container button {
-    width: 100%;
-    padding: 12px;
-    background: #151515;
-    color: #fff;
-    border: none;
-    border-radius: 6px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: 0.3s;
-    margin-top: 10px;
+    background: #8e79b2;
 }
 
 .profile-container button:hover {
-    background: #333;
+    background: #e76667;
 }
 
 /* BOUTON SUPPRESSION */
 .profile-container .delete-btn {
-    background: #d11a2a !important;
+    background: #e76667 !important;
 }
 
 .profile-container .delete-btn:hover {
-    background: #b01020 !important;
+    background: #8e79b2 !important;
 }
 
-/* MESSAGES */
-.profile-success {
-    background: #d4f7d4;
-    padding: 12px;
-    border-left: 4px solid #28a745;
-    border-radius: 6px;
-    margin-bottom: 20px;
-    color: #155724;
-    text-align: center;
+/* ====== PAGE CREATE ACCOUNT ====== */
+.create-container h1 {
+    color: #8e79b2;
 }
 
-.profile-error {
-    background: #ffe1e1;
-    padding: 12px;
-    border-left: 4px solid #d11a2a;
-    border-radius: 6px;
-    margin-bottom: 20px;
-    color: #a10000;
-    text-align: center;
+.create-container label {
+    color: #8e79b2;
+}
+
+.create-container input,
+.create-container select {
+    background: #fddea7;
+    border: 1px solid #8e79b2;
+}
+
+.create-container input:focus,
+.create-container select:focus {
+    border-color: #e76667;
+    background: #fff;
+}
+
+.create-container input[type="submit"] {
+    background: #8e79b2;
+}
+
+.create-container input[type="submit"]:hover {
+    background: #e76667;
 }

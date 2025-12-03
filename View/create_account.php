@@ -6,7 +6,8 @@ $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
 
 ?>
 
-<main>
+<main class="create-container">
+
     <h1>Création de votre compte</h1>
     <?php if (isset($errors["general"])): ?>
         <div style="color:red"><?= $errors["general"] ?></div>
