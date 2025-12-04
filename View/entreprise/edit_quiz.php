@@ -1,7 +1,6 @@
 <?php
-// View/entreprise/edit_quiz.php
+// View/ecole/edit_quiz.php
 
-// Activer les erreurs (débogage)
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
@@ -11,8 +10,8 @@ require_once __DIR__ . "/../../Model/function_quizz.php";
 require_once __DIR__ . "/../../Model/function_question.php";
 require_once __DIR__ . "/../../Model/function_quizz_question.php";
 
-// Vérifier l'authentification et le rôle "entreprise"
-if (!isset($_SESSION["user_id"]) || $_SESSION["role"] !== "entreprise") {
+// Vérifier l'authentification et le rôle "ecole"
+if (!isset($_SESSION["user_id"]) || $_SESSION["role"] !== "ecole") {
     header("Location: /quizzeo/?url=login");
     exit;
 }
@@ -21,7 +20,7 @@ if (!isset($_SESSION["user_id"]) || $_SESSION["role"] !== "entreprise") {
 $quiz_id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
 if ($quiz_id <= 0) {
     $_SESSION['error'] = "Quiz non trouvé";
-    header("Location: /quizzeo/?url=entreprise");
+    header("Location: /quizzeo/?url=ecole");
     exit;
 }
 
@@ -29,21 +28,21 @@ if ($quiz_id <= 0) {
 $quiz = getQuizzById($quiz_id);
 if (!$quiz) {
     $_SESSION['error'] = "Quiz non trouvé";
-    header("Location: /quizzeo/?url=entreprise");
+    header("Location: /quizzeo/?url=ecole");
     exit;
 }
 
 // Vérifier que l'utilisateur est le propriétaire
 if ($quiz['user_id'] != $_SESSION['user_id']) {
     $_SESSION['error'] = "Accès non autorisé";
-    header("Location: /quizzeo/?url=entreprise");
+    header("Location: /quizzeo/?url=ecole");
     exit;
 }
 
 // Récupérer les questions du quiz
 $questions = [];
-if (function_exists('GetQuestionsByQuizz_entreprise')) {
-    $questions = GetQuestionsByQuizz_entreprise($quiz_id);
+if (function_exists('GetQuestionsByQuizz_ecole')) {
+    $questions = GetQuestionsByQuizz_ecole($quiz_id);
 }
 
 // TRAITEMENT DU FORMULAIRE
@@ -95,7 +94,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         } elseif (function_exists('updateQuizzStatus')) {
             $result = updateQuizzStatus($quiz_id, 'launched');
             if ($result) {
-                $_SESSION['success'] = "Quiz lancé ! Les participants peuvent y répondre.";
+                $_SESSION['success'] = "Quiz lancé ! Les étudiants peuvent y répondre.";
                 $quiz['status'] = 'launched';
             } else {
                 $_SESSION['error'] = "Échec du lancement du quiz";
@@ -114,7 +113,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 
-    // Redirection pour éviter le resoumission du formulaire
+    // Redirection pour éviter resoumission du formulaire
     header("Location: " . $_SERVER['PHP_SELF'] . "?id=" . $quiz_id);
     exit;
 }
@@ -142,19 +141,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <div>
             <h1 class="h3 mb-1">Éditer : <?= htmlspecialchars($quiz['name']); ?></h1>
             <p class="text-muted mb-0">
-                ID: <?= $quiz_id; ?> | Statut: 
+                ID: <?= $quiz_id; ?> | Statut:
                 <span class="badge bg-<?= 
-                    $quiz['status'] === 'finished' ? 'success' : 
+                    $quiz['status'] === 'finished' ? 'success' :
                     ($quiz['status'] === 'launched' ? 'warning' : 'secondary') 
                 ?>">
                     <?= 
-                        $quiz['status'] === 'finished' ? 'Terminé' : 
+                        $quiz['status'] === 'finished' ? 'Terminé' :
                         ($quiz['status'] === 'launched' ? 'Lancé' : 'En écriture') 
                     ?>
                 </span>
             </p>
         </div>
-        <a href="/quizzeo/?url=entreprise" class="btn btn-outline-primary">← Retour au dashboard</a>
+        <a href="/quizzeo/?url=ecole" class="btn btn-outline-primary">← Retour au dashboard</a>
     </div>
 
     <!-- Messages -->
@@ -254,7 +253,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                         <span class="badge bg-info ms-2"><?= $question_item['point']; ?> point(s)</span>
                                     </h6>
                                     <div>
-                                        <a href="/quizzeo/View/entreprise/edit_question.php?id=<?= $question_item['id']; ?>" 
+                                        <a href="/quizzeo/View/ecole/edit_question.php?id=<?= $question_item['id']; ?>" 
                                            class="btn btn-sm btn-outline-primary">
                                             <i class="bi bi-pencil"></i> Éditer
                                         </a>
@@ -293,19 +292,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </div>
 </div>
 
-<!-- Bootstrap Icons & JS -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css">
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
-
-<script>
-    // Confirmation avant suppression d'une question
-    document.querySelectorAll('.btn-outline-danger').forEach(button => {
-        button.addEventListener('click', function(e) {
-            if (!confirm('Êtes-vous sûr de vouloir supprimer cette question ?')) {
-                e.preventDefault();
-            }
-        });
-    });
-</script>
 </body>
 </html>

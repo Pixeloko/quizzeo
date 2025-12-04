@@ -14,7 +14,17 @@ function createQuestion(int $quizz_id, string $question_text, int $point = 1): i
     return (int)$conn->lastInsertId();
 }
 
-
+function createQuestionEnt(int $quizz_id, string $title, string $type = 'qcm'): int
+{
+    $pdo = getDatabase();
+    $stmt = $pdo->prepare("INSERT INTO questions (quizz_id, title, type) VALUES (:qid, :title, :type)");
+    $stmt->execute([
+        'qid' => $quizz_id,
+        'title' => $title,
+        'type' => $type
+    ]);
+    return (int)$pdo->lastInsertId();
+}
 
 function addAnswerToQuestion(int $question_id, string $answer_text, bool $is_correct = false): int {
     $conn = getDatabase();

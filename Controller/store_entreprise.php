@@ -1,11 +1,12 @@
 <?php
 // Controller/store_entreprise.php
 
-session_start();
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
-// Vérifier session
+session_start();
+
+// Vérifier la session entreprise
 if (!isset($_SESSION["user_id"]) || $_SESSION["role"] !== "entreprise") {
     $_SESSION["error"] = "Accès non autorisé";
     header('Location: /quizzeo/?url=login');
@@ -15,49 +16,45 @@ if (!isset($_SESSION["user_id"]) || $_SESSION["role"] !== "entreprise") {
 // Inclure les modèles
 require_once __DIR__ . '/../Model/function_quizz.php';
 require_once __DIR__ . '/../Model/function_question.php';
+require_once __DIR__ . '/../Model/function_quizz_question.php'; // table pivot
 
 $errors = [];
 $formData = $_POST;
 
+// Vérifier POST
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $name = trim($_POST['name'] ?? '');
     $questions = $_POST['questions'] ?? [];
 
     // Validation du nom
-    if (empty($name)) {
-        $errors['name'] = "Le nom du quiz est obligatoire";
-    } elseif (strlen($name) < 3) {
-        $errors['name'] = "Le nom doit contenir au moins 3 caractères";
-    }
+    if ($name === '') $errors['name'] = "Le nom du quiz est obligatoire";
+    if (empty($questions)) $errors['questions'] = "Ajoutez au moins une question";
 
-    // Validation des questions
-    if (empty($questions)) {
-        $errors['questions'] = "Ajoutez au moins une question";
-    } else {
-        foreach ($questions as $index => $q_data) {
-            $title = trim($q_data['title'] ?? '');
-            if (empty($title)) {
-                $errors["question_{$index}"] = "La question " . ($index+1) . " est vide";
+    // Valider chaque question
+    foreach ($questions as $index => $q_data) {
+        $question_text = trim($q_data['title'] ?? '');
+        $type = $q_data['type'] ?? 'qcm';
+
+        if ($question_text === '') {
+            $errors["question_{$index}"] = "La question " . ($index + 1) . " est vide";
+        }
+
+        // Pour QCM, vérifier qu'il y a au moins une réponse
+        if ($type === 'qcm') {
+            $hasAnswers = false;
+            foreach ($q_data['answers'] ?? [] as $answer) {
+                if (!empty(trim($answer['text'] ?? ''))) {
+                    $hasAnswers = true;
+                    break;
+                }
             }
-
-            // Pour QCM, vérifier qu’il y a au moins une réponse
-            if (($q_data['type'] ?? 'qcm') === 'qcm') {
-                $hasAnswer = false;
-                foreach ($q_data['answers'] as $answer) {
-                    if (!empty(trim($answer['text'] ?? ''))) {
-                        $hasAnswer = true;
-                        break;
-                    }
-                }
-                if (!$hasAnswer) {
-                    $errors["answers_{$index}"] = "Ajoutez au moins une réponse pour la question " . ($index+1);
-                }
+            if (!$hasAnswers) {
+                $errors["answers_{$index}"] = "Ajoutez au moins une réponse pour la question " . ($index + 1);
             }
         }
     }
 
-    // Si erreurs, renvoyer au formulaire
     if (!empty($errors)) {
         $_SESSION['form_errors'] = $errors;
         $_SESSION['form_data'] = $formData;
@@ -65,39 +62,36 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
 
+    // Créer le quiz
     try {
-        $user_id = $_SESSION['user_id'];
-
-        // Créer le quiz
+        $user_id = (int)$_SESSION['user_id'];
         $quiz_id = createQuizz($name, $user_id);
         if (!$quiz_id) throw new Exception("Erreur lors de la création du quiz");
 
-        // Créer les questions et réponses
-        foreach ($questions as $q_data) {
-            $title = trim($q_data['title'] ?? '');
+        foreach ($questions as $q_index => $q_data) {
+            $question_text = trim($q_data['title'] ?? '');
             $type = $q_data['type'] ?? 'qcm';
+            if ($question_text === '') continue;
 
-            // Points = 0 pour entreprise (option 1)
-            $question_id = createQuestion($quiz_id, $title, 0);
-            if (!$question_id) throw new Exception("Erreur lors de la création de la question");
+            $question_id = createQuestionEnt($quiz_id, $question_text, $type);
+            if (!$question_id) throw new Exception("Erreur à la création de la question #" . ($q_index+1));
 
+            // Ajouter les réponses seulement si QCM
             if ($type === 'qcm') {
-                foreach ($q_data['answers'] as $answer) {
-                    $text = trim($answer['text'] ?? '');
-                    if (!empty($text)) {
-                        addAnswerToQuestion($question_id, $text, 0); // pas de bonne/mauvaise réponse
-                    }
+                foreach ($q_data['answers'] ?? [] as $answer) {
+                    $answer_text = trim($answer['text'] ?? '');
+                    if ($answer_text === '') continue;
+                    addAnswerToQuestion($question_id, $answer_text); // pas de bonne/mauvaise réponse
                 }
             }
-            // Réponse libre → pas de réponse ajoutée, juste stocker lors de la participation
         }
 
-        $_SESSION['success'] = "Quiz créé avec succès !";
+        $_SESSION['success'] = "✅ Quiz créé avec succès !";
         header('Location: /quizzeo/?url=entreprise');
         exit;
 
     } catch (Exception $e) {
-        $_SESSION['form_errors'] = ['general' => $e->getMessage()];
+        $_SESSION['error'] = "Erreur : " . $e->getMessage();
         $_SESSION['form_data'] = $formData;
         header('Location: /quizzeo/?url=entreprise/create');
         exit;
