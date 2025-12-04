@@ -83,3 +83,4 @@ function deleteQuizzQuestions(int $quizz_id): bool
     $stmt->execute(['id' => $quizz_id]);
     return $stmt->rowCount() > 0;
 }
+
