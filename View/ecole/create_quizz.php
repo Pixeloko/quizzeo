@@ -36,7 +36,7 @@ $questionCount = !empty($formData['questions']) ? count($formData['questions']) 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
     body {
-        background-color: #6e5a8a(210, 17%, 98%, 1.00);
+        background-color: #6e5a8a;
     }
 
     .card {
@@ -45,7 +45,7 @@ $questionCount = !empty($formData['questions']) ? count($formData['questions']) 
     }
 
     .question-item {
-        border-left: 4px solid #ff7b00ff;
+        border-left: 4px solid #e76667;
     }
 
     .answer-item {
@@ -53,7 +53,7 @@ $questionCount = !empty($formData['questions']) ? count($formData['questions']) 
     }
 
     .answer-item:hover {
-        background-color: #f8f9fa;
+        background-color: #fddea7;
     }
     </style>
 </head>

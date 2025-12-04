@@ -341,7 +341,7 @@ $base_url = 'http://' . $_SERVER['HTTP_HOST'];
                                 </td>
                                 <td>
                                     <?php if ($submissions > 0): ?>
-                                    <a href="results.php?id=<?= $quiz['id']; ?>" class="text-decoration-none">
+                                    <a href="/quizzeo/View/ecole/results.php?id=<?= $quiz['id']; ?>" class="text-decoration-none">
                                         <span class="badge bg-success">
                                             <i class="bi bi-people-fill me-1"></i>
                                             <?= $submissions; ?> réponse(s)
