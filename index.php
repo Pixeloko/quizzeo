@@ -26,7 +26,7 @@ switch ($url) {
 
     case 'user':
         if (!isset($_SESSION['user_id'])) {
-            header('Location: /?url=login');
+            require __DIR__ . '/View/user.php';
             exit;
         }
         require __DIR__ . '/View/user.php';
