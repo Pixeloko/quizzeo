@@ -2,6 +2,7 @@
 session_start();
 require_once __DIR__ . "/../Controller/create_account.php";
 require_once __DIR__ . "/includes/header.php";
+require_once __DIR__ . "/../config/config.php";
 $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
 
 ?>

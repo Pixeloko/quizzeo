@@ -59,6 +59,46 @@ switch ($url) {
     case 'ecole/store':
         require_once __DIR__ . '/Controller/store.php';
         break;
+    
+    // Redirection utilisateur
+    if ($url === 'user') {
+        require_once './Controller/user.php';
+        $userController = new UserController();
+        
+        if (isset($_GET['action'])) {
+            $action = $_GET['action'];
+            switch ($action) {
+                case 'dashboard':
+                    $userController->dashboard();
+                    break;
+                case 'profile':
+                    $userController->profile();
+                    break;
+                case 'update_profile':
+                    $userController->updateProfile();
+                    break;
+                case 'available_quizzes':
+                    $userController->availableQuizzes();
+                    break;
+                case 'quiz_results':
+                    $userController->quizResults();
+                    break;
+                default:
+                    $userController->dashboard();
+            }
+        } else {
+            $userController->dashboard();
+        }
+        exit;
+    }
+
+    // ROUTE POUR ACCÉDER À UN QUIZ VIA LIEN
+    if ($url === 'quiz' && isset($_GET['id'])) {
+        require_once './Controller/user.php';
+        $userController = new UserController();
+        $userController->accessQuiz();
+        exit;
+    }
 
     default:
         http_response_code(404);
