@@ -217,30 +217,81 @@ function getAnsweredQuizzes($user_id) {
     }
 }
 
+// Model/function_user.php
+
 /**
- * Récupérer les quiz disponibles pour un utilisateur
+ * Récupérer tous les quiz actifs (pour la page d'accueil)
+ */
+function getAllActiveQuizzes() {
+    try {
+        $pdo = getConnexion();
+        
+        $sql = "SELECT q.*, 
+                       COUNT(quest.id) as question_count,
+                       u.firstname as creator_firstname,
+                       u.lastname as creator_lastname
+                FROM quizz q
+                LEFT JOIN question quest ON q.id = quest.quizz_id
+                LEFT JOIN users u ON q.user_id = u.id
+                WHERE q.status = 'launched'
+                AND q.is_active = 1
+                GROUP BY q.id
+                HAVING question_count > 0
+                ORDER BY q.created_at DESC";
+        
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute();
+        
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        
+    } catch (Exception $e) {
+        error_log("Erreur dans getAllActiveQuizzes: " . $e->getMessage());
+        return [];
+    }
+}
+
+/**
+ * Récupérer les quiz disponibles pour un utilisateur 
+ * (ceux de la page d'accueil auxquels il n'a pas encore répondu)
  */
 function getAvailableQuizzesForUser($user_id) {
     try {
         $pdo = getConnexion();
         
         $sql = "SELECT q.*, 
-                       COUNT(quest.id) as question_count
+                       COUNT(quest.id) as question_count,
+                       u.firstname as creator_firstname,
+                       u.lastname as creator_lastname,
+                       CASE 
+                           WHEN qu.id IS NOT NULL THEN 1 
+                           ELSE 0 
+                       END as already_answered
                 FROM quizz q
                 LEFT JOIN question quest ON q.id = quest.quizz_id
+                LEFT JOIN users u ON q.user_id = u.id
+                LEFT JOIN quizz_user qu ON q.id = qu.quizz_id AND qu.user_id = :user_id
                 WHERE q.status = 'launched'
                 AND q.is_active = 1
-                AND q.id NOT IN (
-                    SELECT quizz_id FROM quizz_user WHERE user_id = :user_id
-                )
                 GROUP BY q.id
                 HAVING question_count > 0
-                ORDER BY q.created_at DESC";
+                ORDER BY q.created_at DESC, q.name ASC";
         
         $stmt = $pdo->prepare($sql);
         $stmt->execute(['user_id' => $user_id]);
         
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $quizzes = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        
+        // Filtrer ceux déjà répondu si nécessaire
+        // return $quizzes; // Pour montrer tous même si déjà répondu
+        
+        // Ou filtrer pour ne montrer que les non répondu
+        $filtered_quizzes = [];
+        foreach ($quizzes as $quiz) {
+            if ($quiz['already_answered'] == 0) {
+                $filtered_quizzes[] = $quiz;
+            }
+        }
+        return $filtered_quizzes;
         
     } catch (Exception $e) {
         error_log("Erreur dans getAvailableQuizzesForUser: " . $e->getMessage());

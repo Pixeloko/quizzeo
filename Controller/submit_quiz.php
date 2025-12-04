@@ -226,7 +226,7 @@ try {
     
     echo "<p>Redirection vers les résultats...</p>";
     // Rediriger vers la page de résultats
-    header("Location: /quizzeo/?url=user&action=quiz_results&id=" . $quiz_id);
+    header("Location: /quizzeo/View/user/dashboard.php");
     exit;
     
 } catch (Exception $e) {

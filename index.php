@@ -30,7 +30,7 @@ switch ($url) {
 
     case 'user':
         if (!isset($_SESSION['user_id'])) {
-            require __DIR__ . '/View/user.php';
+            require __DIR__ . '/View/user/dashboard.php';
             exit;
         }
         require __DIR__ . '/View/user.php';
