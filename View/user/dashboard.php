@@ -283,11 +283,6 @@ if (!isset($_SESSION["user_id"]) || $_SESSION["role"] !== "user") {
                         </div>
                     </div>
                 </div>
-
-
-
-
-
                             <?php if (!empty($display_quizzes)): ?>
                             <?php foreach (array_slice($display_quizzes, 0, 3) as $quiz): ?>
                             <div class="quiz-card card mb-3 border">
