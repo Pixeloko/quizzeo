@@ -4,52 +4,6 @@ require_once(__DIR__ . "/../Model/function_quizz.php");
 
 
 /**
- * Récupère tous les utilisateurs (hors admins)
- * @return array Toujours un tableau, même vide
- */
-function fetchUsers(): array {
-    $users = getUsers(); // getUsers() dans userModel.php
-    return $users ?: [];
-}
-
-/**
- * Récupère tous les quizzes
- * @return array Toujours un tableau, même vide
- */
-function fetchQuizzes(): array {
-    $quizzes = getQuizz(); // getQuizz() dans quizModel.php
-    return $quizzes ?: [];
-}
-
-/**
- * Active un utilisateur
- */
-function activateUser(int $userId) {
-    activateUserModel($userId); // fonction à définir dans userModel.php
-}
-
-/**
- * Désactive un utilisateur
- */
-function deactivateUser(int $userId) {
-    deactivateUserModel($userId); // fonction à définir dans userModel.php
-}
-
-/**
- * Active un quiz
- */
-function activateQuiz(int $quizId) {
-    activateQuizModel($quizId); // fonction à définir dans quizModel.php
-}
-
-/**
- * Désactive un quiz
- */
-function deactivateQuiz(int $quizId) {
-    deactivateQuizModel($quizId); // fonction à définir dans quizModel.php
-}
-
-/**
  * Traite le POST pour utilisateurs et quizzes
  */
 function handleAdminPost(): void {
