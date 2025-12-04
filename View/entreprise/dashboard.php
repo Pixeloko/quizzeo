@@ -90,14 +90,17 @@ $quizzes = getQuizzByUserId($_SESSION["user_id"]);
                                     <?php if ($status !== 'finished'): ?>
                                     <a href="/quizzeo/View/entreprise/edit_quiz.php?id=<?= $quiz['id']; ?>"
                                         class="btn btn-sm btn-primary">Éditer</a>
+                                    <?php endif ?>
 
-                                    <a href="/quizzeo/Controller/launch_quiz.php?id=<?= $quiz['id']; ?>"
-                                        class="btn btn-sm btn-warning"
-                                        onclick="return confirm('Lancer ce quiz ? Les étudiants pourront y répondre.')">Lancer</a>
-                                    <?php else: ?>
-                                    <a href="results.php?id=<?= $quiz['id']; ?>" class="btn btn-sm btn-success">Voir
-                                        Résultats</a>
-                                    <?php endif; ?>
+                                    <form method="POST"
+                                        action="/quizzeo/View/entreprise/edit_quiz.php?id=<?= $quiz['id']; ?>"
+                                        style="display: inline;">
+                                        <input type="hidden" name="launch_quiz" value="1">
+                                        <button type="submit" class="btn btn-sm btn-warning"
+                                            onclick="return confirm('Lancer ce quiz ? Les étudiants pourront y répondre.')">
+                                            Lancer
+                                        </button>
+                                    </form>
                                 </td>
                             </tr>
                             <?php endforeach; ?>

@@ -183,15 +183,6 @@ body { background-color: #f8f9fa; }
                         <textarea class="form-control" name="title" rows="4" required><?= htmlspecialchars($question['title']); ?></textarea>
                     </div>
 
-                    <div class="mb-4">
-                        <label class="form-label fw-bold">Points attribués</label>
-                        <select name="point" class="form-select w-auto">
-                            <?php for ($i=1; $i<=5; $i++): ?>
-                                <option value="<?= $i ?>" <?= $question['point']==$i?'selected':'' ?>><?= $i ?> point<?= $i>1?'s':'' ?></option>
-                            <?php endfor; ?>
-                        </select>
-                    </div>
-
                     <button type="submit" name="update_question" class="btn btn-primary w-100">
                         <i class="bi bi-save"></i> Enregistrer la question
                     </button>

@@ -67,7 +67,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $point = (int)($_POST['new_point'] ?? 1);
 
         if ($question_text !== "") {
-            $question_id = createQuestion($quiz_id, $question_text, $point);
+            $question_id = createQuestionEnt($quiz_id, $question_text, $type);
             if ($question_id) {
                 // réponses par défaut
                 for ($i = 0; $i < 4; $i++) {
@@ -144,7 +144,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     <div class="d-flex justify-content-between mb-4">
         <h2>Éditer le quiz : <?= htmlspecialchars($quiz['name']); ?></h2>
-        <a href="/quizzeo/?url=entreprise" class="btn btn-secondary">← Retour</a>
+        <a href="/quizzeo/View/entreprise/dashboard.php" class="btn btn-secondary">← Retour</a>
     </div>
 
     <!-- Messages -->
@@ -178,11 +178,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <div class="card-body">
                     <form method="POST">
                         <input type="text" name="new_question" class="form-control mb-2" placeholder="Question">
-                        <select name="new_point" class="form-select mb-2">
-                            <option value="1">1 point</option>
-                            <option value="2">2 points</option>
-                            <option value="3">3 points</option>
-                        </select>
                         <button name="add_question" class="btn btn-primary w-100">Ajouter</button>
                     </form>
                 </div>
