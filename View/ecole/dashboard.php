@@ -29,7 +29,6 @@ $quizzes = getQuizzByUserId($_SESSION["user_id"]);
             <h1>Dashboard École</h1>
             <div>
                 <a href="ecole/create" class="btn btn-success">+ Nouveau Quiz</a>
-                <a href="../logout.php" class="btn btn-outline-danger">Déconnexion</a>
             </div>
         </div>
 
