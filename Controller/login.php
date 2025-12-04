@@ -40,7 +40,7 @@
             } elseif ($user["role"] === "ecole" || $user["role"] === "entreprise") {
                 header("Location: /quizzeo/ecole");
             } else {
-                header("Location: ../View/user.php");
+                header("Location: /quizzeo/View/user/dashboard.php");
             }
             exit;
         }
