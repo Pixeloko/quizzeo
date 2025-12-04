@@ -116,7 +116,7 @@ function updateQuizzStatus($quiz_id, $status) {
  */
 function getQuestionsByQuizzId($quiz_id) {
     $pdo = getDatabase();
-    $sql = "SELECT * FROM question WHERE quizz_id = :quiz_id";
+    $sql = "SELECT * FROM questions WHERE quizz_id = :quiz_id";
     $stmt = $pdo->prepare($sql);
     $stmt->execute(['quiz_id' => $quiz_id]);
     $questions = $stmt->fetchAll(PDO::FETCH_ASSOC);

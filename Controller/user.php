@@ -95,6 +95,40 @@ class UserController
         // Charger la vue du quiz
         require_once __DIR__ . '/../View/user/play_quiz.php';
     }
+
+    // Dans Controller/user.php
+public function playQuiz() {
+    session_start();
+    
+    if (!isset($_SESSION["user_id"]) || $_SESSION["role"] !== "user") {
+        header("Location: /quizzeo/?url=login");
+        exit;
+    }
+    
+    $quiz_id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
+    
+    if ($quiz_id <= 0) {
+        header("Location: /quizzeo/?url=user");
+        exit;
+    }
+    
+    require_once __DIR__ . '/../Model/function_quizz.php';
+    require_once __DIR__ . '/../Model/function_question.php';
+    
+    // Récupérer le quiz
+    $quiz = getQuizzById($quiz_id);
+    
+    if (!$quiz || $quiz['status'] !== 'launched') {
+        $_SESSION['error'] = "Ce quiz n'est pas disponible";
+        header("Location: /quizzeo/?url=user");
+        exit;
+    }
+    
+    // Récupérer les questions
+    $questions = getQuestionsByQuizzId($quiz_id);
+    
+    require_once __DIR__ . '/../View/user/play_quiz.php';
+}
     
     public function submitQuiz()
     {

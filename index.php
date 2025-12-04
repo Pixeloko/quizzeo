@@ -92,11 +92,16 @@ switch ($url) {
         exit;
     }
 
-    // ROUTE POUR ACCÉDER À UN QUIZ VIA LIEN
+
+    // ROUTE POUR ACCÉDER À UN QUIZ (pour les utilisateurs)
     if ($url === 'quiz' && isset($_GET['id'])) {
-        require_once './Controller/user.php';
-        $userController = new UserController();
-        $userController->accessQuiz();
+        require_once './View/user/play_quiz.php'; 
+        exit;
+    }
+
+    // ROUTE POUR SOUMETTRE UN QUIZ
+    if ($url === 'submit_quizz') {
+        require_once './Controller/submit_quiz.php';
         exit;
     }
 
