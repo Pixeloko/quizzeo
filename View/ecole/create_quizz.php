@@ -1,6 +1,7 @@
 <?php
-// View/ecole/create_quizz.php
-session_start();
+if(session_status()==PHP_SESSION_NONE){
+    session_start();
+}
 
 // Vérifier si l'utilisateur est connecté
 if (!isset($_SESSION["user_id"]) || $_SESSION["role"] !== "ecole") {
@@ -131,7 +132,7 @@ unset($_SESSION['error']);
             </div>
 
             <div class="card-body">
-                <form method="POST" action="/quizzeo/Controller/create_quiz.php" id="quizForm">
+                <form method="POST" action="/quizzeo/Controller/create_quizz.php" id="quizForm">
                     
                     <!-- Nom du quiz -->
                     <div class="mb-4">

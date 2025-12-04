@@ -1,5 +1,7 @@
 <?php
-session_start();
+if(session_status()==PHP_SESSION_NONE){
+    session_start();
+}
 
 // Vérifier la session
 if (!isset($_SESSION["user_id"]) || $_SESSION["role"] !== "ecole") {
@@ -109,7 +111,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             }
             
             $_SESSION["success_message"] = "✅ Quiz créé avec succès !";
-            header("Location: ecole");
+            header("Location: /quizzeo/?url=ecole");
             exit;
             
         } catch (Exception $e) {
