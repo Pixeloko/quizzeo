@@ -53,28 +53,34 @@ function createUser(string $role, string $firstname, string $lastname, string $e
     ]);
     return (int) $conn->lastInsertId();
 }
+function updateUser($id, $firstname, $lastname, $email, $password = null, $profile_photo = null) {
+    $pdo = getDatabase();
 
-function updateUser(int $id, string $firstname, string $lastname, string $email, ?string $password): bool {
-    $conn = getDatabase();
+    $sql = "UPDATE users SET firstname = :firstname, lastname = :lastname, email = :email";
+    
+    $params = [
+        ':firstname' => $firstname,
+        ':lastname' => $lastname,
+        ':email' => $email,
+        ':id' => $id
+    ];
+
     if ($password) {
-        $stmt = $conn->prepare("UPDATE users SET firstname = :firstname, lastname = :lastname, email = :email, password = :password WHERE id = :id");
-        $stmt->execute([
-            'firstname' => $firstname,
-            'lastname' => $lastname,
-            'email'    => $email,
-            'password' => password_hash($password, PASSWORD_BCRYPT),
-            'id'       => $id
-        ]);
-    } else {
-        $stmt = $conn->prepare("UPDATE users SET firstname = :firstname, email = :email WHERE id = :id");
-        $stmt->execute([
-            'firstname' => $firstname,
-            'email'    => $email,
-            'id'       => $id
-        ]);
+        $sql .= ", password = :password";
+        $params[':password'] = password_hash($password, PASSWORD_DEFAULT);
     }
-    return $stmt->rowCount() > 0;
+
+    if ($profile_photo) {
+        $sql .= ", profile_photo = :profile_photo";
+        $params[':profile_photo'] = $profile_photo;
+    }
+
+    $sql .= " WHERE id = :id";
+
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute($params);
 }
+
 
 function deleteUser(int $id): bool {
     $conn = getDatabase();
@@ -110,7 +116,7 @@ function deactivateUser($user_id) {
  * Récupérer les résultats d'un quiz pour un utilisateur
  */
 function getUserQuizResults($user_id, $quiz_id) {
-    $pdo = getConnexion();
+    $pdo = getDatabase();
     
     // Vérifier si l'utilisateur a répondu à ce quiz
     $sql_check = "SELECT id, score, completed_at FROM quizz_user 
