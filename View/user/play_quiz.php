@@ -1,17 +1,19 @@
 <?php
-// View/user/play_quiz.php - VERSION CORRIGÉE
+// View/user/play_quiz.php
 
-// Démarrer la session
+// Démarrer la session SI PAS DÉJÀ FAIT dans index.php
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-// URL de base dynamique
-$baseUrl = 'http://' . $_SERVER['HTTP_HOST'] . '/quizzeo';
+// Activer les erreurs pour debug
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
 
 // Vérifier l'authentification
 if (!isset($_SESSION["user_id"]) || $_SESSION["role"] !== "user") {
-    header("Location: " . $baseUrl . "/index.php?url=login");
+    $base_url = 'http://' . $_SERVER['HTTP_HOST'] . '/quizzeo';
+    header("Location: $base_url/?url=login");
     exit;
 }
 

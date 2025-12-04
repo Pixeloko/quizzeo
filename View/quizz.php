@@ -49,7 +49,7 @@ $questions = getQuestionsByQuizzId($quizz_id);
     <p><?= htmlspecialchars($quizz['description']) ?></p>
 <?php endif; ?>
 
-<form action="/index.php?url=submit_quiz" method="POST" id="quiz-form">
+<form action="?url=submit_quiz" method="POST" id="quiz-form">
     <!-- ID du quizz -->
     <input type="hidden" name="quizz_id" value="<?= $quizz_id ?>">
 
