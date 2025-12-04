@@ -1,14 +1,21 @@
 <?php
-// Empêcher accès direct sans ID
-if (!isset($quizz_id)) {
-    echo "Aucun quizz indiqué.";
-    exit;
+// Démarrer la session si ce n'est pas déjà fait
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
 }
 
 // Charger les fonctions
 require_once __DIR__ . '/../Model/function_quizz.php';
 require_once __DIR__ . '/../Model/function_quizz_question.php';
 require_once __DIR__ . '/../Model/function_question.php';
+
+// Récupérer l'ID du quizz depuis l'URL
+if (isset($_GET['id'])) {
+    $quizz_id = (int) $_GET['id'];
+} else {
+    echo "Aucun quizz indiqué.";
+    exit;
+}
 
 // Récupération du quizz
 $quizz = getQuizzById($quizz_id);
@@ -27,6 +34,7 @@ $questions = getQuestionsByQuizzId($quizz_id);
 <head>
     <meta charset="UTF-8">
     <title><?= htmlspecialchars($quizz['title']) ?></title>
+    
 </head>
 <body>
 
@@ -37,49 +45,40 @@ $questions = getQuestionsByQuizzId($quizz_id);
 <?php endif; ?>
 
 <form action="index.php?url=submit_quizz" method="POST">
-
     <!-- ID du quizz -->
-    <input type="hidden" name="quizz_id" value="<?= (int)$quizz_id ?>">
+    <input type="hidden" name="quizz_id" value="<?= $quizz_id ?>">
 
     <?php if (!empty($questions)): ?>
         <?php foreach ($questions as $index => $question): ?>
-
-            <div style="margin-bottom:30px;">
-                <h3>
-                    Question <?= $index + 1 ?> : 
-                    <?= htmlspecialchars($question['question_text']) ?>
-                </h3>
+            <div class="question">
+                <h3>Question <?= $index + 1 ?> : <?= htmlspecialchars($question['title']) ?></h3>
 
                 <?php 
-                // Récupérer les réponses
-                $answers = getAnswersByQuestionId($question['question_id']);
+                $answers = getAnswersByQuestion((int)$question['id']);
                 ?>
 
                 <?php if (!empty($answers)): ?>
                     <?php foreach ($answers as $answer): ?>
-                        <label style="display:block; margin:5px 0;">
+                        <label>
                             <input 
                                 type="radio" 
-                                name="question_<?= $question['question_id'] ?>"
-                                value="<?= $answer['answer_id'] ?>"
+                                name="question_<?= $question['id'] ?>"
+                                value="<?= $answer['id'] ?>"
                                 required
                             >
                             <?= htmlspecialchars($answer['answer_text']) ?>
                         </label>
                     <?php endforeach; ?>
                 <?php else: ?>
-                    <p style="color:red;">Aucune réponse pour cette question.</p>
+                    <p class="no-answers">Aucune réponse pour cette question.</p>
                 <?php endif; ?>
-
             </div>
-
         <?php endforeach; ?>
     <?php else: ?>
         <p>Aucune question dans ce quizz.</p>
     <?php endif; ?>
 
     <button type="submit">Valider mes réponses</button>
-
 </form>
 
 </body>
