@@ -3,7 +3,6 @@ require_once __DIR__ . '/../Model/function_quizz.php';
 require_once __DIR__ . '/../Model/function_user.php';
 require_once __DIR__ . "/includes/header.php";
 
-// Démarrer la session si ce n'est pas déjà fait
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }

@@ -273,11 +273,10 @@ if (isset($_GET['id'])) {
 
 </html>
 <?php
-    exit; // Important : sortir après avoir affiché le quiz
+    exit; 
     
-// MODE 2 : Afficher la liste des quiz (quand il n'y a pas d'id)
+
 } else {
-    // Code pour afficher la liste des quiz
     require_once __DIR__ . '/../Model/function_quizz.php';
     $quizzes = getActiveQuizz();
     ?>

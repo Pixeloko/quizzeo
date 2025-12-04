@@ -110,12 +110,12 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 }
             }
             
-            $_SESSION["success_message"] = "✅ Quiz créé avec succès !";
+            $_SESSION["success_message"] = "Quiz créé avec succès !";
             header("Location: /quizzeo/?url=ecole");
             exit;
             
         } catch (Exception $e) {
-            $errors["general"] = "❌ Erreur lors de la création du quiz : " . $e->getMessage();
+            $errors["general"] = "Erreur lors de la création du quiz : " . $e->getMessage();
         }
     } else {
         // Stocker les données pour réaffichage
