@@ -114,7 +114,7 @@ switch ($url) {
         break;
 
     case 'entreprise/store':
-        require_once __DIR__ . '/Controller/store.php';
+        require_once __DIR__ . '/Controller/store_entreprise.php';
         break;
 
     default:
