@@ -53,6 +53,9 @@ $questions = getQuestionsByQuizzId($quizz_id);
     <!-- ID du quizz -->
     <input type="hidden" name="quizz_id" value="<?= $quizz_id ?>">
 
+    <form action="?url=submit_quiz" method="POST" id="quiz-form">
+    <input type="hidden" name="quizz_id" value="<?= $quizz_id ?>">
+
     <?php if (!empty($questions)): ?>
         <?php foreach ($questions as $index => $question): ?>
             <div class="question">
@@ -62,7 +65,7 @@ $questions = getQuestionsByQuizzId($quizz_id);
                 $answers = getAnswersByQuestion((int)$question['id']);
                 ?>
 
-                <?php if (!empty($answers)): ?>
+                <?php if ($question['type'] === 'qcm' && !empty($answers)): ?>
                     <?php foreach ($answers as $answer): ?>
                         <label>
                             <input 
@@ -72,15 +75,26 @@ $questions = getQuestionsByQuizzId($quizz_id);
                                 required
                             >
                             <?= htmlspecialchars($answer['answer_text']) ?>
-                        </label>
+                        </label><br>
                     <?php endforeach; ?>
+
+                <?php elseif ($question['type'] === 'free'): ?>
+                    <!-- Réponse libre -->
+                    <textarea 
+                        name="question_<?= $question['id'] ?>" 
+                        rows="3" 
+                        cols="50" 
+                        placeholder="Tapez votre réponse ici..."
+                        required
+                    ></textarea>
+
                 <?php else: ?>
-                    <p class="no-answers">Aucune réponse pour cette question.</p>
+                    <p class="no-answers">Aucune réponse disponible pour cette question.</p>
                 <?php endif; ?>
             </div>
         <?php endforeach; ?>
     <?php else: ?>
-        <p>Aucune question dans ce quizz.</p>
+        <p>Aucune question dans ce quiz.</p>
     <?php endif; ?>
 
     <button type="submit">Valider mes réponses</button>
