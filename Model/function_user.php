@@ -110,68 +110,41 @@ function deactivateUser($user_id) {
 }
 
 
-// Model/function_user.php - Ajoutez cette fonction
-
-/**
- * Récupérer les résultats d'un quiz pour un utilisateur
- */
-function getUserQuizResults($user_id, $quiz_id) {
-    $pdo = getDatabase();
-    
-    // Vérifier si l'utilisateur a répondu à ce quiz
-    $sql_check = "SELECT id, score, completed_at FROM quizz_user 
-                  WHERE user_id = :user_id AND quizz_id = :quiz_id";
-    $stmt_check = $pdo->prepare($sql_check);
-    $stmt_check->execute(['user_id' => $user_id, 'quiz_id' => $quiz_id]);
-    $attempt = $stmt_check->fetch();
-    
-    if (!$attempt) {
-        return null;
-    }
-    
-    // Récupérer les détails des réponses
-    $sql = "SELECT 
-                q.title as question_text,
-                a.answer_text as selected_answer_text,
-                ca.answer_text as correct_answer_text,
-                ua.is_correct,
-                q.point as question_points
-            FROM user_answers ua
-            JOIN question q ON ua.question_id = q.id
-            JOIN answers a ON ua.answer_id = a.id
-            LEFT JOIN answers ca ON ca.question_id = q.id AND ca.is_correct = 1
-            WHERE ua.quizz_user_id = :quizz_user_id
-            ORDER BY ua.id";
-    
-    $stmt = $pdo->prepare($sql);
-    $stmt->execute(['quizz_user_id' => $attempt['id']]);
-    $answers = $stmt->fetchAll(PDO::FETCH_ASSOC);
-    
-    // Calculer les totaux
-    $total_points = 0;
-    $earned_points = 0;
-    $correct_count = 0;
-    
-    foreach ($answers as $answer) {
-        $total_points += $answer['question_points'];
-        if ($answer['is_correct']) {
-            $earned_points += $answer['question_points'];
-            $correct_count++;
+// Dans Model/function_user.php - version corrigée
+function getUserQuizResults($user_id) {
+    try {
+        require_once __DIR__ . '/../config/config.php';
+        $pdo = getDatabase(); // ou getDatabase() selon votre fonction
+        
+        $sql = "SELECT 
+                    q.id as quiz_id,
+                    q.name as quiz_title,
+                    qu.score,
+                    qu.completed_at,
+                    (SELECT SUM(point) FROM questions WHERE quizz_id = q.id) as total_points
+                FROM quizz_user qu
+                JOIN quizz q ON qu.quizz_id = q.id
+                WHERE qu.user_id = :user_id
+                ORDER BY qu.completed_at DESC";
+        
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute(['user_id' => $user_id]);
+        $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        
+        // Calculer les pourcentages
+        foreach ($results as &$result) {
+            if ($result['total_points'] > 0) {
+                $result['percentage'] = round(($result['score'] / $result['total_points']) * 100, 2);
+            } else {
+                $result['percentage'] = 0;
+            }
         }
+        
+        return $results ?: [];
+    } catch (Exception $e) {
+        error_log("Erreur getUserQuizResults: " . $e->getMessage());
+        return [];
     }
-    
-    $percentage = $total_points > 0 ? round(($earned_points / $total_points) * 100, 1) : 0;
-    
-    return [
-        'quiz_id' => $quiz_id,
-        'total_questions' => count($answers),
-        'total_points' => $total_points,
-        'earned_points' => $earned_points,
-        'score_percentage' => $percentage,
-        'correct_count' => $correct_count,
-        'answers' => $answers,
-        'completed_at' => $attempt['completed_at']
-    ];
 }
 
 
@@ -182,7 +155,7 @@ function getUserQuizResults($user_id, $quiz_id) {
  */
 function getAnsweredQuizzes($user_id) {
     try {
-        $pdo = getConnexion();
+        $pdo = getDatabase();
         
         // Version simple pour commencer
         $sql = "SELECT DISTINCT q.* 
@@ -199,7 +172,7 @@ function getAnsweredQuizzes($user_id) {
         // Pour chaque quiz, ajouter des statistiques
         foreach ($quizzes as &$quiz) {
             // Nombre de questions
-            $sql_questions = "SELECT COUNT(*) as count FROM question WHERE quizz_id = :quiz_id";
+            $sql_questions = "SELECT COUNT(*) as count FROM questions WHERE quizz_id = :quiz_id";
             $stmt_q = $pdo->prepare($sql_questions);
             $stmt_q->execute(['quiz_id' => $quiz['id']]);
             $result = $stmt_q->fetch();
@@ -230,14 +203,14 @@ function getAnsweredQuizzes($user_id) {
  */
 function getAllActiveQuizzes() {
     try {
-        $pdo = getConnexion();
+        $pdo = getDatabase();
         
         $sql = "SELECT q.*, 
                        COUNT(quest.id) as question_count,
                        u.firstname as creator_firstname,
                        u.lastname as creator_lastname
                 FROM quizz q
-                LEFT JOIN question quest ON q.id = quest.quizz_id
+                LEFT JOIN questions quest ON q.id = quest.quizz_id
                 LEFT JOIN users u ON q.user_id = u.id
                 WHERE q.status = 'launched'
                 AND q.is_active = 1
@@ -257,50 +230,173 @@ function getAllActiveQuizzes() {
 }
 
 /**
- * Récupérer les quiz disponibles pour un utilisateur 
- * (ceux de la page d'accueil auxquels il n'a pas encore répondu)
+ * Récupère les quiz disponibles (non répondu) pour l'utilisateur
+ * @param int $user_id
+ * @return array
  */
-function getAvailableQuizzesForUser($user_id) {
+function getAvailableQuizzes($user_id) {
     try {
-        $pdo = getConnexion();
+        $pdo = getDatabase();
         
-        $sql = "SELECT q.*, 
-                       COUNT(quest.id) as question_count,
-                       u.firstname as creator_firstname,
-                       u.lastname as creator_lastname,
-                       CASE 
-                           WHEN qu.id IS NOT NULL THEN 1 
-                           ELSE 0 
-                       END as already_answered
+        $sql = "SELECT 
+                    q.id,
+                    q.name,
+                    q.description,
+                    q.created_at,
+                    (SELECT COUNT(*) FROM questions WHERE quizz_id = q.id) as question_count,
+                    u.firstname as creator_firstname,
+                    u.lastname as creator_lastname
                 FROM quizz q
-                LEFT JOIN question quest ON q.id = quest.quizz_id
-                LEFT JOIN users u ON q.user_id = u.id
-                LEFT JOIN quizz_user qu ON q.id = qu.quizz_id AND qu.user_id = :user_id
+                JOIN users u ON q.user_id = u.id
                 WHERE q.status = 'launched'
                 AND q.is_active = 1
-                GROUP BY q.id
-                HAVING question_count > 0
-                ORDER BY q.created_at DESC, q.name ASC";
+                AND q.id NOT IN (
+                    SELECT quizz_id 
+                    FROM quizz_user 
+                    WHERE user_id = :user_id
+                )
+                ORDER BY q.created_at DESC";
         
         $stmt = $pdo->prepare($sql);
         $stmt->execute(['user_id' => $user_id]);
-        
-        $quizzes = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        
-        // Filtrer ceux déjà répondu si nécessaire
-        // return $quizzes; // Pour montrer tous même si déjà répondu
-        
-        // Ou filtrer pour ne montrer que les non répondu
-        $filtered_quizzes = [];
-        foreach ($quizzes as $quiz) {
-            if ($quiz['already_answered'] == 0) {
-                $filtered_quizzes[] = $quiz;
-            }
-        }
-        return $filtered_quizzes;
-        
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     } catch (Exception $e) {
-        error_log("Erreur dans getAvailableQuizzesForUser: " . $e->getMessage());
+        error_log("Erreur getAvailableQuizzes: " . $e->getMessage());
         return [];
+    }
+}
+
+/**
+ * Compte le nombre de quiz répondus par un utilisateur
+ * @param int $user_id
+ * @return int
+ */
+function getQuizCountByUser($user_id) {
+    try {
+        $pdo = getDatabase();
+        
+        $sql = "SELECT COUNT(*) as quiz_count 
+                FROM quizz_user 
+                WHERE user_id = :user_id";
+        
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute(['user_id' => $user_id]);
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        
+        return $result['quiz_count'] ?? 0;
+    } catch (Exception $e) {
+        error_log("Erreur getQuizCountByUser: " . $e->getMessage());
+        return 0;
+    }
+}
+
+/**
+ * Vérifie si un utilisateur a déjà répondu à un quiz
+ * @param int $user_id
+ * @param int $quiz_id
+ * @return bool
+ */
+function hasUserAnsweredQuiz($user_id, $quiz_id) {
+    try {
+        require_once __DIR__ . '/../config/config.php';
+        $pdo = getDatabase();
+        
+        $sql = "SELECT COUNT(*) as count 
+                FROM quizz_user 
+                WHERE user_id = :user_id 
+                AND quizz_id = :quiz_id";
+        
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute([
+            'user_id' => $user_id,
+            'quiz_id' => $quiz_id
+        ]);
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        
+        return ($result['count'] ?? 0) > 0;
+    } catch (Exception $e) {
+        error_log("Erreur hasUserAnsweredQuiz: " . $e->getMessage());
+        return false;
+    }
+}
+
+/**
+ * Compte le nombre total de réponses d'un utilisateur
+ * @param int $user_id
+ * @return int
+ */
+function getTotalAnswersCount($user_id) {
+    try {
+        require_once __DIR__ . '/../config/database.php';
+        $pdo = getDatabase();
+        
+        $sql = "SELECT COUNT(*) as total_answers 
+                FROM user_answers ua
+                JOIN quizz_user qu ON ua.quizz_user_id = qu.id
+                WHERE qu.user_id = :user_id";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute(['user_id' => $user_id]);
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        
+        return $result['total_answers'] ?? 0;
+    } catch (Exception $e) {
+        error_log("Erreur getTotalAnswersCount: " . $e->getMessage());
+        return 0;
+    }
+}
+
+/**
+ * Récupère les statistiques complètes de l'utilisateur
+ * @param int $user_id
+ * @return array
+ */
+function getUserStats($user_id) {
+    return [
+        'quiz_count' => getQuizCountByUser($user_id),
+        'total_answers' => getTotalAnswersCount($user_id),
+        'average_score' => getAverageScore($user_id) // Si vous avez cette fonction
+    ];
+}
+
+/**
+ * Récupère le dernier quiz répondu par l'utilisateur
+ * @param int $user_id
+ * @return array|null
+ */
+function getLastQuizScore($user_id) {
+    try {
+        $pdo = getDatabase();
+        
+        $sql = "SELECT 
+                    q.name as quiz_title,
+                    qu.score,
+                    qu.completed_at,
+                    (SELECT SUM(point) FROM questions WHERE quizz_id = q.id) as total_points
+                FROM quizz_user qu
+                JOIN quizz q ON qu.quizz_id = q.id
+                WHERE qu.user_id = :user_id
+                ORDER BY qu.completed_at DESC
+                LIMIT 1";
+        
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute(['user_id' => $user_id]);
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        
+        if ($result) {
+            // Calculer le pourcentage
+            if ($result['total_points'] > 0) {
+                $result['percentage'] = round(($result['score'] / $result['total_points']) * 100, 2);
+            } else {
+                $result['percentage'] = 0;
+            }
+            
+            // Formater la date
+            $result['formatted_date'] = date('d/m/Y', strtotime($result['completed_at']));
+        }
+        
+        return $result ?: null;
+    } catch (Exception $e) {
+        error_log("Erreur getLastQuizScore: " . $e->getMessage());
+        return null;
     }
 }

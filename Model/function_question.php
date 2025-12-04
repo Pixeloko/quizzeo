@@ -1,5 +1,5 @@
 <?php
-require_once __DIR__ . "/../config/config.php";
+require_once __DIR__ . '/../config/config.php';
 
 function createQuestion(int $quizz_id, string $question_text, int $point = 1): int {
     $conn = getDatabase();

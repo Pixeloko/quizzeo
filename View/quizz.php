@@ -1,7 +1,22 @@
 <?php
-// Démarrer la session si ce n'est pas déjà fait
+// View/quizz.php - CORRECTION
+
+// Démarrer la session
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
+}
+
+// Vérifier si un ID est passé
+if (!isset($_GET['id'])) {
+    // Si pas d'ID, vérifier si c'est une soumission (url=submit_quiz)
+    if (isset($_GET['url']) && $_GET['url'] === 'submit_quiz') {
+        // C'est une soumission, rediriger vers le contrôleur via index.php
+        header("Location: /quizzeo/?url=submit_quiz");
+        exit;
+    } else {
+        echo "Aucun quizz indiqué.";
+        exit;
+    }
 }
 
 // Charger les fonctions
@@ -9,30 +24,17 @@ require_once __DIR__ . '/../Model/function_quizz.php';
 require_once __DIR__ . '/../Model/function_quizz_question.php';
 require_once __DIR__ . '/../Model/function_question.php';
 
-// Récupérer l'ID du quizz depuis l'URL
-if (isset($_GET['id'])) {
-    $quizz_id = (int) $_GET['id'];
-} else {
-    echo "Aucun quizz indiqué.";
-    exit;
-}
+// Récupérer l'ID
+$quizz_id = (int)$_GET['id'];
 
-// Récupération du quizz
-$quiz_id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
-if ($quiz_id <= 0) {
-    $_SESSION['error'] = "Quiz non trouvé";
-    header("Location: /quizzeo/?url=user");
-    exit;
-}
-
-$quizz = getQuizzById($quiz_id);
-
+// Récupérer le quiz
+$quizz = getQuizzById($quizz_id);
 if (!$quizz) {
     echo "<h2>Quizz introuvable.</h2>";
     exit;
 }
 
-// Récupération des questions
+// Récupérer les questions
 $questions = getQuestionsByQuizzId($quizz_id);
 ?>
 
@@ -49,9 +51,11 @@ $questions = getQuestionsByQuizzId($quizz_id);
     <p><?= htmlspecialchars($quizz['description']) ?></p>
 <?php endif; ?>
 
-<form action="?url=submit_quiz" method="POST" id="quiz-form">
-    <!-- ID du quizz -->
-    <input type="hidden" name="quizz_id" value="<?= $quizz_id ?>">
+<!-- LIGNE ~60 - DOIT ÊTRE : -->
+<form action="/quizzeo/?url=submit_quiz" method="POST" id="quiz-form">
+    <!-- Notez : /quizzeo/?url=submit_quiz -->
+    <input type="hidden" name="quiz_id" value="<?= $quizz_id ?>">
+
 
     <form action="?url=submit_quiz" method="POST" id="quiz-form">
     <input type="hidden" name="quizz_id" value="<?= $quizz_id ?>">

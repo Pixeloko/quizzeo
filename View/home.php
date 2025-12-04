@@ -35,7 +35,7 @@ try {
                     
                     <?php if (isset($_SESSION['user_id'])): ?>
                         <!-- Utilisateur connecté : lien vers le quizz -->
-                        <a href="/quizzeo/View/quizz.php?id=<?= (int)$q['quizz_id'] ?>">Répondre au quizz</a>
+                        <a href="/quizzeo/?url=quiz&id=<?= (int)$q['quizz_id'] ?>">Répondre au quizz</a>
 
 
                     <?php else: ?>
