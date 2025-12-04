@@ -1,6 +1,4 @@
 <?php
-// Controller/create_quizz.php
-
 session_start();
 
 // Vérifier la session
@@ -89,20 +87,18 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     // Si pas d'erreurs, créer le quiz
     if (empty($errors)) {
         try {
-            // 1. Créer le quiz
+            // Créer le quiz
             $quiz_id = createQuizz($name, $_SESSION["user_id"]);
             
-            // 2. Créer les questions et réponses
+            // Créer les questions et réponses
             foreach ($questions as $question) {
                 $questionText = trim($question['title']);
                 $point = (int)$question['point'];
                 $correctAnswer = (int)$question['correct_answer'];
                 $answers = $question['answers'];
                 
-                // Créer la question
                 $question_id = createQuestion($quiz_id, $questionText, $point);
                 
-                // Créer les réponses
                 foreach ($answers as $index => $answer) {
                     $answerText = trim($answer['text']);
                     if (!empty($answerText)) {
@@ -112,7 +108,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 }
             }
             
-            // Succès - rediriger vers le dashboard
             $_SESSION["success_message"] = "✅ Quiz créé avec succès !";
             header("Location: ecole");
             exit;
@@ -126,5 +121,4 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     }
 }
 
-// Inclure la vue
 require_once __DIR__ . "/../View/ecole/create_quizz.php";

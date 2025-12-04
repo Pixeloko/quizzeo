@@ -1,7 +1,7 @@
 <?php
 session_start();
 require_once __DIR__ . "/../Model/function_question.php";
-require_once __DIR__ . "/../Model/function_quizz.php"; // si tu veux vérifier le quizz/propriétaire
+require_once __DIR__ . "/../Model/function_quizz.php"; 
 
 if (!isset($_SESSION['user_id']) || !in_array($_SESSION['role'] ?? '', ['ecole', 'entreprise'])) {
     header("Location: ../View/login.php");
@@ -60,14 +60,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         try {
             $question_id = createQuestion($quizz_id, $title, $point);
 
-            // 2) ajouter les 4 réponses et marquer la bonne
+            // Ajouter les 4 réponses et marquer la bonne
             for ($i = 0; $i < 4; $i++) {
                 $is_correct = ($i === $correct_index);
                 addAnswerToQuestion($question_id, $answers[$i], $is_correct);
             }
 
             $_SESSION['message'] = "Question et réponses ajoutées avec succès !";
-            // Tu peux rediriger pour rafraîchir la page et éviter le repost
             header("Location: /../View/create_question.php?quizz_id={$quizz_id}");
             exit;
 

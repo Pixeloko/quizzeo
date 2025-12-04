@@ -8,7 +8,6 @@ $answer = "";
 $point = 0;
 
 if ($_SERVER["REQUEST_METHOD"]  === "POST") {
-    // Je récupère les données du formulaire
     $title = trim($_POST["title"]); 
     $answer = trim($_POST["answer"]);
     $point = isset($_POST["point"]);
@@ -30,7 +29,6 @@ if ($_SERVER["REQUEST_METHOD"]  === "POST") {
     if(empty($errors)) {
         $_SESSION["message"] = "Envoi réussi !";
 
-        // à faire: redirection selon le role
         header('Location : ./View/dashboard_e.php');
         exit;    
     }

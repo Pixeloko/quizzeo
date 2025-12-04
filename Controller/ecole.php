@@ -1,13 +1,13 @@
 <?php
 declare(strict_types=1);
-require_once './Model/function_quizz.php'; // Inclut les fonctions existantes et ajoutées
-require_once './Model/function_question.php'; // Assume un fichier pour les questions (non fourni, mais nécessaire pour lister/ajouter des questions)
+require_once './Model/function_quizz.php'; 
+require_once './Model/function_question.php'; 
 
 class ecoleController
 {
     public function dashboard()
     {
-        $quizzes = getQuizzesByUser($_SESSION['user_id']); // par ex.
+        $quizzes = getQuizzesByUser($_SESSION['user_id']); 
         require_once __DIR__ . '/../View/ecole/dashboard.php';
     }
 
@@ -15,7 +15,7 @@ class ecoleController
 
     public function createForm()
     {
-        // Formulaire de création de quiz (vide au départ)
+        // Créer un nouveau quizz
         require_once './View/ecole/create_quiz.php';
     }
 
@@ -29,8 +29,8 @@ class ecoleController
         }
 
         $questions = getQuestionsByQuizz($quizz_id);
-        // Assume une fonction getAllQuestions() pour lister toutes les questions disponibles
-        $allQuestions = getAllQuestions(); // À implémenter si nécessaire
+        // Récupérer toutes les questions
+        $allQuestions = getAllQuestions(); 
 
         require_once './views/ecole/edit_quiz.php';
     }
@@ -48,7 +48,7 @@ class ecoleController
             exit;
         }
 
-        // Ajouter/supprimer des questions (logique simplifiée)
+        // Ajouter/supprimer des questions
         if (isset($_POST['add_question'])) {
             $question_id = (int) $_POST['question_id'];
             addQuestionToQuizz($quizz_id, $question_id);
