@@ -1,7 +1,7 @@
 <?php
-require_once __DIR__ . '/Model/function_quizz.php';
-require_once __DIR__ . '/Model/function_user.php';
-include __DIR__ . '/View/includes/header.php';
+require_once __DIR__ . '/../Model/function_quizz.php';
+require_once __DIR__ . '/../Model/function_user.php';
+require_once __DIR__ . "/includes/header.php";
 
 
 // Démarrer la session
@@ -44,5 +44,5 @@ try {
         <?php endif; ?>
     </section>
 </main>
-<?php include __DIR__ . '/View/includes/footer.php'; ?>
+<?php include __DIR__ . '/includes/footer.php'; ?>
 

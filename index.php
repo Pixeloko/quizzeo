@@ -13,8 +13,8 @@ switch ($url) {
         break;
 
     case '':
-        require __DIR__ . '/View/home.php';
-        break;
+        header('Location: ./View/home.php');
+        exit;
 
     case 'create':
         require __DIR__ . '/View/create_account.php';
