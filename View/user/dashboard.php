@@ -38,15 +38,151 @@ if ($last_quiz) {
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css">
     <style>
-    body { background-color: #f8f9fa; }
-    .card { border: none; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-    .stat-card { border-left: 4px solid; }
-    .stat-quiz { border-left-color: #007bff; }
-    .stat-score { border-left-color: #ffc107; }
-    .stat-date { border-left-color: #17a2b8; }
-    .stat-available { border-left-color: #28a745; }
-    .progress { height: 6px; }
-    </style>
+:root {
+    --primary-color: #8e79b2;
+    --secondary-color: #e76667;
+    --accent-color: #fddea7;
+    --light-color: #ffffff;
+}
+
+body { 
+    background-color: #ffffff;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.card { 
+    border: none; 
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    border-radius: 8px;
+}
+
+.card.bg-primary {
+    background-color: #8e79b2 !important;
+    border-color: #8e79b2 !important;
+}
+
+.card.bg-primary .card-body h1,
+.card.bg-primary .card-body p {
+    color: #ffffff;
+}
+
+.stat-card { 
+    border-left: 4px solid; 
+    border-radius: 8px;
+}
+
+.stat-quiz { 
+    border-left-color: #8e79b2; 
+}
+
+.stat-score { 
+    border-left-color: #e76667; 
+}
+
+.stat-date { 
+    border-left-color: #fddea7; 
+}
+
+.stat-available { 
+    border-left-color: #8e79b2; 
+}
+
+.progress { 
+    height: 6px; 
+    background-color: #f0f0f0;
+    border-radius: 3px;
+}
+
+.progress-bar {
+    background-color: #8e79b2;
+    border-radius: 3px;
+}
+
+.progress-bar.bg-success {
+    background-color: #8e79b2 !important;
+}
+
+.progress-bar.bg-warning {
+    background-color: #fddea7 !important;
+}
+
+.progress-bar.bg-danger {
+    background-color: #e76667 !important;
+}
+
+.navbar {
+    background-color: #ffffff;
+    border-bottom: 1px solid #8e79b2;
+}
+
+.btn-outline-danger {
+    border-color: #e76667;
+    color: #e76667;
+}
+
+.btn-outline-danger:hover {
+    background-color: #e76667;
+    border-color: #e76667;
+    color: #ffffff;
+}
+
+.btn-primary {
+    background-color: #8e79b2;
+    border-color: #8e79b2;
+    color: #ffffff;
+}
+
+.btn-primary:hover {
+    background-color: #7a68a0;
+    border-color: #7a68a0;
+    color: #ffffff;
+}
+
+.alert-success {
+    background-color: rgba(142, 121, 178, 0.1);
+    border-color: #8e79b2;
+    color: #8e79b2;
+}
+
+.bi-check-circle.text-primary {
+    color: #8e79b2 !important;
+}
+
+.bi-trophy.text-muted {
+    color: #8e79b2 !important;
+    opacity: 0.6;
+}
+
+.text-muted {
+    color: #666666 !important;
+}
+
+.btn-sm {
+    color: #8e79b2;
+}
+
+.btn-sm:hover {
+    color: #7a68a0;
+}
+
+.text-primary {
+    color: #8e79b2 !important;
+}
+
+h1, h3, h4, h5, h6 {
+    color: #8e79b2;
+}
+
+.stat-card .card-body h3,
+.stat-card .card-body h4,
+.stat-card .card-body h5 {
+    color: #333333;
+}
+
+.stat-card .card-body small {
+    color: #666666;
+}
+</style>
 </head>
 <body>
     <div class="container-fluid">
@@ -55,7 +191,7 @@ if ($last_quiz) {
                     <i class="bi bi-box-arrow-right"></i> Déconnexion
                 </a>
                 <a href="/quizzeo/?url=home" class="btn-sm">
-                    <i class="bi bi-house"></i> Accueil
+                    <i class="bi bi-house"></i> Quizz !
                 </a>
             </div>
         </nav>

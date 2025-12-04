@@ -148,7 +148,6 @@ switch ($url) {
         require __DIR__ . '/Controller/store_entreprise.php';
         break;
 
-    // ROUTES DE GESTION DES QUIZZ
     case 'quiz':
         if (isset($_GET['id'])) {
             // Jouer à un quiz spécifique
@@ -156,7 +155,7 @@ switch ($url) {
                 header("Location: $base_url/?url=login");
                 exit;
             }
-            require __DIR__ . '/View/user/play_quiz.php';
+            require __DIR__ . '/View/quizz.php';  // C'est ici que ça devrait pointer
         } else {
             // Liste des quiz
             require __DIR__ . '/View/quizz.php';

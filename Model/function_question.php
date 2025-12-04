@@ -14,6 +14,15 @@ function createQuestion(int $quizz_id, string $question_text, int $point = 1): i
     return (int)$conn->lastInsertId();
 }
 
+
+function getAnswerById(int $answer_id): ?array {
+    $pdo = getDatabase();
+    $stmt = $pdo->prepare("SELECT * FROM answers WHERE id = :id");
+    $stmt->execute(['id' => $answer_id]);
+    $result = $stmt->fetch(PDO::FETCH_ASSOC);
+    return $result ?: null;
+}
+
 function createQuestionEnt(int $quizz_id, string $title, string $type = 'qcm'): int
 {
     $pdo = getDatabase();

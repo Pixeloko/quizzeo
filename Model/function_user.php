@@ -266,11 +266,6 @@ function getAvailableQuizzes($user_id) {
     }
 }
 
-/**
- * Compte le nombre de quiz répondus par un utilisateur
- * @param int $user_id
- * @return int
- */
 function getQuizCountByUser($user_id) {
     try {
         $pdo = getDatabase();
