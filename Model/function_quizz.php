@@ -99,12 +99,37 @@ function getQuizStatus(int $quizz_id): string {
 }
 
 /**
- * Met à jour le statut d'un quiz
+ * Mettre à jour le statut d'un quiz
  */
-function updateQuizzStatus(int $quizz_id, string $status): bool {
-    $conn = getDatabase();
-    $stmt = $conn->prepare("UPDATE quizz SET status = :status WHERE id = :id");
-    return $stmt->execute(['status' => $status, 'id' => $quizz_id]);
+function updateQuizzStatus($quiz_id, $status) {
+    $pdo = getDatabase();
+    $sql = "UPDATE quizz SET status = :status WHERE id = :id";
+    $stmt = $pdo->prepare($sql);
+    return $stmt->execute([
+        'status' => $status,
+        'id' => $quiz_id
+    ]);
+}
+
+/**
+ * Récupérer les questions d'un quiz
+ */
+function getQuestionsByQuizzId($quiz_id) {
+    $pdo = getConnexion();
+    $sql = "SELECT * FROM question WHERE quizz_id = :quiz_id";
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute(['quiz_id' => $quiz_id]);
+    $questions = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    
+    // Récupérer les réponses pour chaque question
+    foreach ($questions as &$question) {
+        $sql_answers = "SELECT * FROM answers WHERE question_id = :question_id";
+        $stmt_answers = $pdo->prepare($sql_answers);
+        $stmt_answers->execute(['question_id' => $question['id']]);
+        $question['answers'] = $stmt_answers->fetchAll(PDO::FETCH_ASSOC);
+    }
+    
+    return $questions;
 }
 
 /**

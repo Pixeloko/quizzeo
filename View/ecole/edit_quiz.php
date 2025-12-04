@@ -129,6 +129,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
     
+    // 5. AJOUTER : Supprimer une question
+    if (isset($_POST['delete_question'])) {
+        $question_id_to_delete = (int)$_POST['delete_question'];
+        
+        // Vérifier que la question appartient au quiz
+        $question_to_delete = getQuestionById($question_id_to_delete);
+        if ($question_to_delete && $question_to_delete['quizz_id'] == $quiz_id) {
+            if (function_exists('deleteQuestion')) {
+                $result = deleteQuestion($question_id_to_delete);
+                
+                if ($result) {
+                    $_SESSION['success'] = "Question supprimée avec succès";
+                } else {
+                    $_SESSION['error'] = "Échec de la suppression de la question";
+                }
+            }
+        } else {
+            $_SESSION['error'] = "Question non trouvée ou non autorisée";
+        }
+    }
+    
     // Redirection
     header("Location: " . $_SERVER['PHP_SELF'] . "?id=" . $quiz_id);
     exit;
@@ -137,26 +158,46 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Éditer le Quiz - Quizzeo</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        body { background-color: #f8f9fa; }
-        .card { border: none; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-        .question-item { border-left: 4px solid #007bff; margin-bottom: 20px; }
-        .answer-item { border: 1px solid #dee2e6; border-radius: 5px; }
-        .correct-answer { border-color: #28a745; background-color: #f8fff9; }
+    body {
+        background-color: #f8f9fa;
+    }
+
+    .card {
+        border: none;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .question-item {
+        border-left: 4px solid #007bff;
+        margin-bottom: 20px;
+    }
+
+    .answer-item {
+        border: 1px solid #dee2e6;
+        border-radius: 5px;
+    }
+
+    .correct-answer {
+        border-color: #28a745;
+        background-color: #f8fff9;
+    }
     </style>
 </head>
+
 <body>
     <div class="container py-4">
         <!-- Navigation -->
         <div class="d-flex justify-content-between align-items-center mb-4">
             <div>
                 <h1 class="h3 mb-1">Éditer : <?= htmlspecialchars($quiz['name']); ?></h1>
-                <p class="text-muted mb-0">ID: <?= $quiz_id; ?> | Statut: 
+                <p class="text-muted mb-0">ID: <?= $quiz_id; ?> | Statut:
                     <span class="badge bg-<?= 
                         $quiz['status'] === 'finished' ? 'success' : 
                         ($quiz['status'] === 'launched' ? 'warning' : 'secondary') 
@@ -175,19 +216,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         <!-- Messages -->
         <?php if (isset($_SESSION['success'])): ?>
-            <div class="alert alert-success alert-dismissible fade show">
-                <?= htmlspecialchars($_SESSION['success']); ?>
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            </div>
-            <?php unset($_SESSION['success']); ?>
+        <div class="alert alert-success alert-dismissible fade show">
+            <?= htmlspecialchars($_SESSION['success']); ?>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        <?php unset($_SESSION['success']); ?>
         <?php endif; ?>
 
         <?php if (isset($_SESSION['error'])): ?>
-            <div class="alert alert-danger alert-dismissible fade show">
-                <?= htmlspecialchars($_SESSION['error']); ?>
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            </div>
-            <?php unset($_SESSION['error']); ?>
+        <div class="alert alert-danger alert-dismissible fade show">
+            <?= htmlspecialchars($_SESSION['error']); ?>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        <?php unset($_SESSION['error']); ?>
         <?php endif; ?>
 
         <div class="row">
@@ -201,17 +242,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <!-- Form pour lancer/terminer -->
                         <form method="POST" class="mb-3">
                             <?php if ($quiz['status'] === 'launched'): ?>
-                                <button type="submit" name="finish_quiz" class="btn btn-success w-100 mb-2">
-                                    <i class="bi bi-stop-circle"></i> Terminer le quiz
-                                </button>
+                            <button type="submit" name="finish_quiz" class="btn btn-success w-100 mb-2">
+                                <i class="bi bi-stop-circle"></i> Terminer le quiz
+                            </button>
                             <?php elseif ($quiz['status'] === 'finished'): ?>
-                                <span class="badge bg-success w-100 p-2 text-center">
-                                    <i class="bi bi-check-circle"></i> Quiz terminé
-                                </span>
+                            <span class="badge bg-success w-100 p-2 text-center">
+                                <i class="bi bi-check-circle"></i> Quiz terminé
+                            </span>
                             <?php else: ?>
-                                <button type="submit" name="launch_quiz" class="btn btn-warning w-100 mb-2">
-                                    <i class="bi bi-play-circle"></i> Lancer le quiz
-                                </button>
+                            <button type="submit" name="launch_quiz" class="btn btn-warning w-100 mb-2">
+                                <i class="bi bi-play-circle"></i> Lancer le quiz
+                            </button>
                             <?php endif; ?>
                         </form>
 
@@ -219,8 +260,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <form method="POST" class="mb-3">
                             <div class="mb-2">
                                 <label class="form-label">Renommer le quiz</label>
-                                <input type="text" name="name" class="form-control" 
-                                       value="<?= htmlspecialchars($quiz['name']); ?>">
+                                <input type="text" name="name" class="form-control"
+                                    value="<?= htmlspecialchars($quiz['name']); ?>">
                             </div>
                             <button type="submit" name="update_name" class="btn btn-outline-primary w-100">
                                 <i class="bi bi-pencil"></i> Renommer
@@ -231,8 +272,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <form method="POST">
                             <div class="mb-2">
                                 <label class="form-label">Ajouter une question</label>
-                                <input type="text" name="new_question" class="form-control" 
-                                       placeholder="Nouvelle question">
+                                <input type="text" name="new_question" class="form-control"
+                                    placeholder="Nouvelle question">
                             </div>
                             <div class="mb-2">
                                 <label class="form-label">Points</label>
@@ -291,58 +332,61 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     </div>
                     <div class="card-body">
                         <?php if (empty($questions)): ?>
-                            <div class="text-center py-4">
-                                <i class="bi bi-question-circle text-muted" style="font-size: 3rem;"></i>
-                                <h5 class="mt-3">Aucune question</h5>
-                                <p class="text-muted">Ajoutez votre première question en utilisant le formulaire à gauche</p>
-                            </div>
+                        <div class="text-center py-4">
+                            <i class="bi bi-question-circle text-muted" style="font-size: 3rem;"></i>
+                            <h5 class="mt-3">Aucune question</h5>
+                            <p class="text-muted">Ajoutez votre première question en utilisant le formulaire à gauche
+                            </p>
+                        </div>
                         <?php else: ?>
-                            <?php foreach ($questions as $index => $question_item): ?>
-                            <div class="question-item p-3 mb-3">
-                                <div class="d-flex justify-content-between align-items-start mb-2">
-                                    <h6 class="mb-0">
-                                        Question <?= $index + 1; ?>
-                                        <span class="badge bg-info ms-2"><?= $question_item['point']; ?> point(s)</span>
-                                    </h6>
-                                    <div>
-                                        <a href="/quizzeo/View/ecole/edit_question.php?id=<?= $question_item['id']; ?>" 
-                                           class="btn btn-sm btn-outline-primary">
-                                            <i class="bi bi-pencil"></i> Éditer
-                                        </a>
-                                        <a href="/quizzeo/Controller/delete_question.php?id=<?= $question_item['id']; ?>&quiz_id=<?= $quiz_id; ?>"
-                                           class="btn btn-sm btn-outline-danger"
-                                           onclick="return confirm('Supprimer cette question ?')">
+                        <?php foreach ($questions as $index => $question_item): ?>
+                        <div class="question-item p-3 mb-3">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <h6 class="mb-0">
+                                    Question <?= $index + 1; ?>
+                                    <span class="badge bg-info ms-2"><?= $question_item['point']; ?> point(s)</span>
+                                </h6>
+                                <div>
+                                    <a href="/quizzeo/View/ecole/edit_question.php?id=<?= $question_item['id']; ?>"
+                                        class="btn btn-sm btn-outline-primary">
+                                        <i class="bi bi-pencil"></i> Éditer
+                                    </a>
+                                    <!-- MODIFICATION : Formulaire de suppression au lieu de lien -->
+                                    <form method="POST" style="display: inline;" 
+                                          onsubmit="return confirm('Supprimer cette question ?')">
+                                        <input type="hidden" name="delete_question" 
+                                               value="<?= $question_item['id']; ?>">
+                                        <button type="submit" class="btn btn-sm btn-outline-danger">
                                             <i class="bi bi-trash"></i>
-                                        </a>
-                                    </div>
+                                        </button>
+                                    </form>
                                 </div>
-                                
-                                <p class="mb-3"><?= htmlspecialchars($question_item['title']); ?></p>
-                                
-                                <!-- Réponses -->
-                                <?php if (!empty($question_item['answers'])): ?>
-                                <div class="answers-container">
-                                    <p class="text-muted small mb-2">Réponses :</p>
-                                    <?php foreach ($question_item['answers'] as $answer): ?>
-                                    <div class="answer-item p-2 mb-1 <?= $answer['is_correct'] ? 'correct-answer' : ''; ?>">
-                                        <div class="form-check d-flex align-items-center">
-                                            <input class="form-check-input me-2" 
-                                                   type="radio" 
-                                                   disabled
-                                                   <?= $answer['is_correct'] ? 'checked' : ''; ?>>
-                                            <span><?= htmlspecialchars($answer['answer_text']); ?></span>
-                                            <?php if ($answer['is_correct']): ?>
-                                                <span class="badge bg-success ms-2">
-                                                    <i class="bi bi-check-circle"></i> Bonne réponse
-                                                </span>
-                                            <?php endif; ?>
-                                        </div>
-                                    </div>
-                                    <?php endforeach; ?>
-                                </div>
-                                <?php endif; ?>
                             </div>
-                            <?php endforeach; ?>
+
+                            <p class="mb-3"><?= htmlspecialchars($question_item['title']); ?></p>
+
+                            <!-- Réponses -->
+                            <?php if (!empty($question_item['answers'])): ?>
+                            <div class="answers-container">
+                                <p class="text-muted small mb-2">Réponses :</p>
+                                <?php foreach ($question_item['answers'] as $answer): ?>
+                                <div class="answer-item p-2 mb-1 <?= $answer['is_correct'] ? 'correct-answer' : ''; ?>">
+                                    <div class="form-check d-flex align-items-center">
+                                        <input class="form-check-input me-2" type="radio" disabled
+                                            <?= $answer['is_correct'] ? 'checked' : ''; ?>>
+                                        <span><?= htmlspecialchars($answer['answer_text']); ?></span>
+                                        <?php if ($answer['is_correct']): ?>
+                                        <span class="badge bg-success ms-2">
+                                            <i class="bi bi-check-circle"></i> Bonne réponse
+                                        </span>
+                                        <?php endif; ?>
+                                    </div>
+                                </div>
+                                <?php endforeach; ?>
+                            </div>
+                            <?php endif; ?>
+                        </div>
+                        <?php endforeach; ?>
                         <?php endif; ?>
                     </div>
                 </div>
@@ -354,16 +398,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css">
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
-    
+
     <script>
-        // Confirmation avant suppression
-        document.querySelectorAll('.btn-outline-danger').forEach(button => {
-            button.addEventListener('click', function(e) {
+    // Confirmation avant suppression (maintenant gérée par le formulaire)
+    document.querySelectorAll('form').forEach(form => {
+        form.addEventListener('submit', function(e) {
+            if (this.querySelector('input[name="delete_question"]')) {
                 if (!confirm('Êtes-vous sûr de vouloir supprimer cette question ?')) {
                     e.preventDefault();
                 }
-            });
+            }
         });
+    });
     </script>
 </body>
 </html>
