@@ -33,7 +33,7 @@ $quizzes = getQuizzByUserId($_SESSION["user_id"]);
             </div>
         </div>
 
-        <!-- Susccès ou erreur ? -->
+        <!-- Succès ou erreur ? -->
         <?php if (isset($_SESSION['message'])): ?>
         <div class="alert alert-success"><?= htmlspecialchars($_SESSION['message']); ?></div>
         <?php unset($_SESSION['message']); ?>
