@@ -1,5 +1,14 @@
 <?php
 
+echo "<pre style='background:#f0f0f0;padding:10px;'>";
+echo "URL demandée: " . ($_GET['url'] ?? 'none') . "\n";
+echo "Fichiers disponibles dans Controller:\n";
+$files = glob(__DIR__ . '/Controller/*.php');
+foreach ($files as $file) {
+    echo "- " . basename($file) . "\n";
+}
+echo "</pre>";
+
 //Vérifier les erreurs
 ini_set('display_errors', 1);
 error_reporting(E_ALL);

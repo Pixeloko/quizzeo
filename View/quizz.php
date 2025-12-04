@@ -45,13 +45,11 @@ $questions = getQuestionsByQuizzId($quizz_id);
 </head>
 <body>
 
-
-
 <?php if (!empty($quizz['description'])): ?>
     <p><?= htmlspecialchars($quizz['description']) ?></p>
 <?php endif; ?>
 
-<form action="index.php?url=submit_quizz" method="POST">
+<form action="/index.php?url=submit_quiz" method="POST" id="quiz-form">
     <!-- ID du quizz -->
     <input type="hidden" name="quizz_id" value="<?= $quizz_id ?>">
 
