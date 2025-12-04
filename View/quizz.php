@@ -18,7 +18,14 @@ if (isset($_GET['id'])) {
 }
 
 // Récupération du quizz
-$quizz = getQuizzById($quizz_id);
+$quiz_id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
+if ($quiz_id <= 0) {
+    $_SESSION['error'] = "Quiz non trouvé";
+    header("Location: /quizzeo/?url=ecole");
+    exit;
+}
+
+$quizz = getQuizzById($quiz_id);
 
 if (!$quizz) {
     echo "<h2>Quizz introuvable.</h2>";
