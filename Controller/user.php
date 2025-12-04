@@ -1,6 +1,4 @@
 <?php
-// Controller/user.php
-
 class UserController
 {
     public function dashboard()

@@ -223,10 +223,6 @@ if (isset($_GET['id'])) {
 
         <div class="card">
             <div class="card-body">
-                <p class="text-muted mb-4">
-                    <i class="bi bi-info-circle"></i>
-                    Ce quiz contient <?= count($questions) ?> question(s). Répondez à toutes les questions.
-                </p>
 
                 <form method="POST" action="/quizzeo/Controller/submit_quiz.php">
                     <input type="hidden" name="quiz_id" value="<?= $quiz_id ?>">

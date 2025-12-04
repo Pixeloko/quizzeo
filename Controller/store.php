@@ -1,11 +1,10 @@
 <?php
-// Controller/store.php
 
-// Activer le débogage
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
-
-session_start();
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+require_once __DIR__ . '/../Model/function_quizz.php';
+require_once __DIR__ . '/../Model/function_question.php';
 
 // Vérifier la session
 if (!isset($_SESSION["user_id"]) || $_SESSION["role"] !== "ecole") {
@@ -14,18 +13,11 @@ if (!isset($_SESSION["user_id"]) || $_SESSION["role"] !== "ecole") {
     exit;
 }
 
-// Inclure les modèles
-require_once __DIR__ . '/../Model/function_quizz.php';
-require_once __DIR__ . '/../Model/function_question.php';
-
 // Initialiser les variables
 $errors = [];
 $success = false;
 
-// Vérifier si c'est une requête POST
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    
-    // Récupérer les données du formulaire
     $name = trim($_POST['name'] ?? '');
     $questions = $_POST['questions'] ?? [];
 
@@ -68,19 +60,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 
-    // Si pas d'erreurs, créer le quiz
+    // Créer le quiz
     if (empty($errors)) {
         try {
             $user_id = $_SESSION['user_id'];
 
-            // 1️⃣ Créer le quiz
+            // Créer le quiz
             $quiz_id = createQuizz($name, $user_id);
             
             if (!$quiz_id) {
                 throw new Exception("Erreur lors de la création du quiz");
             }
 
-            // 2️⃣ Créer les questions et réponses
+            // Créer les questions et réponses
             foreach ($questions as $q_data) {
                 $question_text = trim($q_data['title'] ?? '');
                 $point = (int)($q_data['point'] ?? 1);
@@ -98,7 +90,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 foreach ($q_data['answers'] as $answer) {
                     $answer_text = trim($answer['text'] ?? '');
                     
-                    // Ne pas créer de réponses vides
+                    // Réponses vides interdites
                     if (!empty($answer_text)) {
                         $is_correct = ($answer['id'] == $correct_answer_id);
                         $result = addAnswerToQuestion($question_id, $answer_text, $is_correct);
@@ -111,11 +103,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 }
             }
 
-            // Succès
             $_SESSION["success"] = "✅ Quiz créé avec succès !";
             $_SESSION["quiz_created"] = $quiz_id;
             
-            // Redirection vers le dashboard
             header('Location: /quizzeo/?url=ecole');
             exit;
 
@@ -141,12 +131,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'questions' => $questions
         ];
         
-        // Rediriger vers le formulaire
         header('Location: /quizzeo/?url=ecole/create');
         exit;
     }
 } else {
-    // Si accès direct sans POST, rediriger
+    // Si accès direct sans POST
     $_SESSION["error"] = "Méthode non autorisée";
     header('Location: /quizzeo/?url=ecole');
     exit;
