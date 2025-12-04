@@ -37,17 +37,9 @@
 
             if ($user["role"] === "admin") {
                 header("Location: ../View/admin.php");
-<<<<<<< HEAD
-            } elseif ($user["role"] === "ecole") {
-                header("Location: ecole");
-            } elseif ($user["role"] === "entreprise") {
-                header("Location: ../View/entreprise/dashboard.php");
-            }else {
-=======
             } elseif ($user["role"] === "ecole" || $user["role"] === "entreprise") {
                 header("Location: /quizzeo/ecole");
             } else {
->>>>>>> e9ccf193163ac9958f0792476e9b07cee5d40b87
                 header("Location: ../View/user.php");
             }
             exit;
