@@ -1,17 +1,7 @@
-<IfModule mod_rewrite.c>
-    RewriteEngine On
+RewriteEngine On
+RewriteBase /quizzeo/
 
-    # Interdire uniquement l'accès DIRECT depuis l'URL
-    RewriteRule ^(Controller|Model|config)/.*$ - [L,F]
-
-    # Laisser passer les assets
-    RewriteCond %{REQUEST_URI} ^/assets/ [NC]
-    RewriteRule ^ - [L]
-
-    # Redirection vers index.php
-    RewriteCond %{REQUEST_FILENAME} !-f
-    RewriteCond %{REQUEST_FILENAME} !-d
-    RewriteRule ^(.*)$ index.php?url=$1 [QSA,L]
-</IfModule>
-
-Options -Indexes
+# Si le fichier ou dossier n'existe pas, rediriger vers index.php
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ index.php?url=$1 [QSA,L]

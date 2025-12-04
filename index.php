@@ -1,135 +1,174 @@
 <?php
+// index.php - VERSION CORRIGÉE
 
-echo "<pre style='background:#f0f0f0;padding:10px;'>";
-echo "URL demandée: " . ($_GET['url'] ?? 'none') . "\n";
-echo "Fichiers disponibles dans Controller:\n";
-$files = glob(__DIR__ . '/Controller/*.php');
-foreach ($files as $file) {
-    echo "- " . basename($file) . "\n";
-}
-echo "</pre>";
-
-//Vérifier les erreurs
-ini_set('display_errors', 1);
+// Activation du débogage
 error_reporting(E_ALL);
+ini_set('display_errors', 1);
 
+// Démarrage de session
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 
+// URL de base pour les redirections
+$base_url = 'http://' . $_SERVER['HTTP_HOST'] . '/quizzeo';
+
+// Debug
+echo "<!-- DEBUG: url = " . ($_GET['url'] ?? 'none') . " -->\n";
+echo "<!-- DEBUG: method = " . $_SERVER['REQUEST_METHOD'] . " -->\n";
+
+// Récupérer l'URL demandée
 $url = $_GET['url'] ?? '';
 
+// Router les requêtes
 switch ($url) {
+    // PAGE D'ACCUEIL
+    case '':
+    case 'home':
+        require __DIR__ . '/View/home.php';
+        break;
+
+    // AUTHENTIFICATION
     case 'login':
         require __DIR__ . '/View/login.php';
         break;
 
-    case '':
-        header('Location: ./View/home.php');
-        exit;
-
-    case 'create':
+    case 'create_account':
         require __DIR__ . '/View/create_account.php';
-        break;
-
-    case 'dashboard':
-        if (!isset($_SESSION['user_id'])) {
-            header('Location: /?url=login');
-            exit;
-        }
-        require __DIR__ . '/View/dashboard.php';
-        break;
-
-    case 'user':
-        if (!isset($_SESSION['user_id'])) {
-            require __DIR__ . '/View/user/dashboard.php';
-            exit;
-        }
-        require __DIR__ . '/View/user.php';
         break;
 
     case 'logout':
         require __DIR__ . '/Controller/logout.php';
         break;
 
+    // DASHBOARD UTILISATEUR
+    case 'user':
+        if (!isset($_SESSION['user_id'])) {
+            header("Location: $base_url/?url=login");
+            exit;
+        }
+        // Vérifier l'action demandée
+        if (isset($_GET['action'])) {
+            $action = $_GET['action'];
+            switch ($action) {
+                case 'dashboard':
+                    require __DIR__ . '/View/user/dashboard.php';
+                    break;
+                case 'profile':
+                    require __DIR__ . '/View/user/profile.php';
+                    break;
+                case 'available_quizzes':
+                    require __DIR__ . '/View/user/available_quiz.php';
+                    break;
+                case 'quiz_results':
+                    require __DIR__ . '/View/user/quiz_result.php';
+                    break;
+                default:
+                    require __DIR__ . '/View/user/dashboard.php';
+            }
+        } else {
+            require __DIR__ . '/View/user/dashboard.php';
+        }
+        break;
+
+    // JOUER À UN QUIZ
+    case 'play_quiz':
+        if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'user') {
+            header("Location: $base_url/?url=login");
+            exit;
+        }
+        require __DIR__ . '/View/user/play_quiz.php';
+        break;
+
+    // SOUMETTRE UN QUIZ
+    case 'submit_quiz':
+        if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'user') {
+            header("Location: $base_url/?url=login");
+            exit;
+        }
+        require __DIR__ . '/Controller/submit_quiz.php';
+        break;
+
+    // ADMIN
     case 'admin':
         if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
-            header('Location: /?url=login');
+            header("Location: $base_url/?url=login");
             exit;
         }
         require __DIR__ . '/View/admin.php';
         break;
-    
+
+    // ÉCOLE
     case 'ecole':
-        require_once __DIR__ . '/View/ecole/dashboard.php';
+        if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'ecole') {
+            header("Location: $base_url/?url=login");
+            exit;
+        }
+        require __DIR__ . '/View/ecole/dashboard.php';
         break;
 
     case 'ecole/create':
-        require_once __DIR__ . '/View/ecole/create_quizz.php';
+        if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'ecole') {
+            header("Location: $base_url/?url=login");
+            exit;
+        }
+        require __DIR__ . '/View/ecole/create_quizz.php';
         break;
 
     case 'ecole/store':
-        require_once __DIR__ . '/Controller/store.php';
-        break;
-    
-    // ROUTE UTILISATEUR
-    if ($url === 'user') {
-        require_once './Controller/user.php';
-        $userController = new UserController();
-        
-        // Vérifier l'action demandée
-        if (isset($_GET['action'])) {
-            $action = $_GET['action'];
-            
-            switch ($action) {
-                case 'dashboard':
-                    $userController->dashboard();
-                    break;
-                case 'profile':
-                    $userController->profile();
-                    break;
-                case 'available_quizzes':
-                    $userController->availableQuizzes();
-                    break;
-                case 'quiz_results':
-                    $userController->quizResults();
-                    break;
-                default:
-                    $userController->dashboard();
-            }
-        } else {
-            // Par défaut, afficher le dashboard
-            $userController->dashboard();
+        if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'ecole') {
+            header("Location: $base_url/?url=login");
+            exit;
         }
-        exit;
-    }
-
-    // ROUTE POUR ACCÉDER À UN QUIZ
-    if ($url === 'quiz' && isset($_GET['id'])) {
-        require_once './Controller/user.php';
-        $userController = new UserController();
-        $userController->playQuiz();
-        exit;
-    }
-
-    // ROUTE POUR SOUMETTRE UN QUIZ
-    case 'submit_quiz':
-        require_once __DIR__ . '/Controller/submit_quiz.php';
+        require __DIR__ . '/Controller/store.php';
         break;
-    
 
+    // ENTREPRISE
     case 'entreprise':
-        require_once __DIR__ . '/View/entreprise/dashboard.php';
+        if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'entreprise') {
+            header("Location: $base_url/?url=login");
+            exit;
+        }
+        require __DIR__ . '/View/entreprise/dashboard.php';
         break;
 
     case 'entreprise/create':
-        require_once __DIR__ . '/View/entreprise/create_quizz.php';
+        if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'entreprise') {
+            header("Location: $base_url/?url=login");
+            exit;
+        }
+        require __DIR__ . '/View/entreprise/create_quizz.php';
         break;
 
     case 'entreprise/store':
-        require_once __DIR__ . '/Controller/store_entreprise.php';
+        if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'entreprise') {
+            header("Location: $base_url/?url=login");
+            exit;
+        }
+        require __DIR__ . '/Controller/store_entreprise.php';
         break;
 
+    // ROUTES DE GESTION DES QUIZZ
+    case 'quiz':
+        if (isset($_GET['id'])) {
+            // Jouer à un quiz spécifique
+            if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'user') {
+                header("Location: $base_url/?url=login");
+                exit;
+            }
+            require __DIR__ . '/View/user/play_quiz.php';
+        } else {
+            // Liste des quiz
+            require __DIR__ . '/View/quizz.php';
+        }
+        break;
+
+    // PAGE 404
     default:
         http_response_code(404);
+        echo "<h1>404 - Page non trouvée</h1>";
+        echo "<p>La page '$url' n'existe pas.</p>";
+        echo "<a href='$base_url/'>Retour à l'accueil</a>";
         break;
 }
 ?>
-

@@ -1,17 +1,5 @@
 <?php
-// Controller/submit_quiz.php
 
-// Activer les erreurs pour debug
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
-
-// DEBUG TEMPORAIRE - À RETIRER APRÈS
-echo "<h3>DEBUG: Arrivé dans submit_quiz.php</h3>";
-echo "<pre>";
-echo "Méthode HTTP: " . $_SERVER['REQUEST_METHOD'] . "\n";
-echo "POST reçu: \n";
-print_r($_POST);
-echo "</pre>";
 
 // Démarrage de session
 if (session_status() === PHP_SESSION_NONE) {
@@ -73,15 +61,15 @@ $user_id = $_SESSION['user_id'];
 echo "<p>User ID: $user_id</p>";
 
 // Fonction de connexion - vérifiez le nom exact
-if (!function_exists('getConnexion') && function_exists('getDatabase')) {
-    function getConnexion() {
+if (!function_exists('getDatabase') && function_exists('getDatabase')) {
+    function getDatabase() {
         return getDatabase();
     }
 }
 
 // Obtenir la connexion PDO
 try {
-    $pdo = getConnexion();
+    $pdo = getDatabase();
     echo "<p>Connexion BDD réussie</p>";
 } catch (Exception $e) {
     $_SESSION['error'] = "Erreur de connexion à la base de données";
