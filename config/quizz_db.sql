@@ -63,12 +63,7 @@ CREATE TABLE user_answers (
     FOREIGN KEY (question_id) REFERENCES questions(id) ON DELETE CASCADE,
     FOREIGN KEY (answer_id) REFERENCES answers(id) ON DELETE CASCADE
 );
-
+select * from users;
 INSERT INTO users(role, firstname, lastname, email, password)
 VALUES ('admin', 'Admin', 'admin','admin@gmail.com', '$2y$10$Wh19n.Mm.65eWU4ZfmlexOqPHJvNV7jMJlb1h0PLpEjl.GtgR8pWC');
-
-ALTER TABLE questions
-ADD COLUMN type ENUM('qcm', 'free') NOT NULL DEFAULT 'qcm';
-
-SELECT *FROM users;
-SELECT *FROM quizz;
+ALTER TABLE users ADD COLUMN profile_photo VARCHAR(255) DEFAULT NULL;
