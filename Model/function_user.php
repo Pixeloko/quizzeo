@@ -102,3 +102,68 @@ function deactivateUser($user_id) {
     $stmt = $pdo->prepare($sql);
     return $stmt->execute(['id' => $user_id]);
 }
+
+
+// Model/function_user.php - Ajoutez cette fonction
+
+/**
+ * Récupérer les résultats d'un quiz pour un utilisateur
+ */
+function getUserQuizResults($user_id, $quiz_id) {
+    $pdo = getConnexion();
+    
+    // Vérifier si l'utilisateur a répondu à ce quiz
+    $sql_check = "SELECT id, score, completed_at FROM quizz_user 
+                  WHERE user_id = :user_id AND quizz_id = :quiz_id";
+    $stmt_check = $pdo->prepare($sql_check);
+    $stmt_check->execute(['user_id' => $user_id, 'quiz_id' => $quiz_id]);
+    $attempt = $stmt_check->fetch();
+    
+    if (!$attempt) {
+        return null;
+    }
+    
+    // Récupérer les détails des réponses
+    $sql = "SELECT 
+                q.title as question_text,
+                a.answer_text as selected_answer_text,
+                ca.answer_text as correct_answer_text,
+                ua.is_correct,
+                q.point as question_points
+            FROM user_answers ua
+            JOIN question q ON ua.question_id = q.id
+            JOIN answers a ON ua.answer_id = a.id
+            LEFT JOIN answers ca ON ca.question_id = q.id AND ca.is_correct = 1
+            WHERE ua.quizz_user_id = :quizz_user_id
+            ORDER BY ua.id";
+    
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute(['quizz_user_id' => $attempt['id']]);
+    $answers = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    
+    // Calculer les totaux
+    $total_points = 0;
+    $earned_points = 0;
+    $correct_count = 0;
+    
+    foreach ($answers as $answer) {
+        $total_points += $answer['question_points'];
+        if ($answer['is_correct']) {
+            $earned_points += $answer['question_points'];
+            $correct_count++;
+        }
+    }
+    
+    $percentage = $total_points > 0 ? round(($earned_points / $total_points) * 100, 1) : 0;
+    
+    return [
+        'quiz_id' => $quiz_id,
+        'total_questions' => count($answers),
+        'total_points' => $total_points,
+        'earned_points' => $earned_points,
+        'score_percentage' => $percentage,
+        'correct_count' => $correct_count,
+        'answers' => $answers,
+        'completed_at' => $attempt['completed_at']
+    ];
+}
