@@ -51,9 +51,11 @@ if ($last_quiz) {
 <body>
     <div class="container-fluid">
         <nav class="navbar navbar-light bg-white shadow-sm mb-4">
-            <div class="container">
                 <a href="/quizzeo/?url=logout" class="btn btn-outline-danger btn-sm">
                     <i class="bi bi-box-arrow-right"></i> Déconnexion
+                </a>
+                <a href="/quizzeo/?url=home" class="btn-sm">
+                    <i class="bi bi-house"></i> Accueil
                 </a>
             </div>
         </nav>
