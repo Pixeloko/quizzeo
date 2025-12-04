@@ -20,7 +20,7 @@ $quizzes = getQuizzByUserId($_SESSION["user_id"]);
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard École - Quizzeo</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../assets/style.css">
 </head>
 
 <body>
@@ -28,7 +28,7 @@ $quizzes = getQuizzByUserId($_SESSION["user_id"]);
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h1>Dashboard École</h1>
             <div>
-                <a href="ecole/create" class="btn btn-success">+ Nouveau Quiz</a>
+                <a href="/quizzeo/View/ecole/create_quizz.php" class="btn btn-success">+ Nouveau Quiz</a>
             </div>
         </div>
 
