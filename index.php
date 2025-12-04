@@ -56,6 +56,18 @@ switch ($url) {
         require_once __DIR__ . '/Controller/store.php';
         break;
 
+    case 'entreprise':
+        require_once __DIR__ . '/View/entreprise/dashboard.php';
+        break;
+
+    case 'entreprise/create':
+        require_once __DIR__ . '/View/entreprise/create_quizz.php';
+        break;
+
+    case 'entreprise/store':
+        require_once __DIR__ . '/Controller/store.php';
+        break;
+
     default:
         http_response_code(404);
         break;

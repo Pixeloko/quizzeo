@@ -38,8 +38,10 @@ if (!defined('BASE_URL')) {
                     <?php if (isset($_SESSION["user_id"])): ?>
                         <?php if (isset($_SESSION["role"]) && $_SESSION["role"] === 'admin'): ?>
                             <li><a href="<?= BASE_URL ?>/View/admin.php">Espace Admin</a></li>
-                        <?php elseif (isset($_SESSION["role"]) && ($_SESSION["role"] === 'ecole' || $_SESSION["role"] === 'entreprise')): ?>
+                        <?php elseif (isset($_SESSION["role"]) && ($_SESSION["role"] === 'ecole')): ?>
                             <li><a href="<?= BASE_URL ?>View/ecole/dashboard.php">Espace École</a></li>
+                        <?php elseif (isset($_SESSION["role"]) && ($_SESSION["role"] === 'entreprise')): ?>
+                            <li><a href="<?= BASE_URL ?>View/entreprise/dashboard.php">Espace Entreprise</a></li>
                         <?php endif; ?>
                         
                         <li><a href="<?= BASE_URL ?>/View/profile.php">Profil</a></li>
