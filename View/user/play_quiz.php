@@ -126,8 +126,7 @@ if (empty($questions)) {
         <?php endif; ?>
 
         <!-- Formulaire -->
-        <!-- CORRECTION ICI : URL absolue vers la racine -->
-        <form action="/quizzeo/?url=submit_quizz" method="POST" id="quiz-form">
+        <form action="/quizzeo/?url=submit_quiz" method="POST" id="quiz-form">
             <input type="hidden" name="quiz_id" value="<?= $quiz_id ?>">
             
             <?php if (!empty($questions)): ?>

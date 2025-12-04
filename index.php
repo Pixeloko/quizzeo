@@ -101,10 +101,10 @@ switch ($url) {
     }
 
     // ROUTE POUR SOUMETTRE UN QUIZ
-    if ($url === 'submit_quizz') {
-        require_once './Controller/submit_quiz.php';
-        exit;
-    }
+    case 'submit_quiz':
+        require_once __DIR__ . '/Controller/submit_quiz.php';
+        break;
+    
 
     case 'entreprise':
         require_once __DIR__ . '/View/entreprise/dashboard.php';
