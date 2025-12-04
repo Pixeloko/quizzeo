@@ -27,14 +27,16 @@ $questionCount = !empty($formData['questions']) ? count($formData['questions']) 
 <!DOCTYPE html>
 <html lang="fr">
 <head>
+    <link rel="stylesheet" href="/assets/style.css">
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Créer un Quiz - Quizzeo</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        body { background-color: #f8f9fa; }
+        body { background-color: #6e5a8a(210, 17%, 98%, 1.00); }
         .card { box-shadow: 0 2px 10px rgba(0,0,0,0.1); border: none; }
-        .question-item { border-left: 4px solid #007bff; }
+        .question-item { border-left: 4px solid #ff7b00ff; }
         .answer-item { transition: all 0.3s; }
         .answer-item:hover { background-color: #f8f9fa; }
     </style>
