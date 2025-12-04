@@ -3,6 +3,16 @@
 
 session_start();
 
+// Vérifier si les variables sont définies, sinon les initialiser
+if (!isset($answered_quizzes)) {
+    $answered_quizzes = [];
+}
+
+if (!isset($available_quizzes)) {
+    $available_quizzes = [];
+}
+
+// Vérifier l'authentification
 if (!isset($_SESSION["user_id"]) || $_SESSION["role"] !== "user") {
     header("Location: /quizzeo/?url=login");
     exit;
@@ -11,7 +21,6 @@ if (!isset($_SESSION["user_id"]) || $_SESSION["role"] !== "user") {
 
 <!DOCTYPE html>
 <html lang="fr">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -19,50 +28,14 @@ if (!isset($_SESSION["user_id"]) || $_SESSION["role"] !== "user") {
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css">
     <style>
-    body {
-        background-color: #f8f9fa;
-    }
-
-    .card {
-        border: none;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    }
-
-    .welcome-section {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white;
-    }
-
-    .stat-card {
-        border-left: 4px solid;
-    }
-
-    .stat-card.primary {
-        border-left-color: #007bff;
-    }
-
-    .stat-card.success {
-        border-left-color: #28a745;
-    }
-
-    .stat-card.warning {
-        border-left-color: #ffc107;
-    }
-
-    .stat-card.info {
-        border-left-color: #17a2b8;
-    }
-
-    .quiz-card {
-        transition: transform 0.3s;
-    }
-
-    .quiz-card:hover {
-        transform: translateY(-5px);
-    }
+    body { background-color: #f8f9fa; }
+    .card { border: none; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+    .welcome-section { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; }
+    .stat-card { border-left: 4px solid; }
+    .quiz-card { transition: transform 0.3s; }
+    .quiz-card:hover { transform: translateY(-5px); }
     </style>
 </head>
-
 <body>
     <div class="container-fluid">
         <!-- Navigation -->
@@ -86,10 +59,6 @@ if (!isset($_SESSION["user_id"]) || $_SESSION["role"] !== "user") {
                                 <i class="bi bi-list-check"></i> Quiz disponibles
                             </a>
                         </li>
-                        <!-- Dans View/user/dashboard.php -->
-                        <a href="/quizzeo/?url=quiz&id=<?= $quiz['id']; ?>" class="btn btn-primary">
-                            <i class="bi bi-play"></i> Commencer
-                        </a>
                         <li class="nav-item">
                             <a class="nav-link" href="/quizzeo/?url=user&action=profile">
                                 <i class="bi bi-person"></i> Mon profil
@@ -127,14 +96,16 @@ if (!isset($_SESSION["user_id"]) || $_SESSION["role"] !== "user") {
             <div class="welcome-section rounded-3 p-4 mb-4">
                 <div class="row align-items-center">
                     <div class="col-md-8">
-                        <h1 class="h2 mb-2">Bienvenue,
-                            <?= htmlspecialchars($_SESSION['first_name'] ?? 'Utilisateur'); ?> !</h1>
+                        <h1 class="h2 mb-2">Bienvenue, <?= htmlspecialchars($_SESSION['firstname'] ?? 'Utilisateur'); ?> !</h1>
                         <p class="mb-0">Testez vos connaissances avec nos quiz interactifs</p>
                     </div>
                     <div class="col-md-4 text-end">
-                        <a href="/quizzeo/?url=user&action=available_quizzes" class="btn btn-light btn-lg">
-                            <i class="bi bi-rocket-takeoff"></i> Découvrir les quiz
+                        <?php if (!empty($available_quizzes)): ?>
+                        <a href="/quizzeo/?url=quiz&id=<?= $available_quizzes[0]['id']; ?>" 
+                           class="btn btn-light btn-lg">
+                            <i class="bi bi-rocket-takeoff"></i> Démarrer un quiz
                         </a>
+                        <?php endif; ?>
                     </div>
                 </div>
             </div>
@@ -142,7 +113,7 @@ if (!isset($_SESSION["user_id"]) || $_SESSION["role"] !== "user") {
             <!-- Statistiques -->
             <div class="row mb-4">
                 <div class="col-md-3 mb-3">
-                    <div class="card stat-card primary h-100">
+                    <div class="card stat-card h-100">
                         <div class="card-body">
                             <div class="d-flex justify-content-between align-items-center">
                                 <div>
@@ -155,7 +126,7 @@ if (!isset($_SESSION["user_id"]) || $_SESSION["role"] !== "user") {
                     </div>
                 </div>
                 <div class="col-md-3 mb-3">
-                    <div class="card stat-card success h-100">
+                    <div class="card stat-card h-100">
                         <div class="card-body">
                             <div class="d-flex justify-content-between align-items-center">
                                 <div>
@@ -168,7 +139,7 @@ if (!isset($_SESSION["user_id"]) || $_SESSION["role"] !== "user") {
                     </div>
                 </div>
                 <div class="col-md-3 mb-3">
-                    <div class="card stat-card warning h-100">
+                    <div class="card stat-card h-100">
                         <div class="card-body">
                             <div class="d-flex justify-content-between align-items-center">
                                 <div>
@@ -178,8 +149,8 @@ if (!isset($_SESSION["user_id"]) || $_SESSION["role"] !== "user") {
                                         $total_score = 0;
                                         $quiz_count = 0;
                                         foreach ($answered_quizzes as $quiz) {
-                                            if ($quiz['question_count'] > 0) {
-                                                $score = ($quiz['correct_count'] / $quiz['question_count']) * 100;
+                                            if (isset($quiz['score']) && isset($quiz['question_count']) && $quiz['question_count'] > 0) {
+                                                $score = ($quiz['score'] / ($quiz['question_count'] * 10)) * 100; // Supposons 10 pts max par question
                                                 $total_score += $score;
                                                 $quiz_count++;
                                             }
@@ -194,18 +165,18 @@ if (!isset($_SESSION["user_id"]) || $_SESSION["role"] !== "user") {
                     </div>
                 </div>
                 <div class="col-md-3 mb-3">
-                    <div class="card stat-card info h-100">
+                    <div class="card stat-card h-100">
                         <div class="card-body">
                             <div class="d-flex justify-content-between align-items-center">
                                 <div>
-                                    <h6 class="text-muted mb-1">Activité</h6>
+                                    <h6 class="text-muted mb-1">Dernier quiz</h6>
                                     <h6 class="mb-0">
                                         <?php
                                         if (!empty($answered_quizzes)) {
                                             $last_quiz = $answered_quizzes[0];
-                                            echo date('d/m/Y', strtotime($last_quiz['last_answered']));
+                                            echo date('d/m/Y', strtotime($last_quiz['created_at']));
                                         } else {
-                                            echo 'Aucune';
+                                            echo 'Aucun';
                                         }
                                         ?>
                                     </h6>
@@ -223,10 +194,11 @@ if (!isset($_SESSION["user_id"]) || $_SESSION["role"] !== "user") {
                     <div class="card mb-4">
                         <div class="card-header d-flex justify-content-between align-items-center">
                             <h5 class="mb-0"><i class="bi bi-clock-history"></i> Derniers quiz répondu</h5>
-                            <a href="/quizzeo/?url=user&action=available_quizzes"
-                                class="btn btn-sm btn-outline-primary">
+                            <?php if (!empty($available_quizzes)): ?>
+                            <a href="/quizzeo/?url=user&action=available_quizzes" class="btn btn-sm btn-outline-primary">
                                 Voir tous les quiz
                             </a>
+                            <?php endif; ?>
                         </div>
                         <div class="card-body">
                             <?php if (empty($answered_quizzes)): ?>
@@ -234,9 +206,11 @@ if (!isset($_SESSION["user_id"]) || $_SESSION["role"] !== "user") {
                                 <i class="bi bi-question-circle text-muted" style="font-size: 3rem;"></i>
                                 <h5 class="mt-3">Aucun quiz répondu</h5>
                                 <p class="text-muted">Commencez par répondre à un quiz disponible</p>
-                                <a href="/quizzeo/?url=user&action=available_quizzes" class="btn btn-primary">
-                                    <i class="bi bi-rocket-takeoff"></i> Découvrir les quiz
+                                <?php if (!empty($available_quizzes)): ?>
+                                <a href="/quizzeo/?url=quiz&id=<?= $available_quizzes[0]['id']; ?>" class="btn btn-primary">
+                                    <i class="bi bi-rocket-takeoff"></i> Démarrer un quiz
                                 </a>
+                                <?php endif; ?>
                             </div>
                             <?php else: ?>
                             <div class="table-responsive">
@@ -256,32 +230,31 @@ if (!isset($_SESSION["user_id"]) || $_SESSION["role"] !== "user") {
                                             <td>
                                                 <strong><?= htmlspecialchars($quiz['name']); ?></strong>
                                                 <br>
-                                                <small
-                                                    class="text-muted"><?= htmlspecialchars($quiz['description'] ?? ''); ?></small>
+                                                <small class="text-muted"><?= htmlspecialchars($quiz['description'] ?? ''); ?></small>
                                             </td>
                                             <td>
                                                 <span class="badge bg-info">
-                                                    <?= $quiz['answered_count']; ?>/<?= $quiz['question_count']; ?>
+                                                    <?= isset($quiz['question_count']) ? $quiz['question_count'] : '?'; ?> questions
                                                 </span>
                                             </td>
                                             <td>
                                                 <?php
-                                                $percentage = $quiz['question_count'] > 0 
-                                                    ? round(($quiz['correct_count'] / $quiz['question_count']) * 100, 1) 
-                                                    : 0;
+                                                $score = isset($quiz['score']) ? $quiz['score'] : 0;
+                                                $max_score = isset($quiz['question_count']) ? $quiz['question_count'] * 10 : 100;
+                                                $percentage = $max_score > 0 ? round(($score / $max_score) * 100, 1) : 0;
                                                 $badge_class = $percentage >= 70 ? 'bg-success' : 
                                                                ($percentage >= 50 ? 'bg-warning' : 'bg-danger');
                                                 ?>
                                                 <span class="badge <?= $badge_class; ?>">
-                                                    <?= $percentage; ?>%
+                                                    <?= $score; ?> pts (<?= $percentage; ?>%)
                                                 </span>
                                             </td>
                                             <td>
-                                                <small><?= date('d/m/Y', strtotime($quiz['last_answered'])); ?></small>
+                                                <small><?= date('d/m/Y', strtotime($quiz['created_at'])); ?></small>
                                             </td>
                                             <td>
-                                                <a href="/quizzeo/?url=user&action=quiz_results&id=<?= $quiz['id']; ?>"
-                                                    class="btn btn-sm btn-outline-info">
+                                                <a href="/quizzeo/?url=user&action=quiz_results&id=<?= $quiz['id']; ?>" 
+                                                   class="btn btn-sm btn-outline-info">
                                                     <i class="bi bi-eye"></i> Résultats
                                                 </a>
                                             </td>
@@ -313,16 +286,11 @@ if (!isset($_SESSION["user_id"]) || $_SESSION["role"] !== "user") {
                                 <div class="card-body">
                                     <h6 class="card-title"><?= htmlspecialchars($quiz['name']); ?></h6>
                                     <p class="card-text small text-muted">
-                                        <?= $quiz['question_count']; ?> questions
-                                        <?php if ($quiz['already_answered'] > 0): ?>
-                                        <span class="badge bg-warning float-end">
-                                            Déjà commencé
-                                        </span>
-                                        <?php endif; ?>
+                                        <?= isset($quiz['question_count']) ? $quiz['question_count'] : '0'; ?> questions
                                     </p>
                                     <div class="d-flex justify-content-between">
-                                        <a href="/quizzeo/?url=quiz&id=<?= $quiz['id']; ?>"
-                                            class="btn btn-sm btn-primary">
+                                        <a href="/quizzeo/?url=quiz&id=<?= $quiz['id']; ?>" 
+                                           class="btn btn-sm btn-primary">
                                             <i class="bi bi-play"></i> Commencer
                                         </a>
                                         <small class="text-muted">
@@ -334,8 +302,8 @@ if (!isset($_SESSION["user_id"]) || $_SESSION["role"] !== "user") {
                             <?php endforeach; ?>
                             <?php if (count($available_quizzes) > 3): ?>
                             <div class="text-center mt-3">
-                                <a href="/quizzeo/?url=user&action=available_quizzes"
-                                    class="btn btn-outline-secondary btn-sm">
+                                <a href="/quizzeo/?url=user&action=available_quizzes" 
+                                   class="btn btn-outline-secondary btn-sm">
                                     Voir les <?= count($available_quizzes) - 3; ?> autres quiz
                                 </a>
                             </div>
@@ -343,58 +311,12 @@ if (!isset($_SESSION["user_id"]) || $_SESSION["role"] !== "user") {
                             <?php endif; ?>
                         </div>
                     </div>
-
-                    <!-- Accès rapide -->
-                    <div class="card mt-4">
-                        <div class="card-body">
-                            <h6 class="card-title mb-3"><i class="bi bi-link-45deg"></i> Accès rapide</h6>
-                            <div class="d-grid gap-2">
-                                <a href="/quizzeo/?url=user&action=available_quizzes" class="btn btn-outline-primary">
-                                    <i class="bi bi-list-check"></i> Tous les quiz
-                                </a>
-                                <a href="/quizzeo/?url=user&action=profile" class="btn btn-outline-secondary">
-                                    <i class="bi bi-gear"></i> Mon profil
-                                </a>
-                                <button class="btn btn-outline-info" onclick="shareQuizzeo()">
-                                    <i class="bi bi-share"></i> Partager Quizzeo
-                                </button>
-                            </div>
-                        </div>
-                    </div>
                 </div>
             </div>
         </div>
-
-        <!-- Footer -->
-        <footer class="mt-5 py-4 border-top text-center">
-            <div class="container">
-                <p class="text-muted mb-0">
-                    &copy; <?= date('Y'); ?> Quizzeo. Tous droits réservés.
-                    <span class="mx-2">|</span>
-                    <a href="/quizzeo/?url=user&action=profile" class="text-decoration-none">Mon compte</a>
-                    <span class="mx-2">|</span>
-                    <a href="#" class="text-decoration-none">Contact</a>
-                </p>
-            </div>
-        </footer>
     </div>
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
-
-    <script>
-    function shareQuizzeo() {
-        if (navigator.share) {
-            navigator.share({
-                title: 'Quizzeo - Plateforme de quiz interactifs',
-                text: 'Découvrez Quizzeo, une plateforme de quiz interactifs pour tester vos connaissances !',
-                url: window.location.origin
-            });
-        } else {
-            alert('Partagez ce lien : ' + window.location.origin);
-        }
-    }
-    </script>
 </body>
-
 </html>

@@ -167,3 +167,83 @@ function getUserQuizResults($user_id, $quiz_id) {
         'completed_at' => $attempt['completed_at']
     ];
 }
+
+
+// Model/function_user.php
+
+/**
+ * Récupérer les quiz déjà répondu par l'utilisateur
+ */
+function getAnsweredQuizzes($user_id) {
+    try {
+        $pdo = getConnexion();
+        
+        // Version simple pour commencer
+        $sql = "SELECT DISTINCT q.* 
+                FROM quizz q
+                JOIN quizz_user qu ON q.id = qu.quizz_id
+                WHERE qu.user_id = :user_id
+                ORDER BY qu.completed_at DESC";
+        
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute(['user_id' => $user_id]);
+        
+        $quizzes = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        
+        // Pour chaque quiz, ajouter des statistiques
+        foreach ($quizzes as &$quiz) {
+            // Nombre de questions
+            $sql_questions = "SELECT COUNT(*) as count FROM question WHERE quizz_id = :quiz_id";
+            $stmt_q = $pdo->prepare($sql_questions);
+            $stmt_q->execute(['quiz_id' => $quiz['id']]);
+            $result = $stmt_q->fetch();
+            $quiz['question_count'] = $result['count'];
+            
+            // Score
+            $sql_score = "SELECT score FROM quizz_user 
+                          WHERE quizz_id = :quiz_id AND user_id = :user_id";
+            $stmt_s = $pdo->prepare($sql_score);
+            $stmt_s->execute(['quiz_id' => $quiz['id'], 'user_id' => $user_id]);
+            $score_result = $stmt_s->fetch();
+            $quiz['score'] = $score_result ? $score_result['score'] : 0;
+        }
+        
+        return $quizzes;
+        
+    } catch (Exception $e) {
+        // En cas d'erreur, retourner un tableau vide
+        error_log("Erreur dans getAnsweredQuizzes: " . $e->getMessage());
+        return [];
+    }
+}
+
+/**
+ * Récupérer les quiz disponibles pour un utilisateur
+ */
+function getAvailableQuizzesForUser($user_id) {
+    try {
+        $pdo = getConnexion();
+        
+        $sql = "SELECT q.*, 
+                       COUNT(quest.id) as question_count
+                FROM quizz q
+                LEFT JOIN question quest ON q.id = quest.quizz_id
+                WHERE q.status = 'launched'
+                AND q.is_active = 1
+                AND q.id NOT IN (
+                    SELECT quizz_id FROM quizz_user WHERE user_id = :user_id
+                )
+                GROUP BY q.id
+                HAVING question_count > 0
+                ORDER BY q.created_at DESC";
+        
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute(['user_id' => $user_id]);
+        
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        
+    } catch (Exception $e) {
+        error_log("Erreur dans getAvailableQuizzesForUser: " . $e->getMessage());
+        return [];
+    }
+}

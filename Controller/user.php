@@ -24,7 +24,7 @@ class UserController
         // Récupérer les quiz disponibles
         $available_quizzes = getAvailableQuizzesForUser($user_id);
         
-        // Charger la vue
+        // Charger la vue avec les données
         require_once __DIR__ . '/../View/user/dashboard.php';
     }
     
