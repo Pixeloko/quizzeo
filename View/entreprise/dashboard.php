@@ -89,7 +89,7 @@ $quizzes = getQuizzByUserId($_SESSION["user_id"]);
                                 <td><?= date('d/m/Y', strtotime($quiz['created_at'])); ?></td>
                                 <td>
                                     <?php if ($status !== 'finished'): ?>
-                                    <a href="/quizzeo/View/ecole/edit_quiz.php?id=<?= $quiz['id']; ?>"
+                                    <a href="/quizzeo/View/entreprise/edit_quiz.php?id=<?= $quiz['id']; ?>"
                                         class="btn btn-sm btn-primary">Éditer</a>
 
                                     <a href="/quizzeo/Controller/launch_quiz.php?id=<?= $quiz['id']; ?>"

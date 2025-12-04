@@ -30,7 +30,7 @@ switch ($url) {
 
     case 'user':
         if (!isset($_SESSION['user_id'])) {
-            require __DIR__ . '/View/user.php';
+            require __DIR__ . '/View/user/dashboard.php';
             exit;
         }
         require __DIR__ . '/View/user.php';
@@ -60,22 +60,21 @@ switch ($url) {
         require_once __DIR__ . '/Controller/store.php';
         break;
     
-    // Redirection utilisateur
+    // ROUTE UTILISATEUR
     if ($url === 'user') {
         require_once './Controller/user.php';
         $userController = new UserController();
         
+        // Vérifier l'action demandée
         if (isset($_GET['action'])) {
             $action = $_GET['action'];
+            
             switch ($action) {
                 case 'dashboard':
                     $userController->dashboard();
                     break;
                 case 'profile':
                     $userController->profile();
-                    break;
-                case 'update_profile':
-                    $userController->updateProfile();
                     break;
                 case 'available_quizzes':
                     $userController->availableQuizzes();
@@ -87,15 +86,17 @@ switch ($url) {
                     $userController->dashboard();
             }
         } else {
+            // Par défaut, afficher le dashboard
             $userController->dashboard();
         }
         exit;
     }
 
-
-    // ROUTE POUR ACCÉDER À UN QUIZ (pour les utilisateurs)
+    // ROUTE POUR ACCÉDER À UN QUIZ
     if ($url === 'quiz' && isset($_GET['id'])) {
-        require_once './View/user/play_quiz.php'; 
+        require_once './Controller/user.php';
+        $userController = new UserController();
+        $userController->playQuiz();
         exit;
     }
 
@@ -114,7 +115,7 @@ switch ($url) {
         break;
 
     case 'entreprise/store':
-        require_once __DIR__ . '/Controller/store.php';
+        require_once __DIR__ . '/Controller/store_entreprise.php';
         break;
 
     default:

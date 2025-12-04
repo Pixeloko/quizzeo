@@ -70,6 +70,8 @@ if (isset($_SESSION["user_id"])) {
                             <li><a href="<?= BASE_URL ?>View/ecole/dashboard.php">Espace École</a></li>
                         <?php elseif (isset($_SESSION["role"]) && $_SESSION["role"] === 'entreprise'): ?>
                             <li><a href="<?= BASE_URL ?>View/entreprise/dashboard.php">Espace Entreprise</a></li>
+                        <?php elseif (isset($_SESSION["role"]) && ($_SESSION["role"] === 'user')): ?>
+                            <li><a href="<?= BASE_URL ?>View/user/dashboard.php">Votre espace</a></li>
                         <?php endif; ?>
                         <li><a href="<?= BASE_URL ?>View/profile.php">Profil</a></li>
                         <li><a href="<?= BASE_URL ?>index.php?url=logout">Déconnexion</a></li>

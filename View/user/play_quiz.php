@@ -1,3 +1,49 @@
+<?php
+// View/user/play_quiz.php
+
+// Démarrer la session si ce n'est pas déjà fait
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+// Vérifier l'authentification
+if (!isset($_SESSION["user_id"]) || $_SESSION["role"] !== "user") {
+    header("Location: /quizzeo/?url=login");
+    exit;
+}
+
+// Charger les fonctions
+require_once __DIR__ . '/../Model/function_quizz.php';
+require_once __DIR__ . '/../Model/function_quizz_question.php';
+require_once __DIR__ . '/../Model/function_question.php';
+
+// Récupérer l'ID du quiz depuis l'URL
+$quiz_id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
+if ($quiz_id <= 0) {
+    $_SESSION['error'] = "Quiz non trouvé";
+    header("Location: /quizzeo/?url=user");
+    exit;
+}
+
+// Récupération du quiz
+$quizz = getQuizzById($quiz_id);
+
+if (!$quizz || $quizz['status'] !== 'launched') {
+    $_SESSION['error'] = "Ce quiz n'est pas disponible";
+    header("Location: /quizzeo/?url=user");
+    exit;
+}
+
+// Récupération des questions
+$questions = getQuestionsByQuizzId($quiz_id);
+
+if (empty($questions)) {
+    $_SESSION['error'] = "Ce quiz n'a pas de questions";
+    header("Location: /quizzeo/?url=user");
+    exit;
+}
+?>
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -48,6 +94,15 @@
     </style>
 </head>
 <body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-light bg-white shadow-sm">
+        <div class="container">
+            <a class="navbar-brand fw-bold text-primary" href="/quizzeo/?url=user">
+                <i class="bi bi-house"></i> Retour au dashboard
+            </a>
+        </div>
+    </nav>
+
     <div class="quiz-container py-4">
         <!-- En-tête -->
         <div class="text-center mb-4">
@@ -61,7 +116,17 @@
             <small class="text-muted" id="progress-text">Question 0 sur <?= count($questions); ?></small>
         </div>
 
+        <!-- Messages d'erreur/succès -->
+        <?php if (isset($_SESSION['error'])): ?>
+        <div class="alert alert-danger alert-dismissible fade show mb-4">
+            <?= htmlspecialchars($_SESSION['error']); ?>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        <?php unset($_SESSION['error']); ?>
+        <?php endif; ?>
+
         <!-- Formulaire -->
+        <!-- CORRECTION ICI : URL absolue vers la racine -->
         <form action="/quizzeo/?url=submit_quizz" method="POST" id="quiz-form">
             <input type="hidden" name="quiz_id" value="<?= $quiz_id ?>">
             

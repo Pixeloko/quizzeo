@@ -21,11 +21,28 @@ class UserController
         // Récupérer les quiz déjà répondu
         $answered_quizzes = getAnsweredQuizzes($user_id);
         
-        // Récupérer les quiz disponibles
+        // Récupérer TOUS les quiz actifs (comme sur la home)
+        $all_active_quizzes = getAllActiveQuizzes();
+        
+        // OU: Récupérer les quiz disponibles (non répondu)
         $available_quizzes = getAvailableQuizzesForUser($user_id);
         
-        // Charger la vue
+        // Charger la vue avec les données
         require_once __DIR__ . '/../View/user/dashboard.php';
+    }
+
+    function hasUserAnsweredQuiz($user_id, $quiz_id) {
+        try {
+            $pdo = getConnexion();
+            $sql = "SELECT COUNT(*) as count FROM quizz_user 
+                    WHERE user_id = :user_id AND quizz_id = :quiz_id";
+            $stmt = $pdo->prepare($sql);
+            $stmt->execute(['user_id' => $user_id, 'quiz_id' => $quiz_id]);
+            $result = $stmt->fetch();
+            return $result['count'] > 0;
+        } catch (Exception $e) {
+            return false;
+        }
     }
     
     public function availableQuizzes()
@@ -41,7 +58,16 @@ class UserController
         require_once __DIR__ . '/../Model/function_quizz.php';
         
         $user_id = $_SESSION['user_id'];
-        $available_quizzes = getAvailableQuizzesForUser($user_id);
+        
+        // Récupérer TOUS les quiz actifs
+        $all_quizzes = getAllActiveQuizzes();
+        
+        // Pour savoir lesquels sont déjà répondu
+        $quizzes_with_status = [];
+        foreach ($all_quizzes as $quiz) {
+            $quiz['already_answered'] = hasUserAnsweredQuiz($user_id, $quiz['id']);
+            $quizzes_with_status[] = $quiz;
+        }
         
         require_once __DIR__ . '/../View/user/available_quizzes.php';
     }
