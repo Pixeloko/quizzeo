@@ -1,26 +1,24 @@
 <?php
-// View/ecole/edit_quiz.php
+// --- SESSION ---
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-
-session_start();
-require_once __DIR__ . "/../../Model/function_quizz.php";
-require_once __DIR__ . "/../../Model/function_question.php";
-require_once __DIR__ . "/../../Model/function_quizz_question.php";
-
-// Vérifier l'authentification et le rôle "ecole"
-if (!isset($_SESSION["user_id"]) || $_SESSION["role"] !== "ecole") {
+// --- Vérification du rôle entreprise ---
+if (!isset($_SESSION["user_id"]) || $_SESSION["role"] !== "entreprise") {
     header("Location: /quizzeo/?url=login");
     exit;
 }
+
+require_once __DIR__ . "/../../Model/function_quizz.php";
+require_once __DIR__ . "/../../Model/function_question.php";
+require_once __DIR__ . "/../../Model/function_quizz_question.php";
 
 // Récupérer l'ID du quiz
 $quiz_id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
 if ($quiz_id <= 0) {
     $_SESSION['error'] = "Quiz non trouvé";
-    header("Location: /quizzeo/?url=ecole");
+    header("Location: /quizzeo/?url=entreprise");
     exit;
 }
 
@@ -28,14 +26,14 @@ if ($quiz_id <= 0) {
 $quiz = getQuizzById($quiz_id);
 if (!$quiz) {
     $_SESSION['error'] = "Quiz non trouvé";
-    header("Location: /quizzeo/?url=ecole");
+    header("Location: /quizzeo/?url=entreprise");
     exit;
 }
 
 // Vérifier que l'utilisateur est le propriétaire
 if ($quiz['user_id'] != $_SESSION['user_id']) {
     $_SESSION['error'] = "Accès non autorisé";
-    header("Location: /quizzeo/?url=ecole");
+    header("Location: /quizzeo/?url=entreprise");
     exit;
 }
 
@@ -45,76 +43,83 @@ if (function_exists('GetQuestionsByQuizz_ecole')) {
     $questions = GetQuestionsByQuizz_ecole($quiz_id);
 }
 
-// TRAITEMENT DU FORMULAIRE
+// TRAITEMENT FORMULAIRE
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
-    // 1. Mettre à jour le nom du quiz
+    // 1. Renommer
     if (isset($_POST['update_name'])) {
         $new_name = trim($_POST['name'] ?? '');
-        if (!empty($new_name) && function_exists('updateQuizName')) {
-            $result = updateQuizName($quiz_id, $new_name);
-            if ($result) {
-                $quiz['name'] = $new_name;
+        if ($new_name !== "") {
+            if (updateQuizName($quiz_id, $new_name)) {
                 $_SESSION['success'] = "Nom du quiz mis à jour";
+                $quiz['name'] = $new_name;
             } else {
-                $_SESSION['error'] = "Échec de la mise à jour du nom";
+                $_SESSION['error'] = "Erreur lors du changement de nom";
             }
         } else {
             $_SESSION['error'] = "Le nom ne peut pas être vide";
         }
     }
 
-    // 2. Ajouter une nouvelle question
+    // 2. Ajouter une question
     if (isset($_POST['add_question'])) {
-        $question_text = trim($_POST['new_question'] ?? '');
+        $question_text = trim($_POST['new_question'] ?? "");
         $point = (int)($_POST['new_point'] ?? 1);
 
-        if (!empty($question_text) && function_exists('createQuestion')) {
+        if ($question_text !== "") {
             $question_id = createQuestion($quiz_id, $question_text, $point);
             if ($question_id) {
-                // Ajouter 4 réponses par défaut
+                // réponses par défaut
                 for ($i = 0; $i < 4; $i++) {
-                    $answer_text = "Réponse " . ($i + 1);
-                    $is_correct = ($i === 0);
-                    addAnswerToQuestion($question_id, $answer_text, $is_correct);
+                    addAnswerToQuestion(
+                        $question_id,
+                        "Réponse " . ($i + 1),
+                        $i === 0
+                    );
                 }
-                $_SESSION['success'] = "Question ajoutée avec succès";
+                $_SESSION['success'] = "Question ajoutée";
             } else {
-                $_SESSION['error'] = "Échec de la création de la question";
+                $_SESSION['error'] = "Impossible d’ajouter la question";
             }
-        } else {
-            $_SESSION['error'] = "Le texte de la question ne peut pas être vide";
         }
     }
 
-    // 3. Lancer le quiz
+    // 3. Lancer
     if (isset($_POST['launch_quiz'])) {
         if (empty($questions)) {
             $_SESSION['error'] = "Impossible de lancer un quiz sans questions";
-        } elseif (function_exists('updateQuizzStatus')) {
-            $result = updateQuizzStatus($quiz_id, 'launched');
-            if ($result) {
-                $_SESSION['success'] = "Quiz lancé ! Les étudiants peuvent y répondre.";
-                $quiz['status'] = 'launched';
+        } else {
+            if (updateQuizzStatus($quiz_id, "launched")) {
+                $_SESSION['success'] = "Quiz lancé";
             } else {
-                $_SESSION['error'] = "Échec du lancement du quiz";
+                $_SESSION['error'] = "Erreur lancement quiz";
             }
         }
     }
 
-    // 4. Terminer le quiz
-    if (isset($_POST['finish_quiz']) && function_exists('updateQuizzStatus')) {
-        $result = updateQuizzStatus($quiz_id, 'finished');
-        if ($result) {
+    // 4. Finir
+    if (isset($_POST['finish_quiz'])) {
+        if (updateQuizzStatus($quiz_id, "finished")) {
             $_SESSION['success'] = "Quiz terminé";
-            $quiz['status'] = 'finished';
         } else {
-            $_SESSION['error'] = "Échec de la fin du quiz";
+            $_SESSION['error'] = "Erreur fin quiz";
         }
     }
 
-    // Redirection pour éviter resoumission du formulaire
-    header("Location: " . $_SERVER['PHP_SELF'] . "?id=" . $quiz_id);
+    // 5. Supprimer question
+    if (isset($_POST['delete_question'])) {
+        $qid = (int)$_POST['delete_question'];
+        $q = getQuestionById($qid);
+
+        if ($q && $q["quizz_id"] == $quiz_id) {
+            deleteQuestion($qid);
+            $_SESSION['success'] = "Question supprimée";
+        } else {
+            $_SESSION['error'] = "Question introuvable";
+        }
+    }
+
+    header("Location: /quizzeo/View/entreprise/edit_quiz.php?id=" . $quiz_id);
     exit;
 }
 ?>
@@ -124,175 +129,135 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Éditer le Quiz - Quizzeo</title>
+    <title>Éditer le Quiz - Entreprise</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        body { background-color: #f8f9fa; }
-        .card { border: none; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-        .question-item { border-left: 4px solid #007bff; margin-bottom: 20px; }
+        body { background: #f8f9fa; }
+        .question-item { border-left: 4px solid #007bff; }
         .answer-item { border: 1px solid #dee2e6; border-radius: 5px; }
-        .correct-answer { border-color: #28a745; background-color: #f8fff9; }
+        .correct-answer { background: #f4fff4; border-color: #28a745; }
     </style>
 </head>
+
 <body>
 <div class="container py-4">
-    <!-- Navigation -->
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <div>
-            <h1 class="h3 mb-1">Éditer : <?= htmlspecialchars($quiz['name']); ?></h1>
-            <p class="text-muted mb-0">
-                ID: <?= $quiz_id; ?> | Statut:
-                <span class="badge bg-<?= 
-                    $quiz['status'] === 'finished' ? 'success' :
-                    ($quiz['status'] === 'launched' ? 'warning' : 'secondary') 
-                ?>">
-                    <?= 
-                        $quiz['status'] === 'finished' ? 'Terminé' :
-                        ($quiz['status'] === 'launched' ? 'Lancé' : 'En écriture') 
-                    ?>
-                </span>
-            </p>
-        </div>
-        <a href="/quizzeo/?url=ecole" class="btn btn-outline-primary">← Retour au dashboard</a>
+
+    <div class="d-flex justify-content-between mb-4">
+        <h2>Éditer le quiz : <?= htmlspecialchars($quiz['name']); ?></h2>
+        <a href="/quizzeo/?url=entreprise" class="btn btn-secondary">← Retour</a>
     </div>
 
     <!-- Messages -->
-    <?php if (!empty($_SESSION['success'])): ?>
-        <div class="alert alert-success alert-dismissible fade show">
-            <?= htmlspecialchars($_SESSION['success']); ?>
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        </div>
-        <?php unset($_SESSION['success']); ?>
-    <?php endif; ?>
-    <?php if (!empty($_SESSION['error'])): ?>
-        <div class="alert alert-danger alert-dismissible fade show">
-            <?= htmlspecialchars($_SESSION['error']); ?>
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        </div>
-        <?php unset($_SESSION['error']); ?>
-    <?php endif; ?>
+    <?php if (isset($_SESSION['success'])): ?>
+        <div class="alert alert-success"><?= $_SESSION['success']; ?></div>
+    <?php unset($_SESSION['success']); endif; ?>
+
+    <?php if (isset($_SESSION['error'])): ?>
+        <div class="alert alert-danger"><?= $_SESSION['error']; ?></div>
+    <?php unset($_SESSION['error']); endif; ?>
 
     <div class="row">
-        <!-- Colonne gauche : Actions -->
+        <!-- COL GAUCHE -->
         <div class="col-md-4">
-            <div class="card mb-4">
-                <div class="card-header"><h5 class="mb-0">Actions</h5></div>
+
+            <!-- Renommer -->
+            <div class="card mb-3">
+                <div class="card-header">Renommer</div>
                 <div class="card-body">
-                    <!-- Lancer/terminer -->
-                    <form method="POST" class="mb-3">
-                        <?php if ($quiz['status'] === 'launched'): ?>
-                            <button type="submit" name="finish_quiz" class="btn btn-success w-100 mb-2">
-                                <i class="bi bi-stop-circle"></i> Terminer le quiz
-                            </button>
-                        <?php elseif ($quiz['status'] === 'finished'): ?>
-                            <span class="badge bg-success w-100 p-2 text-center">
-                                <i class="bi bi-check-circle"></i> Quiz terminé
-                            </span>
-                        <?php else: ?>
-                            <button type="submit" name="launch_quiz" class="btn btn-warning w-100 mb-2">
-                                <i class="bi bi-play-circle"></i> Lancer le quiz
-                            </button>
-                        <?php endif; ?>
-                    </form>
-
-                    <!-- Renommer le quiz -->
-                    <form method="POST" class="mb-3">
-                        <div class="mb-2">
-                            <label class="form-label">Renommer le quiz</label>
-                            <input type="text" name="name" class="form-control" value="<?= htmlspecialchars($quiz['name']); ?>">
-                        </div>
-                        <button type="submit" name="update_name" class="btn btn-outline-primary w-100">
-                            <i class="bi bi-pencil"></i> Renommer
-                        </button>
-                    </form>
-
-                    <!-- Ajouter une question -->
                     <form method="POST">
-                        <div class="mb-2">
-                            <label class="form-label">Ajouter une question</label>
-                            <input type="text" name="new_question" class="form-control" placeholder="Nouvelle question">
-                        </div>
-                        <div class="mb-2">
-                            <label class="form-label">Points</label>
-                            <select name="new_point" class="form-select">
-                                <?php for ($i=1; $i<=5; $i++): ?>
-                                    <option value="<?= $i; ?>"><?= $i; ?> point<?= $i>1?'s':''; ?></option>
-                                <?php endfor; ?>
-                            </select>
-                        </div>
-                        <button type="submit" name="add_question" class="btn btn-primary w-100">
-                            <i class="bi bi-plus-circle"></i> Ajouter
-                        </button>
+                        <input type="text" name="name" class="form-control mb-2"
+                               value="<?= htmlspecialchars($quiz['name']); ?>">
+                        <button name="update_name" class="btn btn-primary w-100">Renommer</button>
                     </form>
                 </div>
             </div>
+
+            <!-- Ajouter question -->
+            <div class="card mb-3">
+                <div class="card-header">Nouvelle question</div>
+                <div class="card-body">
+                    <form method="POST">
+                        <input type="text" name="new_question" class="form-control mb-2" placeholder="Question">
+                        <select name="new_point" class="form-select mb-2">
+                            <option value="1">1 point</option>
+                            <option value="2">2 points</option>
+                            <option value="3">3 points</option>
+                        </select>
+                        <button name="add_question" class="btn btn-primary w-100">Ajouter</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Lancer / Finir -->
+            <div class="card mb-3">
+                <div class="card-header">Actions</div>
+                <div class="card-body">
+                    <form method="POST">
+                        <?php if ($quiz['status'] === 'launched'): ?>
+                            <button name="finish_quiz" class="btn btn-success w-100">Terminer le quiz</button>
+                        <?php elseif ($quiz['status'] === 'finished'): ?>
+                            <div class="badge bg-success w-100 p-2 text-center">Quiz terminé</div>
+                        <?php else: ?>
+                            <button name="launch_quiz" class="btn btn-warning w-100">Lancer le quiz</button>
+                        <?php endif; ?>
+                    </form>
+                </div>
+            </div>
+
         </div>
 
-        <!-- Colonne droite : Questions -->
+        <!-- COL DROITE -->
         <div class="col-md-8">
             <div class="card">
                 <div class="card-header">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <h5 class="mb-0">Questions du quiz</h5>
-                        <span class="badge bg-primary"><?= count($questions); ?> questions</span>
-                    </div>
+                    Questions (<?= count($questions); ?>)
                 </div>
                 <div class="card-body">
+
                     <?php if (empty($questions)): ?>
-                        <div class="text-center py-4">
-                            <i class="bi bi-question-circle text-muted" style="font-size: 3rem;"></i>
-                            <h5 class="mt-3">Aucune question</h5>
-                            <p class="text-muted">Ajoutez votre première question en utilisant le formulaire à gauche</p>
-                        </div>
-                    <?php else: ?>
-                        <?php foreach ($questions as $index => $question_item): ?>
-                            <div class="question-item p-3 mb-3">
-                                <div class="d-flex justify-content-between align-items-start mb-2">
-                                    <h6 class="mb-0">
-                                        Question <?= $index + 1; ?>
-                                        <span class="badge bg-info ms-2"><?= $question_item['point']; ?> point(s)</span>
-                                    </h6>
-                                    <div>
-                                        <a href="/quizzeo/View/ecole/edit_question.php?id=<?= $question_item['id']; ?>" 
-                                           class="btn btn-sm btn-outline-primary">
-                                            <i class="bi bi-pencil"></i> Éditer
-                                        </a>
-                                        <a href="/quizzeo/Controller/delete_question.php?id=<?= $question_item['id']; ?>&quiz_id=<?= $quiz_id; ?>"
-                                           class="btn btn-sm btn-outline-danger"
-                                           onclick="return confirm('Supprimer cette question ?')">
-                                            <i class="bi bi-trash"></i>
-                                        </a>
-                                    </div>
-                                </div>
-
-                                <p class="mb-3"><?= htmlspecialchars($question_item['title']); ?></p>
-
-                                <?php if (!empty($question_item['answers'])): ?>
-                                    <div class="answers-container">
-                                        <p class="text-muted small mb-2">Réponses :</p>
-                                        <?php foreach ($question_item['answers'] as $answer): ?>
-                                            <div class="answer-item p-2 mb-1 <?= $answer['is_correct'] ? 'correct-answer' : ''; ?>">
-                                                <div class="form-check d-flex align-items-center">
-                                                    <input class="form-check-input me-2" type="radio" disabled <?= $answer['is_correct'] ? 'checked' : ''; ?>>
-                                                    <span><?= htmlspecialchars($answer['answer_text']); ?></span>
-                                                    <?php if ($answer['is_correct']): ?>
-                                                        <span class="badge bg-success ms-2"><i class="bi bi-check-circle"></i> Bonne réponse</span>
-                                                    <?php endif; ?>
-                                                </div>
-                                            </div>
-                                        <?php endforeach; ?>
-                                    </div>
-                                <?php endif; ?>
-                            </div>
-                        <?php endforeach; ?>
+                        <p class="text-muted">Aucune question.</p>
                     <?php endif; ?>
+
+                    <?php foreach ($questions as $i => $q): ?>
+                        <div class="question-item p-3 mb-3 bg-white">
+
+                            <div class="d-flex justify-content-between mb-2">
+                                <h5>Question <?= $i+1 ?></h5>
+
+                                <div>
+                                    <a href="/quizzeo/View/entreprise/edit_question.php?id=<?= $q['id']; ?>"
+                                       class="btn btn-outline-primary btn-sm">
+                                        Éditer
+                                    </a>
+
+                                    <form method="POST" style="display:inline"
+                                          onsubmit="return confirm('Supprimer ?')">
+                                        <input type="hidden" name="delete_question" value="<?= $q['id']; ?>">
+                                        <button class="btn btn-outline-danger btn-sm">X</button>
+                                    </form>
+                                </div>
+                            </div>
+
+                            <p><?= htmlspecialchars($q['title']); ?></p>
+
+                            <?php if (!empty($q['answers'])): ?>
+                                <?php foreach ($q['answers'] as $ans): ?>
+                                    <div class="answer-item p-2 mb-1 <?= $ans['is_correct'] ? 'correct-answer' : '' ?>">
+                                        <input type="radio" <?= $ans['is_correct'] ? 'checked' : '' ?> disabled>
+                                        <?= htmlspecialchars($ans['answer_text']); ?>
+                                    </div>
+                                <?php endforeach; ?>
+                            <?php endif; ?>
+
+                        </div>
+                    <?php endforeach; ?>
+
                 </div>
             </div>
         </div>
+
     </div>
 </div>
 
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css">
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

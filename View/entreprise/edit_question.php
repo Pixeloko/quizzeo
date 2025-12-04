@@ -47,7 +47,7 @@ $answers = $question['answers'] ?? [];
 
 // Traitement du formulaire
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    
+
     // Mettre à jour la question
     if (isset($_POST['update_question'])) {
         $title = trim($_POST['title'] ?? '');
@@ -60,34 +60,34 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $question['point'] = $point;
             $question['type'] = $type;
             $_SESSION['success'] = "Question mise à jour";
+        } else {
+            $_SESSION['error'] = "Le texte de la question ne peut pas être vide";
         }
     }
-    
+
     // Mettre à jour les réponses (QCM uniquement)
-    if (isset($_POST['update_answers']) && $question['type'] === 'qcm') {
+    if (isset($_POST['update_answers']) && ($question['type'] ?? 'qcm') === 'qcm') {
         $answers_data = $_POST['answers'] ?? [];
         $correct_answer = (int)($_POST['correct_answer'] ?? 0);
-        
+
         foreach ($answers_data as $index => $answer_data) {
             if (isset($answer_data['id']) && !empty($answer_data['id'])) {
                 $answer_id = (int)$answer_data['id'];
                 $answer_text = trim($answer_data['text'] ?? '');
                 $is_correct = ($index == $correct_answer);
-                
+
                 if ($answer_id > 0 && !empty($answer_text)) {
                     updateAnswer($answer_id, $answer_text, $is_correct);
                 }
             }
         }
-        
         $_SESSION['success'] = "Réponses mises à jour";
-        // Recharger les réponses
         $question = getQuestionById($question_id);
         $answers = $question['answers'] ?? [];
     }
-    
+
     // Ajouter une nouvelle réponse (QCM uniquement)
-    if (isset($_POST['add_answer']) && $question['type'] === 'qcm') {
+    if (isset($_POST['add_answer']) && ($question['type'] ?? 'qcm') === 'qcm') {
         $new_answer = trim($_POST['new_answer'] ?? '');
         if (!empty($new_answer)) {
             addAnswerToQuestion($question_id, $new_answer, false);
@@ -96,15 +96,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $answers = $question['answers'] ?? [];
         }
     }
-    
+
     // Supprimer une réponse (QCM uniquement)
-    if (isset($_POST['delete_answer']) && $question['type'] === 'qcm') {
+    if (isset($_POST['delete_answer']) && ($question['type'] ?? 'qcm') === 'qcm') {
         $answer_id = (int)$_POST['delete_answer'];
         deleteAnswer($answer_id);
         $_SESSION['success'] = "Réponse supprimée";
         $question = getQuestionById($question_id);
         $answers = $question['answers'] ?? [];
     }
+
+    // Redirection pour éviter la double soumission
+    header("Location: ?id=" . $question_id);
+    exit;
 }
 ?>
 
@@ -113,7 +117,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Éditer la Question - Quizzeo</title>
+<title>Éditer la Question - Entreprise</title>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css">
 <style>
