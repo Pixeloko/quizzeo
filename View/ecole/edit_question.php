@@ -1,3 +1,120 @@
+<?php
+// View/ecole/edit_question.php
+
+session_start();
+require_once __DIR__ . "/../../Model/function_quizz.php";
+require_once __DIR__ . "/../../Model/function_question.php";
+
+// Vérifier l'authentification
+if (!isset($_SESSION["user_id"]) || $_SESSION["role"] !== "ecole") {
+    header("Location: /quizzeo/?url=login");
+    exit;
+}
+
+// Récupérer l'ID de la question
+$question_id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
+if ($question_id <= 0) {
+    $_SESSION['error'] = "Question non trouvée";
+    header("Location: /quizzeo/?url=ecole");
+    exit;
+}
+
+// Récupérer la question
+$question = getQuestionById($question_id);
+if (!$question) {
+    $_SESSION['error'] = "Question non trouvée";
+    header("Location: /quizzeo/?url=ecole");
+    exit;
+}
+
+// Récupérer le quiz parent
+$quiz = getQuizzById($question['quizz_id']);
+if (!$quiz) {
+    $_SESSION['error'] = "Quiz non trouvé";
+    header("Location: /quizzeo/?url=ecole");
+    exit;
+}
+
+// Vérifier que l'utilisateur est le propriétaire
+if ($quiz['user_id'] != $_SESSION['user_id']) {
+    $_SESSION['error'] = "Accès non autorisé";
+    header("Location: /quizzeo/?url=ecole");
+    exit;
+}
+
+// Récupérer les réponses
+$answers = $question['answers'] ?? [];
+
+// Traitement du formulaire
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    
+    // Mettre à jour la question
+    if (isset($_POST['update_question'])) {
+        $title = trim($_POST['title'] ?? '');
+        $point = (int)($_POST['point'] ?? 1);
+        
+        if (!empty($title)) {
+            updateQuestion($question_id, $title, $point);
+            $question['title'] = $title;
+            $question['point'] = $point;
+            $_SESSION['success'] = "Question mise à jour";
+        }
+    }
+    
+    // Mettre à jour les réponses
+    if (isset($_POST['update_answers'])) {
+        $answers_data = $_POST['answers'] ?? [];
+        $correct_answer = (int)($_POST['correct_answer'] ?? 0);
+        
+        foreach ($answers_data as $index => $answer_data) {
+            if (isset($answer_data['id']) && !empty($answer_data['id'])) {
+                $answer_id = (int)$answer_data['id'];
+                $answer_text = trim($answer_data['text'] ?? '');
+                $is_correct = ($index == $correct_answer);
+                
+                if ($answer_id > 0 && !empty($answer_text)) {
+                    updateAnswer($answer_id, $answer_text, $is_correct);
+                }
+            }
+        }
+        
+        $_SESSION['success'] = "Réponses mises à jour";
+        // Recharger les réponses
+        $question = getQuestionById($question_id);
+        $answers = $question['answers'] ?? [];
+    }
+    
+    // Ajouter une nouvelle réponse
+    if (isset($_POST['add_answer'])) {
+        $new_answer = trim($_POST['new_answer'] ?? '');
+        if (!empty($new_answer)) {
+            addAnswerToQuestion($question_id, $new_answer, false);
+            $_SESSION['success'] = "Nouvelle réponse ajoutée";
+            $question = getQuestionById($question_id);
+            $answers = $question['answers'] ?? [];
+        }
+    }
+    
+    // Supprimer une réponse (AJOUT IMPORTANT)
+    if (isset($_POST['delete_answer'])) {
+        $answer_id = (int)$_POST['delete_answer'];
+        
+        // Vérifier qu'il reste au moins 2 réponses
+        if (count($answers) <= 2) {
+            $_SESSION['error'] = "Une question doit avoir au moins 2 réponses";
+        } else {
+            // Supprimer la réponse
+            deleteAnswer($answer_id);
+            $_SESSION['success'] = "Réponse supprimée";
+            
+            // Recharger les données
+            $question = getQuestionById($question_id);
+            $answers = $question['answers'] ?? [];
+        }
+    }
+}
+?>
+
 <!DOCTYPE html>
 <html lang="fr">
 
@@ -150,7 +267,7 @@
                             Cochez la réponse correcte et modifiez les textes si nécessaire
                         </p>
 
-                        <form method="POST" action="" id="answersForm">
+                        <form method="POST" id="answersForm">
                             <?php foreach ($answers as $index => $answer): ?>
                             <div class="answer-item p-3 mb-3 <?= $answer['is_correct'] ? 'correct-answer' : ''; ?>"
                                 id="answer-<?= $index; ?>">
@@ -168,8 +285,9 @@
                                     </div>
 
                                     <?php if (count($answers) > 2): ?>
-                                    <button type="button" class="btn btn-sm btn-outline-danger delete-answer-btn"
-                                        data-answer-id="<?= $answer['id']; ?>">
+                                    <button type="submit" name="delete_answer" value="<?= $answer['id']; ?>"
+                                        class="btn btn-sm btn-outline-danger"
+                                        onclick="return confirm('Supprimer cette réponse ?')">
                                         <i class="bi bi-trash"></i>
                                     </button>
                                     <?php endif; ?>
@@ -213,29 +331,6 @@
 
     <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Gestion des suppressions de réponses
-        document.querySelectorAll('.delete-answer-btn').forEach(button => {
-            button.addEventListener('click', function() {
-                const answerId = this.getAttribute('data-answer-id');
-                
-                if (confirm('Êtes-vous sûr de vouloir supprimer cette réponse ?')) {
-                    // Créer un formulaire caché pour la suppression
-                    const form = document.createElement('form');
-                    form.method = 'POST';
-                    form.style.display = 'none';
-                    
-                    const input = document.createElement('input');
-                    input.type = 'hidden';
-                    input.name = 'delete_answer';
-                    input.value = answerId;
-                    
-                    form.appendChild(input);
-                    document.body.appendChild(form);
-                    form.submit();
-                }
-            });
-        });
-
         // Mettre en évidence la réponse correcte
         document.querySelectorAll('input[name="correct_answer"]').forEach(radio => {
             radio.addEventListener('change', function() {
@@ -253,21 +348,35 @@
             });
         });
 
+        // Confirmation avant suppression
+        document.querySelectorAll('button[name="delete_answer"]').forEach(button => {
+            button.addEventListener('click', function(e) {
+                if (!confirm('Êtes-vous sûr de vouloir supprimer cette réponse ?')) {
+                    e.preventDefault();
+                }
+            });
+        });
+
         // Validation du formulaire principal
         document.getElementById('answersForm')?.addEventListener('submit', function(e) {
-            const hasCorrect = document.querySelector('input[name="correct_answer"]:checked');
-            if (!hasCorrect) {
-                e.preventDefault();
-                alert('Veuillez sélectionner une réponse correcte');
-                return false;
-            }
+            const submitButton = e.submitter;
             
-            // Vérifier qu'il reste au moins 2 réponses
-            const remainingAnswers = document.querySelectorAll('.answer-item').length;
-            if (remainingAnswers < 2) {
-                e.preventDefault();
-                alert('Une question doit avoir au moins 2 réponses');
-                return false;
+            // Si c'est le bouton "update_answers", valider
+            if (submitButton && submitButton.name === 'update_answers') {
+                const hasCorrect = document.querySelector('input[name="correct_answer"]:checked');
+                if (!hasCorrect) {
+                    e.preventDefault();
+                    alert('Veuillez sélectionner une réponse correcte');
+                    return false;
+                }
+                
+                // Vérifier qu'il reste au moins 2 réponses
+                const remainingAnswers = document.querySelectorAll('.answer-item').length;
+                if (remainingAnswers < 2) {
+                    e.preventDefault();
+                    alert('Une question doit avoir au moins 2 réponses');
+                    return false;
+                }
             }
         });
     });
