@@ -26,6 +26,7 @@ $questionCount = !empty($formData['questions']) ? count($formData['questions']) 
 ?>
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
     <link rel="stylesheet" href="/assets/style.css">
 
@@ -34,28 +35,44 @@ $questionCount = !empty($formData['questions']) ? count($formData['questions']) 
     <title>Créer un Quiz - Quizzeo</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        body { background-color: #6e5a8a(210, 17%, 98%, 1.00); }
-        .card { box-shadow: 0 2px 10px rgba(0,0,0,0.1); border: none; }
-        .question-item { border-left: 4px solid #ff7b00ff; }
-        .answer-item { transition: all 0.3s; }
-        .answer-item:hover { background-color: #f8f9fa; }
+    body {
+        background-color: #6e5a8a(210, 17%, 98%, 1.00);
+    }
+
+    .card {
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        border: none;
+    }
+
+    .question-item {
+        border-left: 4px solid #ff7b00ff;
+    }
+
+    .answer-item {
+        transition: all 0.3s;
+    }
+
+    .answer-item:hover {
+        background-color: #f8f9fa;
+    }
     </style>
 </head>
+
 <body>
     <div class="container py-4">
         <!-- Messages -->
         <?php if ($success): ?>
-            <div class="alert alert-success alert-dismissible fade show">
-                <?= htmlspecialchars($success); ?>
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            </div>
+        <div class="alert alert-success alert-dismissible fade show">
+            <?= htmlspecialchars($success); ?>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
         <?php endif; ?>
-        
+
         <?php if ($error): ?>
-            <div class="alert alert-danger alert-dismissible fade show">
-                <?= htmlspecialchars($error); ?>
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            </div>
+        <div class="alert alert-danger alert-dismissible fade show">
+            <?= htmlspecialchars($error); ?>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
         <?php endif; ?>
 
         <div class="row justify-content-center">
@@ -65,35 +82,30 @@ $questionCount = !empty($formData['questions']) ? count($formData['questions']) 
                         <div class="d-flex justify-content-between align-items-center">
                             <div>
                                 <h1 class="h3 mb-2">Créer un nouveau quiz</h1>
-                                <p class="text-muted mb-0">Remplissez le formulaire ci-dessous</p>
                             </div>
                             <a href="/quizzeo/?url=ecole" class="btn btn-outline-secondary">
                                 ← Retour au dashboard
                             </a>
                         </div>
                     </div>
-                    
+
                     <div class="card-body p-4">
                         <!-- Formulaire -->
                         <form method="POST" action="/quizzeo/?url=ecole/store" id="quizForm">
-                            
+
                             <!-- Nom du quiz -->
                             <div class="mb-4">
                                 <label for="name" class="form-label fw-bold">
-                                    Nom du quiz *
+                                    Nom du quiz
                                     <span class="text-danger" title="Champ obligatoire">*</span>
                                 </label>
-                                <input type="text" 
-                                       class="form-control form-control-lg <?= isset($errors['name']) ? 'is-invalid' : '' ?>" 
-                                       id="name" 
-                                       name="name" 
-                                       value="<?= htmlspecialchars($formData['name'] ?? ''); ?>" 
-                                       placeholder="Ex: Quiz de Mathématiques - Chapitre 3" 
-                                       required>
+                                <input type="text"
+                                    class="form-control form-control-lg <?= isset($errors['name']) ? 'is-invalid' : '' ?>"
+                                    id="name" name="name" value="<?= htmlspecialchars($formData['name'] ?? ''); ?>"
+                                    required>
                                 <?php if (isset($errors['name'])): ?>
-                                    <div class="invalid-feedback d-block"><?= $errors['name']; ?></div>
+                                <div class="invalid-feedback d-block"><?= $errors['name']; ?></div>
                                 <?php endif; ?>
-                                <div class="form-text">Donnez un nom clair et descriptif à votre quiz</div>
                             </div>
 
                             <!-- Section des questions -->
@@ -116,72 +128,66 @@ $questionCount = !empty($formData['questions']) ? count($formData['questions']) 
                                             </button>
                                             <?php endif; ?>
                                         </div>
-                                        
+
                                         <!-- Texte de la question -->
                                         <div class="mb-3">
-                                            <label class="form-label">Texte de la question *</label>
-                                            <input type="text" 
-                                                   class="form-control <?= isset($errors["question_{$q}"]) ? 'is-invalid' : '' ?>" 
-                                                   name="questions[<?= $q; ?>][title]" 
-                                                   value="<?= htmlspecialchars($formData['questions'][$q]['title'] ?? ''); ?>" 
-                                                   required>
+                                            <label class="form-label">Texte de la question</label>
+                                            <input type="text"
+                                                class="form-control <?= isset($errors["question_{$q}"]) ? 'is-invalid' : '' ?>"
+                                                name="questions[<?= $q; ?>][title]"
+                                                value="<?= htmlspecialchars($formData['questions'][$q]['title'] ?? ''); ?>"
+                                                required>
                                             <?php if (isset($errors["question_{$q}"])): ?>
-                                                <div class="invalid-feedback d-block"><?= $errors["question_{$q}"]; ?></div>
+                                            <div class="invalid-feedback d-block"><?= $errors["question_{$q}"]; ?></div>
                                             <?php endif; ?>
                                         </div>
-                                        
+
                                         <!-- Points -->
                                         <div class="mb-3">
-                                            <label class="form-label">Points *</label>
-                                            <input type="number" 
-                                                   class="form-control w-auto <?= isset($errors["point_{$q}"]) ? 'is-invalid' : '' ?>" 
-                                                   name="questions[<?= $q; ?>][point]" 
-                                                   value="<?= htmlspecialchars($formData['questions'][$q]['point'] ?? 1); ?>" 
-                                                   min="1" max="10" 
-                                                   style="width: 100px;" 
-                                                   required>
+                                            <label class="form-label">Points</label>
+                                            <input type="number"
+                                                class="form-control w-auto <?= isset($errors["point_{$q}"]) ? 'is-invalid' : '' ?>"
+                                                name="questions[<?= $q; ?>][point]"
+                                                value="<?= htmlspecialchars($formData['questions'][$q]['point'] ?? 1); ?>"
+                                                min="1" max="10" style="width: 100px;" required>
                                             <?php if (isset($errors["point_{$q}"])): ?>
-                                                <div class="invalid-feedback d-block"><?= $errors["point_{$q}"]; ?></div>
+                                            <div class="invalid-feedback d-block"><?= $errors["point_{$q}"]; ?></div>
                                             <?php endif; ?>
                                         </div>
-                                        
+
                                         <!-- Réponses -->
                                         <div class="answers-container">
                                             <label class="form-label">Réponses *</label>
-                                            <p class="text-muted small mb-2">Cochez la bonne réponse pour chaque question</p>
-                                            
+
+
                                             <?php for ($a = 0; $a < 4; $a++): ?>
                                             <div class="answer-item mb-2 p-2 border rounded">
                                                 <div class="form-check d-flex align-items-center">
-                                                    <input class="form-check-input me-2" 
-                                                           type="radio" 
-                                                           name="questions[<?= $q; ?>][correct_answer]" 
-                                                           value="<?= $a; ?>" 
-                                                           <?= (($formData['questions'][$q]['correct_answer'] ?? 0) == $a) ? 'checked' : ''; ?>
-                                                           <?= $a === 0 && !isset($formData['questions'][$q]['correct_answer']) ? 'checked' : ''; ?>>
-                                                    <input type="text" 
-                                                           class="form-control" 
-                                                           name="questions[<?= $q; ?>][answers][<?= $a; ?>][text]" 
-                                                           value="<?= htmlspecialchars($formData['questions'][$q]['answers'][$a]['text'] ?? ''); ?>" 
-                                                           placeholder="Réponse <?= $a + 1; ?>" 
-                                                           required>
-                                                    <input type="hidden" 
-                                                           name="questions[<?= $q; ?>][answers][<?= $a; ?>][id]" 
-                                                           value="<?= $a; ?>">
+                                                    <input class="form-check-input me-2" type="radio"
+                                                        name="questions[<?= $q; ?>][correct_answer]" value="<?= $a; ?>"
+                                                        <?= (($formData['questions'][$q]['correct_answer'] ?? 0) == $a) ? 'checked' : ''; ?>
+                                                        <?= $a === 0 && !isset($formData['questions'][$q]['correct_answer']) ? 'checked' : ''; ?>>
+                                                    <input type="text" class="form-control"
+                                                        name="questions[<?= $q; ?>][answers][<?= $a; ?>][text]"
+                                                        value="<?= htmlspecialchars($formData['questions'][$q]['answers'][$a]['text'] ?? ''); ?>"
+                                                        placeholder="Réponse <?= $a + 1; ?>" required>
+                                                    <input type="hidden"
+                                                        name="questions[<?= $q; ?>][answers][<?= $a; ?>][id]"
+                                                        value="<?= $a; ?>">
                                                 </div>
                                             </div>
                                             <?php endfor; ?>
-                                            
+
                                             <?php if (isset($errors["answers_{$q}"])): ?>
-                                                <div class="alert alert-warning mt-2"><?= $errors["answers_{$q}"]; ?></div>
+                                            <div class="alert alert-warning mt-2"><?= $errors["answers_{$q}"]; ?></div>
                                             <?php endif; ?>
                                         </div>
                                     </div>
                                     <?php endfor; ?>
                                 </div>
-                                
+
                                 <?php if (isset($errors['questions'])): ?>
-                                    <div class="alert alert-warning"><?= $errors['questions']; ?></div>
+                                <div class="alert alert-warning"><?= $errors['questions']; ?></div>
                                 <?php endif; ?>
                             </div>
 
@@ -205,16 +211,16 @@ $questionCount = !empty($formData['questions']) ? count($formData['questions']) 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css">
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
-    
+
     <script>
-        // Gestion des questions dynamiques
-        let questionCount = <?= $questionCount; ?>;
-        
-        document.getElementById('add-question').addEventListener('click', function() {
-            questionCount++;
-            const container = document.getElementById('questions-container');
-            
-            const template = `
+    // Gestion des questions dynamiques
+    let questionCount = <?= $questionCount; ?>;
+
+    document.getElementById('add-question').addEventListener('click', function() {
+        questionCount++;
+        const container = document.getElementById('questions-container');
+
+        const template = `
                 <div class="question-item mb-4 p-4 border rounded">
                     <div class="d-flex justify-content-between align-items-start mb-3">
                         <h5 class="mb-0">Question ${questionCount}</h5>
@@ -237,78 +243,96 @@ $questionCount = !empty($formData['questions']) ? count($formData['questions']) 
                         <label class="form-label">Réponses *</label>
                         <p class="text-muted small mb-2">Cochez la bonne réponse pour chaque question</p>
                         
-                        ${Array.from({length: 4}, (_, i) => `
-                            <div class="answer-item mb-2 p-2 border rounded">
-                                <div class="form-check d-flex align-items-center">
-                                    <input class="form-check-input me-2" type="radio" name="questions[${questionCount-1}][correct_answer]" value="${i}" ${i === 0 ? 'checked' : ''}>
-                                    <input type="text" class="form-control" name="questions[${questionCount-1}][answers][${i}][text]" placeholder="Réponse ${i + 1}" required>
-                                    <input type="hidden" name="questions[${questionCount-1}][answers][${i}][id]" value="${i}">
-                                </div>
-                            </div>
-                        `).join('')}
+                        ${Array.from({length: 4}, (_, i) => ` <
+            div class = "answer-item mb-2 p-2 border rounded" >
+            <
+            div class = "form-check d-flex align-items-center" >
+            <
+            input class = "form-check-input me-2"
+        type = "radio"
+        name = "questions[${questionCount-1}][correct_answer]"
+        value = "${i}"
+        $ {
+            i === 0 ? 'checked' : ''
+        } >
+        <
+        input type = "text"
+        class = "form-control"
+        name = "questions[${questionCount-1}][answers][${i}][text]"
+        placeholder = "Réponse ${i + 1}"
+        required >
+            <
+            input type = "hidden"
+        name = "questions[${questionCount-1}][answers][${i}][id]"
+        value = "${i}" >
+            <
+            /div> <
+            /div>
+        `).join('')}
                     </div>
                 </div>
             `;
-            
-            container.insertAdjacentHTML('beforeend', template);
-        });
-        
-        // Supprimer une question
-        document.addEventListener('click', function(e) {
-            if (e.target.closest('.remove-question')) {
-                e.target.closest('.question-item').remove();
-                updateQuestionNumbers();
-            }
-        });
-        
-        function updateQuestionNumbers() {
-            const questions = document.querySelectorAll('.question-item');
-            questions.forEach((question, index) => {
-                const title = question.querySelector('h5');
-                if (title) {
-                    title.textContent = `Question ${index + 1}`;
-                }
-                updateQuestionIndexes(question, index);
-            });
-            questionCount = questions.length;
+
+        container.insertAdjacentHTML('beforeend', template);
+    });
+
+    // Supprimer une question
+    document.addEventListener('click', function(e) {
+        if (e.target.closest('.remove-question')) {
+            e.target.closest('.question-item').remove();
+            updateQuestionNumbers();
         }
-        
-        function updateQuestionIndexes(questionElement, newIndex) {
-            // Mettre à jour tous les inputs
-            const inputs = questionElement.querySelectorAll('[name]');
-            inputs.forEach(input => {
-                const name = input.getAttribute('name');
-                const updatedName = name.replace(/questions\[\d+\]/g, `questions[${newIndex}]`);
-                input.setAttribute('name', updatedName);
-            });
-        }
-        
-        // Validation avant soumission
-        document.getElementById('quizForm').addEventListener('submit', function(e) {
-            const questions = document.querySelectorAll('.question-item');
-            
-            if (questions.length === 0) {
-                e.preventDefault();
-                alert('Veuillez ajouter au moins une question');
-                return false;
+    });
+
+    function updateQuestionNumbers() {
+        const questions = document.querySelectorAll('.question-item');
+        questions.forEach((question, index) => {
+            const title = question.querySelector('h5');
+            if (title) {
+                title.textContent = `Question ${index + 1}`;
             }
-            
-            // Vérifier que chaque question a une bonne réponse
-            let isValid = true;
-            questions.forEach((question, index) => {
-                const hasRadioChecked = question.querySelector('input[type="radio"]:checked');
-                if (!hasRadioChecked) {
-                    isValid = false;
-                    question.style.borderColor = '#dc3545';
-                }
-            });
-            
-            if (!isValid) {
-                e.preventDefault();
-                alert('Veuillez sélectionner une bonne réponse pour chaque question');
-                return false;
+            updateQuestionIndexes(question, index);
+        });
+        questionCount = questions.length;
+    }
+
+    function updateQuestionIndexes(questionElement, newIndex) {
+        // Mettre à jour tous les inputs
+        const inputs = questionElement.querySelectorAll('[name]');
+        inputs.forEach(input => {
+            const name = input.getAttribute('name');
+            const updatedName = name.replace(/questions\[\d+\]/g, `questions[${newIndex}]`);
+            input.setAttribute('name', updatedName);
+        });
+    }
+
+    // Validation avant soumission
+    document.getElementById('quizForm').addEventListener('submit', function(e) {
+        const questions = document.querySelectorAll('.question-item');
+
+        if (questions.length === 0) {
+            e.preventDefault();
+            alert('Veuillez ajouter au moins une question');
+            return false;
+        }
+
+        // Vérifier que chaque question a une bonne réponse
+        let isValid = true;
+        questions.forEach((question, index) => {
+            const hasRadioChecked = question.querySelector('input[type="radio"]:checked');
+            if (!hasRadioChecked) {
+                isValid = false;
+                question.style.borderColor = '#dc3545';
             }
         });
+
+        if (!isValid) {
+            e.preventDefault();
+            alert('Veuillez sélectionner une bonne réponse pour chaque question');
+            return false;
+        }
+    });
     </script>
 </body>
+
 </html>

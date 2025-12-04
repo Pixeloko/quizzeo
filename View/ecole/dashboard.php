@@ -27,14 +27,213 @@ $base_url = 'http://' . $_SERVER['HTTP_HOST'];
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css">
     <link rel="stylesheet" href="../assets/style.css">
+    
     <style>
+    /* Couleurs personnalisées */
+    :root {
+        --primary-color: #8e79b2;
+        --secondary-color: #e76667;
+        --accent-color: #fddea7;
+        --light-color: #ffffff;
+    }
+    
+    body {
+        background-color: #f8f9fa;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    
+    .container {
+        max-width: 1200px;
+    }
+    
+    /* Header */
+    .dashboard-header {
+        background: linear-gradient(135deg, var(--primary-color), #6a5b95);
+        color: white;
+        padding: 2rem;
+        border-radius: 15px;
+        margin-bottom: 2rem;
+        box-shadow: 0 4px 12px rgba(142, 121, 178, 0.3);
+    }
+    
+    .dashboard-header h1 {
+        color: white;
+        font-weight: 700;
+    }
+    
+    /* Boutons */
+    .btn-success {
+        background-color: var(--primary-color);
+        border-color: var(--primary-color);
+        color: white;
+        padding: 10px 20px;
+        font-weight: 600;
+        border-radius: 8px;
+    }
+    
+    .btn-success:hover {
+        background-color: #7a68a0;
+        border-color: #7a68a0;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(142, 121, 178, 0.3);
+    }
+    
+    .btn-primary {
+        background-color: var(--primary-color);
+        border-color: var(--primary-color);
+        color: white;
+    }
+    
+    .btn-primary:hover {
+        background-color: #7a68a0;
+        border-color: #7a68a0;
+    }
+    
+    .btn-warning {
+        background-color: var(--accent-color);
+        border-color: var(--accent-color);
+        color: #333;
+    }
+    
+    .btn-warning:hover {
+        background-color: #fcd28f;
+        border-color: #fcd28f;
+    }
+    
+    .btn-danger {
+        background-color: var(--secondary-color);
+        border-color: var(--secondary-color);
+        color: white;
+    }
+    
+    .btn-danger:hover {
+        background-color: #d95556;
+        border-color: #d95556;
+    }
+    
+    .btn-info {
+        background-color: var(--primary-color);
+        border-color: var(--primary-color);
+        color: white;
+    }
+    
+    .btn-info:hover {
+        background-color: #7a68a0;
+        border-color: #7a68a0;
+    }
+    
+    /* Carte */
+    .card {
+        border: none;
+        border-radius: 12px;
+        box-shadow: 0 6px 15px rgba(0, 0, 0, 0.08);
+        overflow: hidden;
+        margin-bottom: 2rem;
+        transition: transform 0.3s ease;
+    }
+    
+    .card:hover {
+        transform: translateY(-5px);
+    }
+    
+    .card-header {
+        background-color: var(--primary-color);
+        color: white;
+        border-bottom: none;
+        padding: 1.2rem 1.5rem;
+        font-weight: 600;
+    }
+    
+    .card-header h3 {
+        color: white;
+        margin: 0;
+        font-weight: 700;
+    }
+    
+    .card-body {
+        background-color: white;
+        padding: 1.5rem;
+    }
+    
+    /* Table */
+    .table {
+        margin-bottom: 0;
+    }
+    
+    .table thead th {
+        background-color: #f8f9fa;
+        border-bottom: 2px solid var(--primary-color);
+        color: var(--primary-color);
+        font-weight: 700;
+        padding: 1rem;
+    }
+    
+    .table tbody td {
+        padding: 1rem;
+        vertical-align: middle;
+        border-color: #eee;
+    }
+    
+    .table tbody tr:hover {
+        background-color: rgba(142, 121, 178, 0.05);
+    }
+    
+    /* Badges */
+    .badge {
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-weight: 600;
+        font-size: 0.85em;
+    }
+    
+    .bg-success {
+        background-color: var(--primary-color) !important;
+    }
+    
+    .bg-warning {
+        background-color: var(--accent-color) !important;
+        color: #333;
+    }
+    
+    .bg-secondary {
+        background-color: #e9ecef !important;
+        color: #6c757d;
+    }
+    
+    .bg-info {
+        background-color: var(--primary-color) !important;
+    }
+    
+    /* Alerts */
+    .alert-success {
+        background-color: rgba(142, 121, 178, 0.15);
+        border-color: var(--primary-color);
+        color: var(--primary-color);
+    }
+    
+    .alert-danger {
+        background-color: rgba(231, 102, 103, 0.15);
+        border-color: var(--secondary-color);
+        color: var(--secondary-color);
+    }
+    
+    /* Bouton copier */
     .copy-link-btn {
         position: relative;
+        background-color: var(--primary-color);
+        border-color: var(--primary-color);
+        color: white;
     }
-
+    
+    .copy-link-btn:hover {
+        background-color: #7a68a0;
+        border-color: #7a68a0;
+        color: white;
+    }
+    
     .tooltip-custom {
         position: absolute;
-        background: #28a745;
+        background: var(--primary-color);
         color: white;
         padding: 5px 10px;
         border-radius: 4px;
@@ -44,10 +243,38 @@ $base_url = 'http://' . $_SERVER['HTTP_HOST'];
         pointer-events: none;
         opacity: 0;
         transition: opacity 0.3s;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.2);
     }
-
+    
     .tooltip-custom.show {
         opacity: 1;
+    }
+    
+    /* Bouton groupe */
+    .btn-group-sm .btn {
+        padding: 0.4rem 0.8rem;
+        border-radius: 6px;
+        margin-right: 5px;
+        font-size: 0.875rem;
+    }
+    
+    .btn-group-sm .btn i {
+        margin-right: 5px;
+    }
+    
+    /* Responsive */
+    @media (max-width: 768px) {
+        .dashboard-header {
+            padding: 1.5rem;
+        }
+        
+        .btn-group {
+            flex-wrap: wrap;
+        }
+        
+        .btn-group-sm .btn {
+            margin-bottom: 5px;
+        }
     }
     </style>
 </head>
@@ -134,7 +361,7 @@ $base_url = 'http://' . $_SERVER['HTTP_HOST'];
                                         <!-- Mode édition -->
                                         <a href="/quizzeo/View/ecole/edit_quiz.php?id=<?= $quiz['id']; ?>"
                                             class="btn btn-primary">
-                                            <i class="bi bi-pencil"></i> Éditer
+                                            <i class="bi"></i> Éditer
                                         </a>
 
                                         <form method="POST"

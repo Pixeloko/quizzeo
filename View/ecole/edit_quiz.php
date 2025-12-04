@@ -166,29 +166,184 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
     body {
-        background-color: #f8f9fa;
+        background-color: #ffffff;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }
 
     .card {
         border: none;
         box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        border-radius: 8px;
+        margin-bottom: 1.5rem;
     }
 
-    .question-item {
-        border-left: 4px solid #007bff;
-        margin-bottom: 20px;
+    .card-header {
+        background-color: #8e79b2;
+        color: #ffffff;
+        border-bottom: none;
+        padding: 1rem 1.5rem;
+        border-radius: 8px 8px 0 0;
+    }
+
+    .card-header.bg-primary {
+        background-color: #8e79b2 !important;
+    }
+
+    .card-header h5 {
+        color: #ffffff;
+        margin: 0;
+        font-weight: 600;
+    }
+
+    .card-body {
+        background-color: #ffffff;
+        padding: 1.5rem;
+    }
+
+    .btn {
+        border-radius: 5px;
+        padding: 8px 16px;
+        font-weight: 500;
+        transition: all 0.3s;
+    }
+
+    .btn-primary {
+        background-color: #8e79b2;
+        border-color: #8e79b2;
+        color: #ffffff;
+    }
+
+    .btn-primary:hover {
+        background-color: #7a68a0;
+        border-color: #7a68a0;
+        color: #ffffff;
+    }
+
+    .btn-success {
+        background-color: #8e79b2;
+        border-color: #8e79b2;
+        color: #ffffff;
+    }
+
+    .btn-success:hover {
+        background-color: #7a68a0;
+        border-color: #7a68a0;
+        color: #ffffff;
+    }
+
+    .btn-outline-secondary {
+        border-color: #cccccc;
+        color: #666666;
+    }
+
+    .btn-outline-secondary:hover {
+        background-color: #f5f5f5;
+        border-color: #bbbbbb;
+        color: #666666;
+    }
+
+    .btn-outline-primary {
+        border-color: #8e79b2;
+        color: #8e79b2;
+    }
+
+    .btn-outline-primary:hover {
+        background-color: #8e79b2;
+        border-color: #8e79b2;
+        color: #ffffff;
+    }
+
+    .btn-outline-danger {
+        border-color: #e76667;
+        color: #e76667;
+    }
+
+    .btn-outline-danger:hover {
+        background-color: #e76667;
+        border-color: #e76667;
+        color: #ffffff;
+    }
+
+    .alert-success {
+        background-color: rgba(142, 121, 178, 0.1);
+        border-color: #8e79b2;
+        color: #8e79b2;
+    }
+
+    .alert-danger {
+        background-color: rgba(231, 102, 103, 0.1);
+        border-color: #e76667;
+        color: #e76667;
     }
 
     .answer-item {
-        border: 1px solid #dee2e6;
+        border: 1px solid #8e79b2;
         border-radius: 5px;
+        padding: 1rem;
+        margin-bottom: 1rem;
+        transition: all 0.3s;
+        background-color: #ffffff;
+    }
+
+    .answer-item:hover {
+        background-color: #ffffff;
+        box-shadow: 0 2px 8px rgba(142, 121, 178, 0.2);
     }
 
     .correct-answer {
-        border-color: #28a745;
-        background-color: #f8fff9;
+        border-color: #8e79b2;
+        background-color: rgba(142, 121, 178, 0.05);
+        box-shadow: 0 2px 8px rgba(142, 121, 178, 0.2);
     }
-    </style>
+
+    .badge {
+        border-radius: 20px;
+        padding: 4px 10px;
+        font-weight: 500;
+        font-size: 0.85rem;
+    }
+
+    .badge.bg-primary {
+        background-color: #8e79b2 !important;
+    }
+
+    .badge.bg-success {
+        background-color: #8e79b2 !important;
+    }
+
+    .form-control {
+        border: 1px solid #dddddd;
+        border-radius: 5px;
+        padding: 8px 12px;
+    }
+
+    .form-control:focus {
+        border-color: #8e79b2;
+        box-shadow: 0 0 0 0.2rem rgba(142, 121, 178, 0.25);
+    }
+
+    .form-check-input:checked {
+        background-color: #8e79b2;
+        border-color: #8e79b2;
+    }
+
+    .form-check-input:focus {
+        border-color: #8e79b2;
+        box-shadow: 0 0 0 0.2rem rgba(142, 121, 178, 0.25);
+    }
+
+    h1, h3, h5 {
+        color: #8e79b2;
+    }
+
+    .text-muted {
+        color: #666666 !important;
+    }
+
+    .btn-close:focus {
+        box-shadow: 0 0 0 0.2rem rgba(142, 121, 178, 0.25);
+    }
+</style>
 </head>
 
 <body>
