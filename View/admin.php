@@ -72,43 +72,64 @@ $quizzes = fetchQuizzes();
     <?php endif ?>
 
     <!-- ======================= UTILISATEURS ======================= -->
-    <h3>Utilisateurs :</h3>
+<h3>Utilisateurs :</h3>
 
-    <?php if (count($users) === 0): ?>
-        <p>Il n'y a pas d'utilisateur pour le moment.</p>
-    <?php else: ?>
-        <table class="admin-table">
-            <thead>
-                <tr>
-                    <th>Prénom</th>
-                    <th>Nom</th>
-                    <th>Date de création</th>
-                    <th>Rôle</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
+<?php if (count($users) === 0): ?>
+    <p>Il n'y a pas d'utilisateur pour le moment.</p>
+<?php else: ?>
+    <table class="admin-table">
+        <thead>
+            <tr>
+                <th>Prénom</th>
+                <th>Nom</th>
+                <th>Date de création</th>
+                <th>Rôle</th>
+                <th>Statut</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
 
-            <tbody>
-                <?php foreach ($users as $user): ?>
-                <tr>
-                    <td><?= htmlspecialchars($user["firstname"]) ?></td>
-                    <td><?= htmlspecialchars($user["lastname"]) ?></td>
-                    <td><?= formatDate($user["created_at"]) ?></td>
-                    <td><?= htmlspecialchars($user["role"]) ?></td>
-                    <td>
-                        <form method="POST" action="activate_account.php?user_id=<?= htmlspecialchars($user['id']) ?>">
-                            <button>Activer</button>
+        <tbody>
+            <?php foreach ($users as $user): 
+                // Déterminer le statut
+                $status = isset($user['is_active']) ? $user['is_active'] : 1;
+            ?>
+            <tr>
+                <td><?= htmlspecialchars($user["firstname"]) ?></td>  <!-- firstname au lieu de firstname -->
+                <td><?= htmlspecialchars($user["lastname"]) ?></td>   <!-- lastname au lieu de lastname -->
+                <td><?= formatDate($user["created_at"]) ?></td>
+                <td><?= htmlspecialchars($user["role"]) ?></td>
+                <td>
+                    <?php if ($status == 1): ?>
+                        <span class="badge bg-success">Actif</span>
+                    <?php else: ?>
+                        <span class="badge bg-danger">Inactif</span>
+                    <?php endif; ?>
+                </td>
+                <td>
+                    <?php if ($status == 0): ?>
+                        <!-- Bouton Activer (visible seulement si inactif) -->
+                        <form method="POST" action="admin.php" style="display:inline-block;">
+                            <input type="hidden" name="user_id" value="<?= htmlspecialchars($user['id']) ?>">
+                            <input type="hidden" name="action" value="activate">
+                            <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
+                            <button type="submit" class="btn btn-success btn-sm">Activer</button>
                         </form>
- 
-                        <form method="POST" action="desactivate_account.php?user_id=<?= htmlspecialchars($task['id']) ?>">
-                            <button>Désactiver</button>
+                    <?php else: ?>
+                        <!-- Bouton Désactiver (visible seulement si actif) -->
+                        <form method="POST" action="admin.php" style="display:inline-block;">
+                            <input type="hidden" name="user_id" value="<?= htmlspecialchars($user['id']) ?>">
+                            <input type="hidden" name="action" value="deactivate">
+                            <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
+                            <button type="submit" class="btn btn-warning btn-sm">Désactiver</button>
                         </form>
-                    </td>
-                </tr>
-                <?php endforeach ?>
-            </tbody>
-        </table>
-    <?php endif ?>
+                    <?php endif; ?>
+                </td>
+            </tr>
+            <?php endforeach ?>
+        </tbody>
+    </table>
+<?php endif; ?>
 
     <!-- ======================= QUIZZ ======================= -->
     <h3>Quizz :</h3>
@@ -127,25 +148,35 @@ $quizzes = fetchQuizzes();
             </thead>
 
             <tbody>
-                <?php foreach ($quizzes as $quiz): ?>
+                <?php foreach ($quizzes as $quiz): 
+                    $quiz_status = isset($quiz['is_active']) ? $quiz['is_active'] : 1;
+                ?>
                 <tr>
                     <td><?= htmlspecialchars($quiz["name"]) ?></td>
                     <td><?= formatDate($quiz["created_at"]) ?></td>
-                    <td><?= htmlspecialchars($quiz["status"]) ?></td>
                     <td>
-                        <form method="POST" action="admin.php" style="display:inline-block;">
-                            <input type="hidden" name="quiz_id" value="<?= htmlspecialchars($quiz['id']) ?>">
-                            <input type="hidden" name="action" value="activate">
-                            <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
-                            <button type="submit">Activer</button>
-                        </form>
-
-                        <form method="POST" action="admin.php" style="display:inline-block;">
-                            <input type="hidden" name="quiz_id" value="<?= htmlspecialchars($quiz['id']) ?>">
-                            <input type="hidden" name="action" value="deactivate">
-                            <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
-                            <button type="submit">Désactiver</button>
-                        </form>
+                        <?php if ($quiz_status == 1): ?>
+                            <span class="badge bg-success">Actif</span>
+                        <?php else: ?>
+                            <span class="badge bg-danger">Inactif</span>
+                        <?php endif; ?>
+                    </td>
+                    <td>
+                        <?php if ($quiz_status == 0): ?>
+                            <form method="POST" action="admin.php" style="display:inline-block;">
+                                <input type="hidden" name="quiz_id" value="<?= htmlspecialchars($quiz['id']) ?>">
+                                <input type="hidden" name="action" value="activate">
+                                <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
+                                <button type="submit" class="btn btn-success btn-sm">Activer</button>
+                            </form>
+                        <?php else: ?>
+                            <form method="POST" action="admin.php" style="display:inline-block;">
+                                <input type="hidden" name="quiz_id" value="<?= htmlspecialchars($quiz['id']) ?>">
+                                <input type="hidden" name="action" value="deactivate">
+                                <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
+                                <button type="submit" class="btn btn-warning btn-sm">Désactiver</button>
+                            </form>
+                        <?php endif; ?>
                     </td>
                 </tr>
                 <?php endforeach ?>

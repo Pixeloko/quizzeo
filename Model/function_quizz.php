@@ -115,7 +115,7 @@ function updateQuizzStatus($quiz_id, $status) {
  * Récupérer les questions d'un quiz
  */
 function getQuestionsByQuizzId($quiz_id) {
-    $pdo = getConnexion();
+    $pdo = getDatabase();
     $sql = "SELECT * FROM question WHERE quizz_id = :quiz_id";
     $stmt = $pdo->prepare($sql);
     $stmt->execute(['quiz_id' => $quiz_id]);
@@ -167,4 +167,43 @@ function getQuizzResults(int $quizz_id): array {
     }
     
     return $results ?: [];
+}
+
+// Model/function_quizz.php
+
+/**
+ * Activer un quiz
+ */
+function activateQuiz($quiz_id) {
+    $pdo = getDatabase();
+    $sql = "UPDATE quizz SET is_active = 1 WHERE id = :id";
+    $stmt = $pdo->prepare($sql);
+    return $stmt->execute(['id' => $quiz_id]);
+}
+
+/**
+ * Désactiver un quiz
+ */
+function deactivateQuiz($quiz_id) {
+    $pdo = getDatabase();
+    $sql = "UPDATE quizz SET is_active = 0 WHERE id = :id";
+    $stmt = $pdo->prepare($sql);
+    return $stmt->execute(['id' => $quiz_id]);
+}
+
+
+// Model/function_quizz.php
+
+/**
+ * Récupérer tous les quiz
+ */
+function fetchQuizzes() {
+    $pdo = getDatabase();
+    $sql = "SELECT q.*, u.firstname, u.lastname 
+            FROM quizz q 
+            LEFT JOIN users u ON q.user_id = u.id 
+            ORDER BY q.created_at DESC";
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute();
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }

@@ -17,11 +17,19 @@ function getUserById(int $id): ?array {
     return $stmt->fetch() ?: null ;
 }
 
-function getUsers(): ?array {
-    $conn = getDatabase();
-    $stmt = $conn->prepare("SELECT * FROM users WHERE role != 'admin'");
+// Model/function_user.php
+
+/**
+ * Récupérer tous les utilisateurs
+ */
+function fetchUsers() {
+    $pdo = getDatabase();
+    $sql = "SELECT id, firstname, lastname, email, role, is_active, created_at 
+            FROM users 
+            ORDER BY created_at DESC";
+    $stmt = $pdo->prepare($sql);
     $stmt->execute();
-    return $stmt->fetchAll() ?: null;
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 
 function getUserByEmail(string $email): ?array {
@@ -75,41 +83,22 @@ function deleteUser(int $id): bool {
     return $stmt->rowCount() > 0;
 }
 
-function setActiveUser($userId)
-{
-    $conn = getDatabase();
-    try {
-        $stmt = $conn->prepare("UPDATE users SET is_active = 1 WHERE id = :id");
-        $stmt->execute([
-            "id" => $userId
-        ]);
-
-        // Vérifie le changement
-        if ($stmt->rowCount() > 0) {
-            $_SESSION['message'] = "Succès";
-        } else {
-            $_SESSION['message'] = "Erreur, l'utilisateur n'existe pas ou est déjà actif";
-        }
-    } catch (PDOException $e) {
-        $_SESSION['error'] = "Database error: " . $e->getMessage();
-    }
+/**
+ * Activer un utilisateur
+ */
+function activateUser($user_id) {
+    $pdo = getDatabase();
+    $sql = "UPDATE users SET is_active = 1 WHERE id = :id";
+    $stmt = $pdo->prepare($sql);
+    return $stmt->execute(['id' => $user_id]);
 }
 
-function setInactiveUser($userId)
-{
-    $conn = getDatabase();
-    try {
-    $stmt = $conn->prepare("UPDATE users SET is_active = 0 WHERE id = :id");
-    $stmt->execute([
-        "id" => $userId
-    ]);
-
-    if ($stmt->rowCount() > 0) {
-        $_SESSION['message'] = "Utilisateur désactivé";
-    } else {
-        $_SESSION['message'] = "Pas de changement, utilisateur inexistant ou déjà inactif";
-    }
-    } catch (PDOException $e) {
-        $_SESSION['error'] = "Database error: " . $e->getMessage();
-    }
+/**
+ * Désactiver un utilisateur
+ */
+function deactivateUser($user_id) {
+    $pdo = getDatabase();
+    $sql = "UPDATE users SET is_active = 0 WHERE id = :id";
+    $stmt = $pdo->prepare($sql);
+    return $stmt->execute(['id' => $user_id]);
 }
