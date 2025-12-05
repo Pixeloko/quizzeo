@@ -1,8 +1,5 @@
 <?php
 
-// Activation du débogage
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
 
 // Démarrage de session
 if (session_status() === PHP_SESSION_NONE) {
