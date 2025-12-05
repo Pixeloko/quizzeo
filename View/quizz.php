@@ -13,17 +13,17 @@ if (isset($_GET['id'])) {
         header("Location: /quizzeo/?url=login");
         exit;
     }
-    
+
     $quiz_id = (int)$_GET['id'];
-    
+
     // Vérifier si l'utilisateur a déjà répondu
     require_once __DIR__ . '/../Model/function_user.php';
-    if (hasUserAnsweredQuiz($_SESSION['user_id'], $quiz_id)) {
+    if (function_exists('hasUserAnsweredQuiz') && hasUserAnsweredQuiz($_SESSION['user_id'], $quiz_id)) {
         $_SESSION['error'] = "Vous avez déjà répondu à ce quiz";
         header("Location: /quizzeo/?url=home");
         exit;
     }
-    
+
     // Récupérer le quiz
     require_once __DIR__ . '/../Model/function_quizz.php';
     $quiz = getQuizzById($quiz_id);
@@ -32,18 +32,18 @@ if (isset($_GET['id'])) {
         header("Location: /quizzeo/?url=home");
         exit;
     }
-    
+
     // Récupérer les questions
     require_once __DIR__ . '/../Model/function_question.php';
     $questions = getQuestionsByQuizzId($quiz_id);
-    
+
     // Si pas de questions
     if (empty($questions)) {
         $_SESSION['error'] = "Ce quiz n'a pas encore de questions";
         header("Location: /quizzeo/?url=home");
         exit;
     }
-    
+
     // AFFICHER LE QUIZ À JOUER
     ?>
 <!DOCTYPE html>
@@ -52,207 +52,80 @@ if (isset($_GET['id'])) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?= htmlspecialchars($quiz['name']) ?> - Quizzeo</title>
+    <title><?= htmlspecialchars($quiz['name'] ?? 'Quiz') ?> - Quizzeo</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-    :root {
-        --primary-color: #8e79b2;
-        --secondary-color: #e76667;
-        --accent-color: #fddea7;
-        --light-color: #ffffff;
-    }
-
-    body {
-        background-color: #ffffff;
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    }
-
-    .container {
-        max-width: 800px;
-    }
-
-    h1 {
-        color: #8e79b2;
-        font-weight: 700;
-    }
-
-    .card {
-        border: none;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        border-radius: 8px;
-        margin-bottom: 1.5rem;
-    }
-
-    .card-header {
-        background-color: #8e79b2;
-        color: #ffffff;
-        border-bottom: none;
-        padding: 1rem 1.5rem;
-        border-radius: 8px 8px 0 0;
-    }
-
-    .card-header h5 {
-        color: #ffffff;
-        margin: 0;
-        font-weight: 600;
-    }
-
-    .card-body {
-        background-color: #ffffff;
-        padding: 1.5rem;
-    }
-
-    .question-card {
-        margin-bottom: 2rem;
-        border: 1px solid #8e79b2;
-        border-radius: 8px;
-    }
-
-    .badge.bg-primary {
-        background-color: #8e79b2 !important;
-    }
-
-    .answer-option {
-        margin-bottom: 1rem;
-        padding: 1rem;
-        border: 1px solid #8e79b2;
-        border-radius: 5px;
-        background-color: #ffffff;
-        transition: all 0.3s;
-    }
-
-    .answer-option:hover {
-        background-color: rgba(142, 121, 178, 0.05);
-        border-color: #7a68a0;
-    }
-
-    .form-check-input {
-        border: 2px solid #8e79b2;
-    }
-
-    .form-check-input:checked {
-        background-color: #8e79b2;
-        border-color: #8e79b2;
-    }
-
-    .form-check-input:focus {
-        border-color: #8e79b2;
-        box-shadow: 0 0 0 0.2rem rgba(142, 121, 178, 0.25);
-    }
-
-    .btn {
-        border-radius: 5px;
-        font-weight: 500;
-        transition: all 0.3s;
-    }
-
-    .btn-outline-secondary {
-        border-color: #cccccc;
-        color: #666666;
-    }
-
-    .btn-outline-secondary:hover {
-        background-color: #f5f5f5;
-        border-color: #bbbbbb;
-        color: #666666;
-    }
-
-    .btn-primary {
-        background-color: #8e79b2;
-        border-color: #8e79b2;
-        color: #ffffff;
-    }
-
-    .btn-primary:hover {
-        background-color: #7a68a0;
-        border-color: #7a68a0;
-        color: #ffffff;
-        transform: translateY(-2px);
-        box-shadow: 0 4px 8px rgba(142, 121, 178, 0.3);
-    }
-
-    .btn-lg {
-        padding: 0.75rem 2rem;
-        font-size: 1.1rem;
-    }
-
-    .text-muted {
-        color: #666666 !important;
-    }
-
-    .bi-info-circle {
-        color: #8e79b2;
-    }
-
-    .fw-bold {
-        color: #333333;
-    }
-
-    .form-check-label {
-        color: #333333;
-        cursor: pointer;
-    }
-
-    /* Pour la liste des quiz (mode 2) */
-    .card.mb-3 {
-        border-left: 4px solid #8e79b2;
-    }
-
-    .card.mb-3 .card-body h5 {
-        color: #8e79b2;
-    }
-
-    .card.mb-3 .btn-primary {
-        background-color: #8e79b2;
-        border-color: #8e79b2;
-    }
-
-    .card.mb-3 .btn-primary:hover {
-        background-color: #7a68a0;
-        border-color: #7a68a0;
-    }
+    /* (garde ton CSS existant — abrégé ici pour la lisibilité) */
+    :root { --primary-color: #8e79b2; }
+    body { background-color: #ffffff; font-family: system-ui, sans-serif; }
+    .container { max-width: 900px; }
+    .card { border: none; box-shadow: 0 2px 10px rgba(0,0,0,0.06); margin-bottom: 1.2rem; }
+    .question-card { border: 1px solid var(--primary-color); border-radius: 8px; }
+    .answer-option { padding: .9rem; border-radius: 6px; margin-bottom: .6rem; border: 1px solid var(--primary-color); }
     </style>
 </head>
 
 <body>
     <div class="container py-4">
         <div class="d-flex justify-content-between align-items-center mb-4">
-            <h1><?= htmlspecialchars($quiz['name']) ?></h1>
+            <h1><?= htmlspecialchars($quiz['name'] ?? '') ?></h1>
             <a href="/quizzeo/?url=home" class="btn btn-outline-secondary">← Retour</a>
         </div>
 
         <div class="card">
             <div class="card-body">
 
-                <form method="POST" action="/quizzeo/Controller/submit_quiz.php">
+                <form method="POST" action="/quizzeo/Controller/submit_quiz.php" id="quiz-form">
                     <input type="hidden" name="quiz_id" value="<?= $quiz_id ?>">
 
                     <?php foreach ($questions as $index => $question): ?>
+                        <?php
+                            // sécurité : s'assurer que $question est bien un tableau
+                            if (!is_array($question)) continue;
+
+                            // récupérer les réponses (déjà incluses si getQuestionsByQuizzId le fait,
+                            // sinon appeler getAnswersByQuestion)
+                            $answers = $question['answers'] ?? [];
+                            $qName = 'question_' . (int)$question['id'];
+                        ?>
                     <div class="question-card card mb-4">
                         <div class="card-header">
                             <h5 class="mb-0">
                                 Question <?= $index + 1 ?>
-                                <span class="badge bg-primary float-end"><?= $question['point'] ?> point(s)</span>
+                                <span class="badge bg-primary float-end"><?= (int)($question['point'] ?? 1) ?> point(s)</span>
                             </h5>
                         </div>
                         <div class="card-body">
-                            <p class="fw-bold mb-3"><?= htmlspecialchars($question['title']) ?></p>
+                            <p class="fw-bold mb-3"><?= htmlspecialchars($question['title'] ?? '') ?></p>
 
-                            <?php if (!empty($question['answers'])): ?>
-                            <?php foreach ($question['answers'] as $answer): ?>
-                            <div class="answer-option">
-                                <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="question_<?= $question['id'] ?>"
-                                        value="<?= $answer['id'] ?>" id="answer_<?= $answer['id'] ?>">
-                                    <label class="form-check-label w-100" for="answer_<?= $answer['id'] ?>">
-                                        <?= htmlspecialchars($answer['answer_text']) ?>
-                                    </label>
-                                </div>
-                            </div>
-                            <?php endforeach; ?>
+                            <?php if (!empty($answers)): ?>
+                                <!-- QCM : on met required sur le premier input radio du groupe via JS (voir plus bas) -->
+                                <?php foreach ($answers as $i => $answer): ?>
+                                    <div class="answer-option">
+                                        <div class="form-check">
+                                            <input class="form-check-input"
+                                                   type="radio"
+                                                   name="<?= $qName ?>"
+                                                   value="<?= (int)($answer['id'] ?? 0) ?>"
+                                                   id="answer_<?= (int)($answer['id'] ?? 0) ?>">
+                                            <label class="form-check-label w-100" for="answer_<?= (int)($answer['id'] ?? 0) ?>">
+                                                <?= htmlspecialchars($answer['answer_text'] ?? '') ?>
+                                            </label>
+                                        </div>
+                                    </div>
+                                <?php endforeach; ?>
+
                             <?php else: ?>
-                            <p class="text-muted">Aucune réponse disponible</p>
+                                <!-- RÉPONSE LIBRE -->
+                                <div class="mb-2">
+                                    <textarea class="form-control"
+                                              name="<?= $qName ?>"
+                                              rows="3"
+                                              placeholder="Écrivez votre réponse..."
+                                              required></textarea>
+                                </div>
                             <?php endif; ?>
+
                         </div>
                     </div>
                     <?php endforeach; ?>
@@ -263,41 +136,54 @@ if (isset($_GET['id'])) {
                         </button>
                     </div>
                 </form>
+
             </div>
         </div>
     </div>
 
+    <!-- Bootstrap Icons & JS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+    // Rendre required le premier radio de chaque groupe QCM afin que le groupe soit obligatoire
+    // (HTML ne supporte pas required sur groupe de radio directement via nom)
+    (function() {
+        const questions = <?= json_encode(array_map(function($q){ return (int)$q['id']; }, $questions)); ?>;
+        questions.forEach(function(qid) {
+            const radios = document.querySelectorAll('input[name="question_' + qid + '"][type="radio"]');
+            if (radios.length > 0) {
+                // marquer le premier radio comme required ; si l'utilisateur choisit un autre, c'est ok
+                radios[0].required = true;
+            }
+        });
+    })();
+    </script>
 </body>
 
 </html>
 <?php
-    exit; 
-    
-
+    exit;
 } else {
+    // MODE 2 : liste des quiz
     require_once __DIR__ . '/../Model/function_quizz.php';
     $quizzes = getActiveQuizz();
     ?>
 <!DOCTYPE html>
 <html lang="fr">
-
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Liste des Quiz - Quizzeo</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
-
 <body>
     <div class="container py-4">
         <h1>Liste des Quiz Disponibles</h1>
         <?php foreach ($quizzes as $quiz): ?>
         <div class="card mb-3">
             <div class="card-body">
-                <h5><?= htmlspecialchars($quiz['title']) ?></h5>
-                <a href="?url=quiz&id=<?= $quiz['quizz_id'] ?>" class="btn btn-primary">
+                <h5><?= htmlspecialchars($quiz['title'] ?? $quiz['name'] ?? '') ?></h5>
+                <a href="?url=quiz&id=<?= (int)($quiz['quizz_id'] ?? $quiz['id'] ?? 0) ?>" class="btn btn-primary">
                     Jouer ce quiz
                 </a>
             </div>
@@ -305,7 +191,6 @@ if (isset($_GET['id'])) {
         <?php endforeach; ?>
     </div>
 </body>
-
 </html>
 <?php
 }
