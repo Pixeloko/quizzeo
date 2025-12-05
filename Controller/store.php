@@ -60,7 +60,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 
-    // Créer le quiz
     if (empty($errors)) {
         try {
             $user_id = $_SESSION['user_id'];

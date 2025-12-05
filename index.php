@@ -1,5 +1,4 @@
 <?php
-// index.php - VERSION CORRIGÉE
 
 // Activation du débogage
 error_reporting(E_ALL);
