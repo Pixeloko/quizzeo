@@ -1,6 +1,4 @@
 <?php
-
-
 // Démarrage de session
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
@@ -9,9 +7,6 @@ if (session_status() === PHP_SESSION_NONE) {
 // URL de base pour les redirections
 $base_url = 'http://' . $_SERVER['HTTP_HOST'] . '/quizzeo';
 
-// Debug
-echo "<!-- DEBUG: url = " . ($_GET['url'] ?? 'none') . " -->\n";
-echo "<!-- DEBUG: method = " . $_SERVER['REQUEST_METHOD'] . " -->\n";
 
 // Récupérer l'URL demandée
 $url = $_GET['url'] ?? '';
@@ -65,15 +60,6 @@ switch ($url) {
         } else {
             require __DIR__ . '/View/user/dashboard.php';
         }
-        break;
-
-    // JOUER À UN QUIZ
-    case 'play_quiz':
-        if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'user') {
-            header("Location: $base_url/?url=login");
-            exit;
-        }
-        require __DIR__ . '/View/user/play_quiz.php';
         break;
 
     // SOUMETTRE UN QUIZ
